@@ -20,6 +20,17 @@ Route::middleware(['auth'])->group(function () {
 
     Route::group(['prefix' => '/dashboard', 'as' => 'dashboard.'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
+        Route::prefix('/stats')->group(function () {
+            Route::get('/kependudukan', [DashboardController::class, 'statsKependudukan'])->name('kependudukan');
+            Route::get('/gender', [DashboardController::class, 'statsGender'])->name('gender');
+            Route::get('/umur', [DashboardController::class, 'statsUmur'])->name('umur');
+            Route::get('/perkawinan', [DashboardController::class, 'statsPerkawinan'])->name('perkawinan');
+            Route::get('/bpjs', [DashboardController::class, 'statsBPJS'])->name('bpjs');
+            Route::get('/pendapatan', [DashboardController::class, 'statsPendapatan'])->name('pendapatan');
+            Route::get('/kepemilikan-rumah', [DashboardController::class, 'statsKepemilikanRumah'])->name('kepemilikan.rumah');
+            Route::get('/gol-darah', [DashboardController::class, 'statsGolDarah'])->name('gol.darah');
+            Route::get('/per-desa', [DashboardController::class, 'statsPerDesa'])->name('per.desa');
+        });
     });
 
     Route::group(['prefix' => '/penduduk', 'as' => 'penduduk.'], function () {
