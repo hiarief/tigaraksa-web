@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="{!! asset('assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') !!}">
     <link rel="stylesheet" href="{!! asset('assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') !!}">
     <link rel="stylesheet" href="{!! asset('assets/plugins/jquery-ui/jquery-ui.css') !!}">
+    <link rel="stylesheet" href="{!! asset('assets/plugins/chart.js/Chart.min.css') !!}">
     <script>
         if (window.location.protocol === 'https:') {
             var meta = document.createElement('meta');
@@ -65,24 +66,24 @@
     <div class="wrapper">
         @include('admin.layout.partials.navbar')
         @include('admin.layout.partials.sidebar')
-        <div class="content-wrapper p-0">
-            {{--  <div class="content-header">
+        <div class="content-wrapper">
+            <div class="content-header">
                 <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="breadcrumb-item m-0"><strong>@yield('content-header')</strong></div>
+                    <div class="row mb-0 mt-0">
+                        <div class="col-sm">
+                            <h4 class="m-0">@yield('title')</h4>
                         </div>
-                        <div class="col-sm-6">
+                        {{--  <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
-                                        class="text-navy">Dashboard</a></li>
-                                <li class="breadcrumb-item active text-dark">@yield('content-header')</li>
+                                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                <li class="breadcrumb-item active">Dashboard v1</li>
                             </ol>
-                        </div>
+                        </div>  --}}
                     </div>
                 </div>
-            </div>  --}}
-            <div class="content mt-1">
+            </div>
+
+            <div class="content">
                 <div class="container-fluid">
                     @if ($errors->count() > 0)
                         <div class="alert alert-danger alert-dismissible">
@@ -117,6 +118,9 @@
     <script src="{!! asset('assets/plugins/daterangepicker/daterangepicker.js') !!}"></script>
     <script src="{!! asset('assets/plugins/sweetalert2/sweetalert2.all.min.js') !!}"></script>
     <script src="{!! asset('assets/plugins/export-excel/xlsx.full.min.js') !!}"></script>
+    <script src="{!! asset('assets/plugins/chart.js/Chart.min.js') !!}"></script>
+    <script src="{{ asset('assets/plugins/chart.js/chart2.js') }}"></script>
+    <script src="{{ asset('assets/plugins/chart.js/chartjs-plugin-datalabels.js') }}"></script>
     <script>
         $(function() {
             // Make table headers resizable

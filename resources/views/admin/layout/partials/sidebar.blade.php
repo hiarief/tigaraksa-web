@@ -33,16 +33,71 @@
                 data-widget="treeview" role="menu" data-accordion="false">
 
                 <li class="nav-item">
-                    <a href="#" class="nav-link {!! request()->is('dashboard') || request()->is('dashboard/*') ? 'active' : '' !!}">
-                        <i class="nav-icon fas fa-tachometer-alt bounce-icon"></i>
-                        <p>
-                            Dashboard
-                        </p>
+                    <a href="{{ route('dashboard.index') }}"
+                        class="nav-link {{ Route::is('dashboard.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <p>Dashboard</p>
                     </a>
                 </li>
 
-                {{--  <li class="nav-item menu-open">
-                    <a href="#" class="nav-link active">
+                <li class="nav-header">CHART</li>
+
+                <li class="nav-item">
+                    <a href="{{ route('pendidikan.pendidikan') }}"
+                        class="nav-link {{ Route::is('pendidikan.pendidikan') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-graduation-cap"></i>
+                        <p>Pendidikan</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="" class="nav-link">
+                        <i class="nav-icon fas fa-briefcase"></i>
+                        <p>Pekerjaan</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('pendapatan.pendapatan') }}"
+                        class="nav-link {{ Route::is('pendapatan.pendapatan') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-money-bill-wave"></i>
+                        <p>Pendapatan</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('kepemilikan.rumah.index') }}"
+                        class="nav-link {{ Route::is('kepemilikan.rumah.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-home"></i>
+                        <p>Kepemilikan Rumah</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('penduduk.index') }}"
+                        class="nav-link {{ Route::is('penduduk.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>Kependudukan</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('umur.umur') }}" class="nav-link {{ Route::is('umur.umur') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-hourglass-half"></i>
+                        <p>Umur</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('bpjs.bpjs') }}" class="nav-link {{ Route::is('bpjs.bpjs') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-hourglass-half"></i>
+                        <p>Bpjs</p>
+                    </a>
+                </li>
+
+                <li class="nav-header">PENDUDUK</li>
+                <li class="nav-item {{ Route::is('kependudukan.*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ Route::is('kependudukan.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-people-group text-info"></i>
                         <p>
                             Kependudukan
@@ -52,8 +107,8 @@
 
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="http://3raksa.id/siode/kependudukan/kartu-keluarga/kepala-keluarga"
-                                class="nav-link active">
+                            <a href="{{ route('kependudukan.kartu.keluarga.index') }}"
+                                class="nav-link {{ Route::is('kependudukan.kartu.keluarga.*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon text-success"></i>
                                 <p>Kepala Keluarga</p>
                             </a>
@@ -66,7 +121,7 @@
                             </a>
                         </li>
                     </ul>
-                </li>  --}}
+                </li>
                 {{--  @can('users-manage')
                     <li class="nav-header">USER MANAGE</li>
 
