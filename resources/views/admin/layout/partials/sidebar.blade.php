@@ -1,21 +1,22 @@
 <aside class="main-sidebar sidebar-dark-warning elevation-4">
 
-
-    <a href="http://3raksa.id/siode/dashboard" class="brand-link text-sm">
-        <img src="http://3raksa.id/images/siode.png" class="brand-image img-circle elevation-3" style="opacity:.8">
-        <span class="brand-text font-weight-light">SiODe</span>
-    </a>
-
-    <a href="route('login')" class="brand-link">
-        <img src="{{ asset('assets/img/AdminLTELogo.png') }}" alt="Logo"
-            class="brand-image img-circle elevation-3 bounce" style="opacity: .9; background: white; padding: 5px;">
-
-        <span class="brand-text font-weight-bold ml-2" style="color: #ffffff; font-size: 1.1rem;">
-            Desa <span class="text-danger">{{ ucfirst(strtolower(Auth::user()->namadesa)) }}</span>
+    <a href="{{ route('dashboard.index') }}" class="brand-link">
+        <img src="http://3raksa.id/images/siode.png" class="brand-image img-circle elevation-3">
+        <span class="brand-text font-weight-light">TIGARAKSA</span>
     </a>
     <div
         class="sidebar os-host os-theme-light os-host-overflow os-host-overflow-y os-host-resize-disabled os-host-transition os-host-scrollbar-horizontal-hidden">
 
+        <div class="user-panel d-flex mb-2 mt-2 pb-2">
+            <div class="image">
+                <img src="{{ asset('assets/img/AdminLTELogo.png') }}" class="img-circle elevation-2">
+            </div>
+            <div class="info">
+                <span class="d-block text-sm text-white">
+                    Desa {{ ucfirst(strtolower(Auth::user()->namadesa)) }}
+                </span>
+            </div>
+        </div>
         <div class="form-inline d-flex mb-3 mt-2 pb-0">
             <div class="input-group" data-widget="sidebar-search">
                 <input class="form-control form-control-sidebar form-control-sm" type="search" placeholder="Search"
@@ -35,43 +36,12 @@
                 <li class="nav-item">
                     <a href="{{ route('dashboard.index') }}"
                         class="nav-link {{ Route::is('dashboard.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <i class="nav-icon fas fa-chart-line"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
 
-                <li class="nav-header">CHART</li>
-
-                <li class="nav-item">
-                    <a href="{{ route('pendidikan.pendidikan') }}"
-                        class="nav-link {{ Route::is('pendidikan.pendidikan') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-graduation-cap"></i>
-                        <p>Pendidikan</p>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="" class="nav-link">
-                        <i class="nav-icon fas fa-briefcase"></i>
-                        <p>Pekerjaan</p>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="{{ route('pendapatan.pendapatan') }}"
-                        class="nav-link {{ Route::is('pendapatan.pendapatan') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-money-bill-wave"></i>
-                        <p>Pendapatan</p>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="{{ route('kepemilikan.rumah.index') }}"
-                        class="nav-link {{ Route::is('kepemilikan.rumah.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-home"></i>
-                        <p>Kepemilikan Rumah</p>
-                    </a>
-                </li>
+                <li class="nav-header">DATA PENDUDUK</li>
 
                 <li class="nav-item">
                     <a href="{{ route('penduduk.index') }}"
@@ -83,17 +53,53 @@
 
                 <li class="nav-item">
                     <a href="{{ route('umur.umur') }}" class="nav-link {{ Route::is('umur.umur') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-hourglass-half"></i>
+                        <i class="nav-icon fas fa-birthday-cake"></i>
                         <p>Umur</p>
+                    </a>
+                </li>
+
+                <li class="nav-header">SOSIAL</li>
+
+                <li class="nav-item">
+                    <a href="{{ route('pendidikan.pendidikan') }}"
+                        class="nav-link {{ Route::is('pendidikan.pendidikan') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-graduation-cap"></i>
+                        <p>Pendidikan</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-briefcase"></i>
+                        <p>Pekerjaan</p>
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="{{ route('bpjs.bpjs') }}" class="nav-link {{ Route::is('bpjs.bpjs') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-hourglass-half"></i>
-                        <p>Bpjs</p>
+                        <i class="nav-icon fas fa-id-card"></i>
+                        <p>BPJS</p>
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('kepemilikan.rumah.index') }}"
+                        class="nav-link {{ Route::is('kepemilikan.rumah.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-house-user"></i>
+                        <p>Kepemilikan Rumah</p>
+                    </a>
+                </li>
+
+                <li class="nav-header">EKONOMI</li>
+
+                <li class="nav-item">
+                    <a href="{{ route('pendapatan.pendapatan') }}"
+                        class="nav-link {{ Route::is('pendapatan.pendapatan') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-wallet"></i>
+                        <p>Pendapatan</p>
+                    </a>
+                </li>
+
 
                 <li class="nav-header">PENDUDUK</li>
                 <li class="nav-item {{ Route::is('kependudukan.*') ? 'menu-open' : '' }}">
