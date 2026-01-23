@@ -35,7 +35,16 @@ class DashboardController extends Controller
         }
 
         $totalPenduduk = $query->count();
-        $totalKK = $query->distinct('t2.no_kk')->count('t2.no_kk');
+
+        // Hitung Total KK berdasarkan sts_hub_kel = 1 (Kepala Keluarga)
+        $totalKK = DB::table('t_kartu_keluarga_anggota as t1')
+            ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+            ->where('t1.sts_hub_kel', 1)
+            ->when($desa, function($q) use ($desa) {
+                return $q->where('t2.desa', $desa);
+            })
+            ->count();
+
         $rataAnggotaKK = $totalKK > 0 ? round($totalPenduduk / $totalKK, 1) : 0;
 
         // Distribusi per RT/RW
@@ -326,13 +335,15 @@ class DashboardController extends Controller
             ->leftJoin('indonesia_villages as t3', 't3.code', '=', 't2.desa')
             ->select(
                 't3.name as desa',
+                't2.desa as desa_code',
                 DB::raw('COUNT(DISTINCT t1.no_nik) as total_penduduk'),
-                DB::raw('COUNT(DISTINCT t2.no_kk) as total_kk'),
+                DB::raw('SUM(CASE WHEN t1.sts_hub_kel = 1 THEN 1 ELSE 0 END) as total_kk'),
                 DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as laki_laki'),
                 DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as perempuan'),
                 DB::raw('SUM(CASE WHEN t1.punya_bpjs = "ya" THEN 1 ELSE 0 END) as punya_bpjs')
             )
-            ->groupBy('t3.name', 't3.code')
+            ->groupBy('t3.name', 't2.desa')
+            ->orderBy('t3.name')
             ->get();
 
         return response()->json($stats);
