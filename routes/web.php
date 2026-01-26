@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\BpjsController;
 use App\Http\Controllers\Admin\UmurController;
 use App\Http\Controllers\Admin\ChartController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PekerjaanController;
 use App\Http\Controllers\Admin\PendapatanController;
 use App\Http\Controllers\Admin\PendidikanController;
 use App\Http\Controllers\Admin\KependudukanController;
@@ -46,17 +47,34 @@ Route::middleware(['auth'])->group(function () {
 
     Route::group(['prefix' => '/umur', 'as' => 'umur.'], function () {
         Route::get('/', [UmurController::class, 'umur'])->name('umur');
-        Route::get('/umur/data', [UmurController::class, 'getDataUmur'])->name('data');
-        Route::get('/umur/rw-list', [UmurController::class, 'getRwList'])->name('rw.list');
-        Route::get('/umur/rt-list', [UmurController::class, 'getRtList'])->name('rt.list');
-        Route::get('/umur/data-pemilih', [UmurController::class, 'getDataPemilih'])->name('pemilih');
-        Route::get('/umur/data-semua', [UmurController::class, 'getDataSemua'])->name('semua');
+        Route::get('/data', [UmurController::class, 'getDataUmur'])->name('data');
+        Route::get('/rw-list', [UmurController::class, 'getRwList'])->name('rw.list');
+        Route::get('/rt-list', [UmurController::class, 'getRtList'])->name('rt.list');
+        Route::get('/data-pemilih', [UmurController::class, 'getDataPemilih'])->name('pemilih');
+        Route::get('/data-semua', [UmurController::class, 'getDataSemua'])->name('semua');
     });
 
     Route::group(['prefix' => '/bpjs', 'as' => 'bpjs.'], function () {
         Route::get('/', [BpjsController::class, 'bpjs'])->name('bpjs');
         Route::get('/statistik', [BpjsController::class, 'getStatistik'])->name('statistik');
         Route::get('/detail', [BpjsController::class, 'getDetailData'])->name('detail');
+    });
+
+    Route::group(['prefix' => '/pekerjaan', 'as' => 'pekerjaan.'], function () {
+        Route::get('/', [PekerjaanController::class, 'index'])->name('index');
+
+        // API Routes untuk AJAX
+        Route::get('/api/kpi', [PekerjaanController::class, 'getKpiData'])->name('api.kpi');
+        Route::get('/api/distribusi-pekerjaan', [PekerjaanController::class, 'getDistribusiPekerjaan'])->name('api.distribusi.pekerjaan');
+        Route::get('/api/distribusi-pendapatan', [PekerjaanController::class, 'getDistribusiPendapatan'])->name('api.distribusi.pendapatan');
+        Route::get('/api/pekerjaan-vs-pendapatan', [PekerjaanController::class, 'getPekerjaanVsPendapatan'])->name('api.pekerjaan.pendapatan');
+        Route::get('/api/pekerjaan-by-gender', [PekerjaanController::class, 'getPekerjaanByGender'])->name('api.pekerjaan.gender');
+        Route::get('/api/pekerjaan-by-usia', [PekerjaanController::class, 'getPekerjaanByUsia'])->name('api.pekerjaan.usia');
+        Route::get('/api/distribusi-usia', [PekerjaanController::class, 'getDistribusiUsia'])->name('api.distribusi.usia');
+
+        // NEW API Routes
+        Route::get('/api/status-pekerjaan', [PekerjaanController::class, 'getStatusPekerjaan'])->name('api.status.pekerjaan');
+        Route::get('/api/analisis-pendapatan', [PekerjaanController::class, 'getAnalisisPendapatanProduktif'])->name('api.analisis.pendapatan');
     });
 
     Route::group(['prefix' => '/kepemilikan-rumah', 'as' => 'kepemilikan.rumah.'], function () {
