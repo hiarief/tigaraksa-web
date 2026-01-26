@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\PerkawinanController;
 use App\Http\Controllers\Admin\KependudukanController;
 use App\Http\Controllers\Admin\KartuKeluargaController;
 use App\Http\Controllers\Admin\KepemilikanRumahController;
+use App\Http\Controllers\Admin\BantuanPemerintahController;
 
 
 Route::get('/', function () {
@@ -112,6 +113,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/datatable-penduduk', [PendapatanController::class, 'datatablePenduduk'])->name('datatable.penduduk');
         Route::get('/datatable-lansia-rentan', [PendapatanController::class, 'datatableLansiaRentan'])->name('datatable.lansia.rentan');
         Route::get('/datatable-per-rt/{rt_rw}', [PendapatanController::class, 'datatablePerRT'])->name('datatable.per.rt');
+    });
+
+    Route::group(['prefix' => '/bantuan-pemerintah', 'as' => 'bantuan.pemerintah.'], function () {
+        Route::get('/', [BantuanPemerintahController::class, 'index'])->name('index');
+        Route::get('/statistik', [BantuanPemerintahController::class, 'getStatistik'])->name('statistik');
+        Route::get('/datatables', [BantuanPemerintahController::class, 'getDatatables'])->name('datatables');
     });
 
     Route::group(['prefix' => 'kependudukan', 'as' => 'kependudukan.'], function () {

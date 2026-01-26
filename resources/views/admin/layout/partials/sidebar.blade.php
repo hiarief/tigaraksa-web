@@ -32,83 +32,95 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column nav-flat nav-compact nav-child-indent"
                 data-widget="treeview" role="menu" data-accordion="false">
-
+                {{-- ================= DASHBOARD ================= --}}
                 <li class="nav-item">
                     <a href="{{ route('dashboard.index') }}"
                         class="nav-link {{ Route::is('dashboard.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-chart-line"></i>
+                        <i class="nav-icon fas fa-chart-pie text-primary"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
 
-                <li class="nav-header">DATA PENDUDUK</li>
+                {{-- ================= KEPENDUDUKAN ================= --}}
+                <li class="nav-header">KEPENDUDUKAN</li>
 
                 <li class="nav-item">
                     <a href="{{ route('penduduk.index') }}"
-                        class="nav-link {{ Route::is('penduduk.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>Kependudukan</p>
+                        class="nav-link {{ Route::is('penduduk.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-user-friends text-info"></i>
+                        <p>Data Penduduk</p>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('umur.umur') }}" class="nav-link {{ Route::is('umur.umur') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-birthday-cake"></i>
-                        <p>Umur</p>
+                    <a href="{{ route('umur.umur') }}" class="nav-link {{ Route::is('umur.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-user-clock text-info"></i>
+                        <p>Distribusi Umur</p>
                     </a>
                 </li>
 
-                <li class="nav-header">SOSIAL</li>
+                <li class="nav-item">
+                    <a href="{{ route('perkawinan.index') }}"
+                        class="nav-link {{ Route::is('perkawinan.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-ring text-info"></i>
+                        <p>Status Perkawinan</p>
+                    </a>
+                </li>
+
+                {{-- ================= SOSIAL & KESEJAHTERAAN ================= --}}
+                <li class="nav-header">SOSIAL & KESEJAHTERAAN</li>
 
                 <li class="nav-item">
                     <a href="{{ route('pendidikan.pendidikan') }}"
-                        class="nav-link {{ Route::is('pendidikan.pendidikan') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-graduation-cap"></i>
+                        class="nav-link {{ Route::is('pendidikan.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-school text-success"></i>
                         <p>Pendidikan</p>
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="{{ route('pekerjaan.index') }}"
-                        class="nav-link {{ Route::is('pekerjaan.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-briefcase"></i>
+                        class="nav-link {{ Route::is('pekerjaan.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-briefcase text-success"></i>
                         <p>Pekerjaan</p>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('bpjs.bpjs') }}" class="nav-link {{ Route::is('bpjs.bpjs') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-id-card"></i>
-                        <p>BPJS</p>
+                    <a href="{{ route('bpjs.bpjs') }}" class="nav-link {{ Route::is('bpjs.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-notes-medical text-success"></i>
+                        <p>Jaminan Kesehatan (BPJS)</p>
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="{{ route('kepemilikan.rumah.index') }}"
-                        class="nav-link {{ Route::is('kepemilikan.rumah.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-house-user"></i>
+                        class="nav-link {{ Route::is('kepemilikan.rumah.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-home text-success"></i>
                         <p>Kepemilikan Rumah</p>
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('perkawinan.index') }}"
-                        class="nav-link {{ Route::is('perkawinan.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-heart"></i>
-                        <p>Perkawinan</p>
-                    </a>
-                </li>
-
-                <li class="nav-header">EKONOMI</li>
+                {{-- ================= EKONOMI & BANTUAN ================= --}}
+                <li class="nav-header">EKONOMI & BANTUAN</li>
 
                 <li class="nav-item">
                     <a href="{{ route('pendapatan.pendapatan') }}"
-                        class="nav-link {{ Route::is('pendapatan.pendapatan') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-wallet"></i>
+                        class="nav-link {{ Route::is('pendapatan.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-coins text-navy"></i>
                         <p>Pendapatan</p>
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a href="{{ route('bantuan.pemerintah.index') }}"
+                        class="nav-link {{ Route::is('bantuan.pemerintah.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-hands-helping text-navy"></i>
+                        <p>Bantuan Pemerintah</p>
+                    </a>
+                </li>
+
+                {{-- ================= MENU KEPENDUDUKAN ================= --}}
 
                 <li class="nav-header">PENDUDUK</li>
                 <li class="nav-item {{ Route::is('kependudukan.*') ? 'menu-open' : '' }}">
