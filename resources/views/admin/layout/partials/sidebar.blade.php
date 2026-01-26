@@ -91,6 +91,14 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a href="{{ route('perkawinan.index') }}"
+                        class="nav-link {{ Route::is('perkawinan.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-heart"></i>
+                        <p>Perkawinan</p>
+                    </a>
+                </li>
+
                 <li class="nav-header">EKONOMI</li>
 
                 <li class="nav-item">

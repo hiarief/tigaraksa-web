@@ -74,7 +74,7 @@
                 </div>
             </div>
 
-            <!-- Chart Row 3: Status Pekerjaan & Analisis Pendapatan (NEW) -->
+            <!-- Chart Row 3: Status Pekerjaan & Analisis Pendapatan -->
             <div class="row mb-4">
                 <!-- Status Pekerjaan Usia Kerja -->
                 <div class="col-lg-5 col-md-12 mb-4">
@@ -170,6 +170,276 @@
                 </div>
             </div>
 
+            <!-- DataTables Section with Tabs -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-gradient-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-table mr-2"></i>Detail Data Penduduk</h5>
+                            <small>Pilih tab untuk melihat detail data berdasarkan kategori</small>
+                        </div>
+                        <div class="card-body">
+                            <!-- Navigation Tabs -->
+                            <ul class="nav nav-tabs nav-tabs-custom" id="dataTableTabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="tab-pekerjaan" data-toggle="tab"
+                                        href="#content-pekerjaan" role="tab">
+                                        <i class="fas fa-briefcase mr-1"></i> Pekerjaan
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-pendapatan" data-toggle="tab" href="#content-pendapatan"
+                                        role="tab">
+                                        <i class="fas fa-money-bill-wave mr-1"></i> Pendapatan
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-status" data-toggle="tab" href="#content-status"
+                                        role="tab">
+                                        <i class="fas fa-user-check mr-1"></i> Status Pekerjaan
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-gender" data-toggle="tab" href="#content-gender"
+                                        role="tab">
+                                        <i class="fas fa-venus-mars mr-1"></i> Gender
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-usia" data-toggle="tab" href="#content-usia"
+                                        role="tab">
+                                        <i class="fas fa-users mr-1"></i> Kategori Usia
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <!-- Tab Contents -->
+                            <div class="tab-content mt-3" id="dataTableTabsContent">
+                                <!-- Tab Pekerjaan -->
+                                <div class="tab-pane fade show active" id="content-pekerjaan" role="tabpanel">
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <label for="filter-pekerjaan">Filter Jenis Pekerjaan:</label>
+                                            <select class="form-control" id="filter-pekerjaan">
+                                                <option value="">Semua Pekerjaan</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <button class="btn btn-primary btn-block" onclick="applyFilter('pekerjaan')">
+                                                <i class="fas fa-filter mr-1"></i> Filter
+                                            </button>
+                                        </div>
+                                        {{--  <div class="col-md-6 d-flex align-items-end justify-content-end">
+                                            <button class="btn btn-success" onclick="exportTable('pekerjaan')">
+                                                <i class="fas fa-file-excel mr-1"></i> Export Excel
+                                            </button>
+                                        </div>  --}}
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table id="table-pekerjaan" class="table-bordered table-striped table-hover table"
+                                            style="width:100%">
+                                            <thead class="thead-dark">
+                                                <tr class="nowrap text-center">
+                                                    <th style="width: 1%">No</th>
+                                                    <th>NIK</th>
+                                                    <th>Nama</th>
+                                                    <th>Usia</th>
+                                                    <th>JK</th>
+                                                    <th>Pekerjaan</th>
+                                                    <th>Pendapatan</th>
+                                                    <th>Alamat</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Tab Pendapatan -->
+                                <div class="tab-pane fade" id="content-pendapatan" role="tabpanel">
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <label for="filter-pendapatan">Filter Kategori Pendapatan:</label>
+                                            <select class="form-control" id="filter-pendapatan">
+                                                <option value="">Semua Kategori</option>
+                                                <option value="Tidak Ada">Tidak Ada</option>
+                                                <option value="0-1 Juta">0 - 1 Juta</option>
+                                                <option value="1-2 Juta">1 - 2 Juta</option>
+                                                <option value="2-5 Juta">2 - 5 Juta</option>
+                                                <option value=">5 Juta">&gt; 5 Juta</option>
+                                            </select>
+
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <button class="btn btn-primary btn-block" onclick="applyFilter('pendapatan')">
+                                                <i class="fas fa-filter mr-1"></i> Filter
+                                            </button>
+                                        </div>
+                                        {{--  <div class="col-md-6 d-flex align-items-end justify-content-end">
+                                            <button class="btn btn-success" onclick="exportTable('pendapatan')">
+                                                <i class="fas fa-file-excel mr-1"></i> Export Excel
+                                            </button>
+                                        </div>  --}}
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table id="table-pendapatan"
+                                            class="table-bordered table-striped table-hover table" style="width:100%">
+                                            <thead class="thead-dark">
+                                                <tr class="nowrap text-center">
+                                                    <th style="width: 1%">No</th>
+                                                    <th>NIK</th>
+                                                    <th>Nama</th>
+                                                    <th>Usia</th>
+                                                    <th>JK</th>
+                                                    <th>Pekerjaan</th>
+                                                    <th>Pendapatan</th>
+                                                    <th>Alamat</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Tab Status -->
+                                <div class="tab-pane fade" id="content-status" role="tabpanel">
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <label for="filter-status">Filter Status Pekerjaan:</label>
+                                            <select class="form-control" id="filter-status">
+                                                <option value="">Semua Status</option>
+                                                <option value="Bekerja">Bekerja</option>
+                                                <option value="Pengangguran">Pengangguran</option>
+                                                <option value="Mengurus Rumah Tangga">Mengurus Rumah Tangga</option>
+                                                <option value="Pelajar/Mahasiswa">Pelajar/Mahasiswa</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <button class="btn btn-primary btn-block" onclick="applyFilter('status')">
+                                                <i class="fas fa-filter mr-1"></i> Filter
+                                            </button>
+                                        </div>
+                                        {{--  <div class="col-md-6 d-flex align-items-end justify-content-end">
+                                            <button class="btn btn-success" onclick="exportTable('status')">
+                                                <i class="fas fa-file-excel mr-1"></i> Export Excel
+                                            </button>
+                                        </div>  --}}
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table id="table-status" class="table-bordered table-striped table-hover table"
+                                            style="width:100%">
+                                            <thead class="thead-dark">
+                                                <tr class="nowrap text-center">
+                                                    <th style="width: 1%">No</th>
+                                                    <th>NIK</th>
+                                                    <th>Nama</th>
+                                                    <th>Usia</th>
+                                                    <th>JK</th>
+                                                    <th>Pekerjaan</th>
+                                                    <th>Status Pekerjaan</th>
+                                                    <th>Pendapatan</th>
+                                                    <th>Alamat</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Tab Gender -->
+                                <div class="tab-pane fade" id="content-gender" role="tabpanel">
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="filter-gender">Filter Jenis Kelamin:</label>
+                                            <select class="form-control" id="filter-gender">
+                                                <option value="">Semua</option>
+                                                <option value="L">Laki-Laki</option>
+                                                <option value="P">Perempuan</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="filter-gender-pekerjaan">Filter Pekerjaan:</label>
+                                            <select class="form-control" id="filter-gender-pekerjaan">
+                                                <option value="">Semua Pekerjaan</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <button class="btn btn-primary btn-block" onclick="applyFilter('gender')">
+                                                <i class="fas fa-filter mr-1"></i> Filter
+                                            </button>
+                                        </div>
+                                        {{--  <div class="col-md-4 d-flex align-items-end justify-content-end">
+                                            <button class="btn btn-success" onclick="exportTable('gender')">
+                                                <i class="fas fa-file-excel mr-1"></i> Export Excel
+                                            </button>
+                                        </div>  --}}
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table id="table-gender" class="table-bordered table-striped table-hover table"
+                                            style="width:100%">
+                                            <thead class="thead-dark">
+                                                <tr class="nowrap text-center">
+                                                    <th style="width: 1%">No</th>
+                                                    <th>NIK</th>
+                                                    <th>Nama</th>
+                                                    <th>Usia</th>
+                                                    <th>JK</th>
+                                                    <th>Pekerjaan</th>
+                                                    <th>Alamat</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Tab Usia -->
+                                <div class="tab-pane fade" id="content-usia" role="tabpanel">
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <label for="filter-usia">Filter Kategori Usia:</label>
+                                            <select class="form-control" id="filter-usia">
+                                                <option value="">Semua Kategori</option>
+                                                <option value="Anak (<15)">Anak (<15) </option>
+                                                <option value="Usia Sekolah (15-17)">Usia Sekolah (15-17)</option>
+                                                <option value="Produktif Awal (18-24)">Produktif Awal (18-24)</option>
+                                                <option value="Produktif Utama (25-44)">Produktif Utama (25-44)</option>
+                                                <option value="Produktif Akhir (45-59)">Produktif Akhir (45-59)</option>
+                                                <option value="Lansia (≥60)">Lansia (≥60)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <button class="btn btn-primary btn-block" onclick="applyFilter('usia')">
+                                                <i class="fas fa-filter mr-1"></i> Filter
+                                            </button>
+                                        </div>
+                                        {{--  <div class="col-md-6 d-flex align-items-end justify-content-end">
+                                            <button class="btn btn-success" onclick="exportTable('usia')">
+                                                <i class="fas fa-file-excel mr-1"></i> Export Excel
+                                            </button>
+                                        </div>  --}}
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table id="table-usia" class="table-bordered table-striped table-hover table"
+                                            style="width:100%">
+                                            <thead class="thead-dark">
+                                                <tr class="nowrap text-center">
+                                                    <th style="width: 1%">No</th>
+                                                    <th>NIK</th>
+                                                    <th>Nama</th>
+                                                    <th>Tanggal Lahir</th>
+                                                    <th>Usia</th>
+                                                    <th>Kategori Usia</th>
+                                                    <th>JK</th>
+                                                    <th>Pekerjaan</th>
+                                                    <th>Alamat</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 @endsection
@@ -231,7 +501,6 @@
             margin-top: 5px;
         }
 
-        /* Card Styling */
         .card {
             border: none;
             border-radius: 10px;
@@ -252,8 +521,65 @@
             height: 100%;
         }
 
+        /* Custom Tabs Styling */
+        .nav-tabs-custom {
+            border-bottom: 2px solid #dee2e6;
+        }
 
-        /* Animation */
+        .nav-tabs-custom .nav-link {
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #6c757d;
+            font-weight: 500;
+            padding: 12px 20px;
+            transition: all 0.3s;
+        }
+
+        .nav-tabs-custom .nav-link:hover {
+            border-bottom-color: #007bff;
+            color: #007bff;
+        }
+
+        .nav-tabs-custom .nav-link.active {
+            border-bottom-color: #007bff;
+            color: #007bff;
+            background-color: transparent;
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        /* DataTables Styling */
+        .table-responsive {
+            margin-top: 1rem;
+        }
+
+        table.dataTable {
+            font-size: 0.85rem;
+        }
+
+        table.dataTable thead th {
+            font-weight: 600;
+            white-space: nowrap;
+            background-color: #343a40;
+            color: white;
+        }
+
+        table.dataTable tbody td {
+            vertical-align: middle;
+        }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 1rem;
+        }
+
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            margin-top: 1rem;
+        }
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -270,7 +596,6 @@
             animation: fadeInUp 0.5s ease-out;
         }
 
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             .kpi-value {
                 font-size: 1.5rem;
@@ -278,6 +603,11 @@
 
             .kpi-icon {
                 font-size: 2rem;
+            }
+
+            .nav-tabs-custom .nav-link {
+                font-size: 0.85rem;
+                padding: 8px 12px;
             }
         }
     </style>
@@ -297,6 +627,18 @@
                 status: null,
                 analisis: null
             };
+
+            // DataTable instances
+            let dataTables = {
+                pekerjaan: null,
+                pendapatan: null,
+                status: null,
+                gender: null,
+                usia: null
+            };
+
+            // Store chart data for filters
+            let chartDataList = [];
 
             // Color schemes
             const colors = {
@@ -374,6 +716,17 @@
                     url: '{{ route('pekerjaan.api.distribusi.pekerjaan') }}',
                     method: 'GET',
                     success: function(data) {
+                        chartDataList = data;
+
+                        // Populate filter dropdown
+                        $('#filter-pekerjaan, #filter-gender-pekerjaan').html(
+                            '<option value="">Semua Pekerjaan</option>');
+                        data.forEach(item => {
+                            $('#filter-pekerjaan, #filter-gender-pekerjaan').append(
+                                `<option value="${item.pekerjaan}">${item.pekerjaan} (${item.jumlah})</option>`
+                            );
+                        });
+
                         $('#loading-pekerjaan').hide();
                         $('#chartDistribusiPekerjaan').show();
 
@@ -700,8 +1053,8 @@
                         });
                     },
                     error: function(xhr, status, error) {
-                        console.error('Error loading gender data:', error);
-                        $('#loading-gender').html(
+                        console.error('Error loading analisis data:', error);
+                        $('#loading-analisis').html(
                             '<div class="alert alert-danger">Gagal memuat data: ' + error + '</div>'
                         );
                     }
@@ -714,8 +1067,6 @@
                     url: '{{ route('pekerjaan.api.pekerjaan.gender') }}',
                     method: 'GET',
                     success: function(data) {
-                        console.log('Gender data:', data);
-
                         $('#loading-gender').hide();
                         $('#chartPekerjaanGender').show();
 
@@ -771,7 +1122,6 @@
                                     },
                                     y: {
                                         beginAtZero: true,
-
                                         ticks: {
                                             callback: function(value) {
                                                 return value.toLocaleString();
@@ -790,14 +1140,13 @@
                     }
                 });
             }
+
             // 8. Load Pekerjaan by Usia
             function loadPekerjaanByUsia() {
                 $.ajax({
                     url: '{{ route('pekerjaan.api.pekerjaan.usia') }}',
                     method: 'GET',
                     success: function(data) {
-                        console.log('Usia data:', data);
-
                         $('#loading-usia').hide();
                         $('#chartPekerjaanUsia').show();
 
@@ -885,8 +1234,6 @@
                     url: '{{ route('pekerjaan.api.distribusi.usia') }}',
                     method: 'GET',
                     success: function(data) {
-                        console.log('Piramida data:', data);
-
                         $('#loading-piramida').hide();
                         $('#chartPiramidaPenduduk').show();
 
@@ -951,7 +1298,6 @@
                 });
             }
 
-
             // Initialize all charts
             function initializeCharts() {
                 loadKPIData();
@@ -967,6 +1313,511 @@
 
             // Run on page load
             initializeCharts();
+
+            // ============= DataTable Functions =============
+
+            // Initialize DataTable Pekerjaan
+            function initTablePekerjaan() {
+                if (dataTables.pekerjaan) {
+                    dataTables.pekerjaan.destroy();
+                }
+
+                dataTables.pekerjaan = $('#table-pekerjaan').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: false,
+                    autoWidth: false,
+                    ordering: true,
+                    paging: true,
+                    searching: true,
+                    info: true,
+                    lengthMenu: [
+                        [10, 25, 50, 100, -1],
+                        [10, 25, 50, 100, "All"]
+                    ],
+                    ajax: {
+                        url: '{{ route('pekerjaan.dt.detail.pekerjaan') }}',
+                        data: function(d) {
+                            d.pekerjaan = $('#filter-pekerjaan').val();
+                        }
+                    },
+                    columns: [{
+                            data: 'DT_RowIndex',
+                            name: 'DT_RowIndex',
+                            orderable: false,
+                            searchable: false,
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'nik',
+                            name: 'nik',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'nama',
+                            name: 'nama',
+                            className: 'nowrap'
+                        },
+                        {
+                            data: 'usia',
+                            name: 'usia',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'jenis_kelamin',
+                            name: 'jenis_kelamin',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'pekerjaan',
+                            name: 'pekerjaan',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'kategori_pendapatan',
+                            name: 'kategori_pendapatan',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'alamat_kk',
+                            name: 'alamat_kk',
+                            className: 'nowrap'
+                        }
+                    ],
+                });
+            }
+
+            function initTablePendapatan() {
+                if (dataTables.pendapatan) {
+                    dataTables.pendapatan.destroy();
+                }
+
+                dataTables.pendapatan = $('#table-pendapatan').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: false,
+                    autoWidth: false,
+                    ordering: true,
+                    paging: true,
+                    searching: true,
+                    info: true,
+                    lengthMenu: [
+                        [10, 25, 50, 100, -1],
+                        [10, 25, 50, 100, "All"]
+                    ],
+                    ajax: {
+                        url: '{{ route('pekerjaan.dt.detail.pendapatan') }}',
+                        data: function(d) {
+                            d.kategori = $('#filter-pendapatan').val();
+                        }
+                    },
+                    columns: [{
+                            data: 'DT_RowIndex',
+                            name: 'DT_RowIndex',
+                            orderable: false,
+                            searchable: false,
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'nik',
+                            name: 'nik',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'nama',
+                            name: 'nama',
+                            className: 'nowrap'
+                        },
+                        {
+                            data: 'usia',
+                            name: 'usia',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'jenis_kelamin',
+                            name: 'jenis_kelamin',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'pekerjaan',
+                            name: 'pekerjaan',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'pendapatan_perbulan',
+                            name: 'pendapatan_perbulan',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'alamat_kk',
+                            name: 'alamat_kk',
+                            className: 'nowrap'
+                        }
+                    ],
+                });
+            }
+
+            // Initialize DataTable Status
+            function initTableStatus() {
+                if (dataTables.status) {
+                    dataTables.status.destroy();
+                }
+
+                dataTables.status = $('#table-status').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: false,
+                    autoWidth: false,
+                    ordering: true,
+                    paging: true,
+                    searching: true,
+                    info: true,
+                    lengthMenu: [
+                        [10, 25, 50, 100, -1],
+                        [10, 25, 50, 100, "All"]
+                    ],
+                    ajax: {
+                        url: '{{ route('pekerjaan.dt.detail.status') }}',
+                        data: function(d) {
+                            d.status = $('#filter-status').val();
+                        }
+                    },
+                    columns: [{
+                            data: 'DT_RowIndex',
+                            name: 'DT_RowIndex',
+                            orderable: false,
+                            searchable: false,
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'nik',
+                            name: 'nik',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'nama',
+                            name: 'nama',
+                            className: 'nowrap'
+                        },
+                        {
+                            data: 'usia',
+                            name: 'usia',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'jenis_kelamin',
+                            name: 'jenis_kelamin',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'pekerjaan',
+                            name: 'pekerjaan',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'status_pekerjaan',
+                            name: 'status_pekerjaan',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'pendapatan_perbulan',
+                            name: 'pendapatan_perbulan',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'alamat_kk',
+                            name: 'alamat_kk',
+                            className: 'nowrap'
+                        }
+                    ],
+                });
+            }
+
+
+            // Initialize DataTable Gender
+            function initTableGender() {
+                if (dataTables.gender) {
+                    dataTables.gender.destroy();
+                }
+
+                dataTables.gender = $('#table-gender').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: false,
+                    autoWidth: false,
+                    ordering: true,
+                    paging: true,
+                    searching: true,
+                    info: true,
+                    lengthMenu: [
+                        [10, 25, 50, 100, -1],
+                        [10, 25, 50, 100, "All"]
+                    ],
+                    ajax: {
+                        url: '{{ route('pekerjaan.dt.detail.gender') }}',
+                        data: function(d) {
+                            d.gender = $('#filter-gender').val();
+                            d.pekerjaan = $('#filter-gender-pekerjaan').val();
+                        }
+                    },
+                    columns: [{
+                            data: 'DT_RowIndex',
+                            name: 'DT_RowIndex',
+                            orderable: false,
+                            searchable: false,
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'nik',
+                            name: 'nik',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'nama',
+                            name: 'nama',
+                            className: 'text-left nowrap'
+                        },
+                        {
+                            data: 'usia',
+                            name: 'usia',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'jenis_kelamin',
+                            name: 'jenis_kelamin',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'pekerjaan',
+                            name: 'pekerjaan',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'alamat_kk',
+                            name: 'alamat_kk',
+                            className: 'text-left nowrap'
+                        }
+                    ],
+                });
+            }
+
+            // Initialize DataTable Usia
+            function initTableUsia() {
+                if (dataTables.usia) {
+                    dataTables.usia.destroy();
+                }
+
+                dataTables.usia = $('#table-usia').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: false,
+                    autoWidth: false,
+                    ordering: true,
+                    paging: true,
+                    searching: true,
+                    info: true,
+                    lengthMenu: [
+                        [10, 25, 50, 100, -1],
+                        [10, 25, 50, 100, "All"]
+                    ],
+                    ajax: {
+                        url: '{{ route('pekerjaan.dt.detail.usia') }}',
+                        data: function(d) {
+                            d.kategori_usia = $('#filter-usia').val();
+                        }
+                    },
+                    columns: [{
+                            data: 'DT_RowIndex',
+                            name: 'DT_RowIndex',
+                            orderable: false,
+                            searchable: false,
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'nik',
+                            name: 'nik',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'nama',
+                            name: 'nama',
+                            className: 'text-left nowrap'
+                        },
+                        {
+                            data: 'tgl_lahir',
+                            name: 'tgl_lahir',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'usia',
+                            name: 'usia',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'kategori_usia',
+                            name: 'kategori_usia',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'jenis_kelamin',
+                            name: 'jenis_kelamin',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'pekerjaan',
+                            name: 'pekerjaan',
+                            className: 'text-center nowrap'
+                        },
+                        {
+                            data: 'alamat_kk',
+                            name: 'alamat_kk',
+                            className: 'text-left nowrap'
+                        }
+                    ],
+                });
+            }
+
+            // Tab change handler
+            $('#dataTableTabs a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+                const target = $(e.target).attr('href');
+
+                switch (target) {
+                    case '#content-pekerjaan':
+                        if (!dataTables.pekerjaan) {
+                            initTablePekerjaan();
+                        }
+                        break;
+                    case '#content-pendapatan':
+                        if (!dataTables.pendapatan) {
+                            initTablePendapatan();
+                        }
+                        break;
+                    case '#content-status':
+                        if (!dataTables.status) {
+                            initTableStatus();
+                        }
+                        break;
+                    case '#content-gender':
+                        if (!dataTables.gender) {
+                            initTableGender();
+                        }
+                        break;
+                    case '#content-usia':
+                        if (!dataTables.usia) {
+                            initTableUsia();
+                        }
+                        break;
+                }
+            });
+
+            // Initialize first tab
+            initTablePekerjaan();
+
+            // Apply Filter Function
+            window.applyFilter = function(type) {
+                switch (type) {
+                    case 'pekerjaan':
+                        if (dataTables.pekerjaan) {
+                            dataTables.pekerjaan.ajax.reload();
+                        }
+                        break;
+                    case 'pendapatan':
+                        if (dataTables.pendapatan) {
+                            dataTables.pendapatan.ajax.reload();
+                        }
+                        break;
+                    case 'status':
+                        if (dataTables.status) {
+                            dataTables.status.ajax.reload();
+                        }
+                        break;
+                    case 'gender':
+                        if (dataTables.gender) {
+                            dataTables.gender.ajax.reload();
+                        }
+                        break;
+                    case 'usia':
+                        if (dataTables.usia) {
+                            dataTables.usia.ajax.reload();
+                        }
+                        break;
+                }
+            }
+
+            // Export Function
+            window.exportTable = function(type) {
+                let table = null;
+                let filename = 'Detail_Data_Penduduk_';
+
+                switch (type) {
+                    case 'pekerjaan':
+                        table = dataTables.pekerjaan;
+                        filename += 'Pekerjaan';
+                        break;
+                    case 'pendapatan':
+                        table = dataTables.pendapatan;
+                        filename += 'Pendapatan';
+                        break;
+                    case 'status':
+                        table = dataTables.status;
+                        filename += 'Status';
+                        break;
+                    case 'gender':
+                        table = dataTables.gender;
+                        filename += 'Gender';
+                        break;
+                    case 'usia':
+                        table = dataTables.usia;
+                        filename += 'Usia';
+                        break;
+                }
+
+                if (table) {
+                    // Get current filter values
+                    let params = new URLSearchParams();
+
+                    switch (type) {
+                        case 'pekerjaan':
+                            if ($('#filter-pekerjaan').val()) {
+                                params.append('pekerjaan', $('#filter-pekerjaan').val());
+                            }
+                            break;
+                        case 'pendapatan':
+                            if ($('#filter-pendapatan').val()) {
+                                params.append('kategori', $('#filter-pendapatan').val());
+                            }
+                            break;
+                        case 'status':
+                            if ($('#filter-status').val()) {
+                                params.append('status', $('#filter-status').val());
+                            }
+                            break;
+                        case 'gender':
+                            if ($('#filter-gender').val()) {
+                                params.append('gender', $('#filter-gender').val());
+                            }
+                            if ($('#filter-gender-pekerjaan').val()) {
+                                params.append('pekerjaan', $('#filter-gender-pekerjaan').val());
+                            }
+                            break;
+                        case 'usia':
+                            if ($('#filter-usia').val()) {
+                                params.append('kategori_usia', $('#filter-usia').val());
+                            }
+                            break;
+                    }
+
+                    params.append('export', 'excel');
+
+                    // Create download URL
+                    let exportUrl = table.ajax.url() + '?' + params.toString();
+
+                    // Simple export using current data
+                    alert(
+                        'Fitur export Excel akan segera tersedia. Saat ini Anda dapat menggunakan copy/print dari menu DataTables.'
+                    );
+                }
+            }
         });
     </script>
 @endpush

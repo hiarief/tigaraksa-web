@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Yajra\DataTables\Facades\DataTables;
 
 class PekerjaanController extends Controller
 {
@@ -447,4 +448,280 @@ class PekerjaanController extends Controller
 
         return response()->json($data);
     }
+
+    public function getDetailByPekerjaan(Request $request)
+    {
+        $desaId = auth()->user()->desa;
+        $pekerjaan = $request->get('pekerjaan');
+
+        $query = DB::table('t_kartu_keluarga_anggota as t1')
+            ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+            ->leftJoin('m_pekerjaan as t4', 't4.id', '=', 't1.jns_pekerjaan')
+            ->where('t2.desa', $desaId)
+            ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) >= 15')
+            ->select(
+                't1.no_nik as nik',
+                't1.nama',
+                't1.tgl_lahir',
+                DB::raw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) as usia'),
+                DB::raw("CASE
+                    WHEN t1.jenkel = 1 THEN 'Laki-Laki'
+                    WHEN t1.jenkel = 2 THEN 'Perempuan'
+                    ELSE 'Tidak Diketahui'
+                END as jenis_kelamin"),
+                DB::raw('COALESCE(t4.nama, "Tidak Diketahui") as pekerjaan'),
+                DB::raw('COALESCE(t1.pendapatan_perbulan, "Tidak Diketahui") as kategori_pendapatan'),
+                't2.kp as alamat_kk'
+            );
+
+        if ($pekerjaan && $pekerjaan !== 'Semua') {
+            $query->whereRaw('COALESCE(t4.nama, "Tidak Diketahui") = ?', [$pekerjaan]);
+        }
+
+        return DataTables::of($query)
+            ->editColumn('pendapatan_perbulan', function($row) {
+                return $row->pendapatan_perbulan ?? '-';
+            })
+            ->addIndexColumn()
+            ->editColumn('nama', fn($row) => strtoupper($row->nama))
+            ->editColumn('alamat_kk', fn($row) => strtoupper($row->alamat_kk))
+            ->editColumn('jenis_kelamin', function ($row) {
+                return $row->jenis_kelamin == 1 ? 'L' : 'P';
+            })
+            ->editColumn('tgl_lahir', function ($row) {
+                return date('d-m-Y', strtotime($row->tgl_lahir));
+            })
+            ->addColumn('action', function($row) {
+                return '<button class="btn btn-sm btn-info btn-detail" data-nik="'.$row->nik.'">
+                    <i class="fas fa-eye"></i> Detail
+                </button>';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    /**
+     * DataTable: Detail Penduduk Berdasarkan Kategori Pendapatan
+     */
+    public function getDetailByPendapatan(Request $request)
+    {
+        $desaId  = auth()->user()->desa;
+        $kategori = $request->get('kategori');
+        $query = DB::table('t_kartu_keluarga_anggota as t1')
+            ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+            ->leftJoin('m_pekerjaan as t4', 't4.id', '=', 't1.jns_pekerjaan')
+            ->where('t2.desa', $desaId)
+            ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) >= 15')
+            ->select(
+                't1.no_nik as nik',
+                't1.nama',
+                't1.tgl_lahir',
+                DB::raw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) as usia'),
+                DB::raw("CASE
+                    WHEN t1.jenkel = 1 THEN 'Laki-Laki'
+                    WHEN t1.jenkel = 2 THEN 'Perempuan'
+                    ELSE 'Tidak Diketahui'
+                END as jenis_kelamin"),
+                DB::raw('COALESCE(t4.nama, "Tidak Diketahui") as pekerjaan'),
+                DB::raw('COALESCE(t1.pendapatan_perbulan, "Tidak Ada") as pendapatan_perbulan'),
+                't2.kp as alamat_kk'
+            );
+
+        if (!empty($kategori)) {
+            $query->whereRaw(
+                'COALESCE(t1.pendapatan_perbulan, "Tidak Ada") = ?',
+                [$kategori]
+            );
+        }
+
+
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->editColumn('nama', fn($row) => strtoupper($row->nama))
+            ->editColumn('alamat_kk', fn($row) => strtoupper($row->alamat_kk))
+            ->editColumn('jenis_kelamin', function ($row) {
+                return $row->jenis_kelamin == 1 ? 'L' : 'P';
+            })
+            ->editColumn('tgl_lahir', function ($row) {
+                return date('d-m-Y', strtotime($row->tgl_lahir));
+            })
+            ->addColumn('action', fn ($row) =>
+                '<button class="btn btn-sm btn-info btn-detail" data-nik="'.$row->nik.'">
+                    <i class="fas fa-eye"></i> Detail
+                </button>'
+            )
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+
+    /**
+     * DataTable: Detail Penduduk Berdasarkan Status Pekerjaan
+     */
+    public function getDetailByStatus(Request $request)
+    {
+        $desaId = auth()->user()->desa;
+        $status = $request->get('status');
+
+        $query = DB::table('t_kartu_keluarga_anggota as t1')
+            ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+            ->leftJoin('m_pekerjaan as t4', 't4.id', '=', 't1.jns_pekerjaan')
+            ->where('t2.desa', $desaId)
+            ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 15 AND 64')
+            ->select(
+                't1.no_nik as nik',
+                't1.nama',
+                't1.tgl_lahir',
+                DB::raw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) as usia'),
+                DB::raw("CASE
+                    WHEN t1.jenkel = 1 THEN 'Laki-Laki'
+                    WHEN t1.jenkel = 2 THEN 'Perempuan'
+                    ELSE 'Tidak Diketahui'
+                END as jenis_kelamin"),
+                DB::raw('COALESCE(t4.nama, "Tidak Diketahui") as pekerjaan'),
+                DB::raw("CASE
+                    WHEN LOWER(t4.nama) = 'belum/tidak bekerja' OR t1.jns_pekerjaan IS NULL THEN 'Pengangguran'
+                    WHEN LOWER(t4.nama) = 'mengurus rumah tangga' THEN 'Mengurus Rumah Tangga'
+                    WHEN LOWER(t4.nama) LIKE '%pelajar%' OR LOWER(t4.nama) LIKE '%mahasiswa%' THEN 'Pelajar/Mahasiswa'
+                    ELSE 'Bekerja'
+                END as status_pekerjaan"),
+                DB::raw('COALESCE(t1.pendapatan_perbulan, "Tidak Ada") as pendapatan_perbulan'),
+                't2.kp as alamat_kk'
+            );
+
+        if ($status && $status !== 'Semua') {
+            $query->having('status_pekerjaan', $status);
+        }
+
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->editColumn('nama', fn($row) => strtoupper($row->nama))
+            ->editColumn('alamat_kk', fn($row) => strtoupper($row->alamat_kk))
+            ->editColumn('jenis_kelamin', function ($row) {
+                return $row->jenis_kelamin == 1 ? 'L' : 'P';
+            })
+            ->editColumn('tgl_lahir', function ($row) {
+                return date('d-m-Y', strtotime($row->tgl_lahir));
+            })
+            ->addColumn('action', fn ($row) =>
+                '<button class="btn btn-sm btn-info btn-detail" data-nik="'.$row->nik.'">
+                    <i class="fas fa-eye"></i> Detail
+                </button>'
+            )
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+
+    /**
+     * DataTable: Detail Penduduk Berdasarkan Gender dan Pekerjaan
+     */
+    public function getDetailByGender(Request $request)
+    {
+        $desaId   = auth()->user()->desa;
+        $gender   = $request->get('gender');
+        $pekerjaan = $request->get('pekerjaan');
+
+        $query = DB::table('t_kartu_keluarga_anggota as t1')
+            ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+            ->leftJoin('m_pekerjaan as t4', 't4.id', '=', 't1.jns_pekerjaan')
+            ->where('t2.desa', $desaId)
+            ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) >= 15')
+            ->select(
+                't1.no_nik as nik',
+                't1.nama',
+                't1.tgl_lahir',
+                DB::raw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) as usia'),
+                't1.jenkel as jenis_kelamin',
+                DB::raw('COALESCE(t4.nama, "Tidak Diketahui") as pekerjaan'),
+                DB::raw('COALESCE(t1.pendapatan_perbulan, "Tidak Ada") as pendapatan_perbulan'),
+                't2.kp as alamat_kk'
+            );
+
+        if (!empty($gender)) {
+            $query->where('t1.jenkel', $gender === 'L' ? 1 : 2);
+        }
+
+        if ($pekerjaan && $pekerjaan !== 'Semua') {
+            $query->whereRaw('COALESCE(t4.nama, "Tidak Diketahui") = ?', [$pekerjaan]);
+        }
+
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->editColumn('nama', fn($row) => strtoupper($row->nama))
+            ->editColumn('alamat_kk', fn($row) => strtoupper($row->alamat_kk))
+            ->editColumn('jenis_kelamin', function ($row) {
+                return $row->jenis_kelamin == 1 ? 'L' : 'P';
+            })
+            ->editColumn('tgl_lahir', function ($row) {
+                return date('d-m-Y', strtotime($row->tgl_lahir));
+            })
+            ->addColumn('action', fn ($row) =>
+                '<button class="btn btn-sm btn-info btn-detail" data-nik="'.$row->nik.'">
+                    <i class="fas fa-eye"></i> Detail
+                </button>'
+            )
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+
+    /**
+     * DataTable: Detail Penduduk Berdasarkan Kategori Usia
+     */
+   public function getDetailByUsia(Request $request)
+    {
+        $desaId = auth()->user()->desa;
+        $kategoriUsia = $request->get('kategori_usia');
+
+        $query = DB::table('t_kartu_keluarga_anggota as t1')
+            ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+            ->leftJoin('m_pekerjaan as t4', 't4.id', '=', 't1.jns_pekerjaan')
+            ->where('t2.desa', $desaId)
+            ->select(
+                't1.no_nik as nik',
+                't1.nama',
+                't1.tgl_lahir',
+                DB::raw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) as usia'),
+                DB::raw("CASE
+                    WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) < 15 THEN 'Anak (<15)'
+                    WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 15 AND 17 THEN 'Usia Sekolah (15-17)'
+                    WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 18 AND 24 THEN 'Produktif Awal (18-24)'
+                    WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 25 AND 44 THEN 'Produktif Utama (25-44)'
+                    WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 45 AND 59 THEN 'Produktif Akhir (45-59)'
+                    ELSE 'Lansia (≥60)'
+                END as kategori_usia"),
+                DB::raw("CASE
+                    WHEN t1.jenkel = 1 THEN 'Laki-Laki'
+                    WHEN t1.jenkel = 2 THEN 'Perempuan'
+                    ELSE 'Tidak Diketahui'
+                END as jenis_kelamin"),
+                DB::raw('COALESCE(t4.nama, "Tidak Diketahui") as pekerjaan'),
+                DB::raw('COALESCE(t1.pendapatan_perbulan, "Tidak Ada") as pendapatan_perbulan'),
+                't2.kp as alamat_kk'
+            );
+
+        if ($kategoriUsia && $kategoriUsia !== 'Semua') {
+            $query->having('kategori_usia', $kategoriUsia);
+        }
+
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->editColumn('nama', fn($row) => strtoupper($row->nama))
+            ->editColumn('alamat_kk', fn($row) => strtoupper($row->alamat_kk))
+            ->editColumn('jenis_kelamin', function ($row) {
+                return $row->jenis_kelamin == 1 ? 'L' : 'P';
+            })
+            ->editColumn('tgl_lahir', function ($row) {
+                return date('d-m-Y', strtotime($row->tgl_lahir));
+            })
+            ->addColumn('action', fn ($row) =>
+                '<button class="btn btn-sm btn-info btn-detail" data-nik="'.$row->nik.'">
+                    <i class="fas fa-eye"></i> Detail
+                </button>'
+            )
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
 }
