@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\BpjsController;
 use App\Http\Controllers\Admin\UmurController;
 use App\Http\Controllers\Admin\ChartController;
+use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PekerjaanController;
 use App\Http\Controllers\Admin\PendapatanController;
@@ -15,9 +16,42 @@ use App\Http\Controllers\Admin\KepemilikanRumahController;
 use App\Http\Controllers\Admin\BantuanPemerintahController;
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+Route::get('/', [LandingPageController::class, 'page'])->name('page');
+
+// ========================================
+// API ENDPOINTS - PROGRESSIVE LOADING
+// ========================================
+
+// 1️⃣ Basic Stats (Load First - Paling Ringan)
+Route::get('/api/basic-stats', [LandingPageController::class, 'getBasicStats'])->name('api.basic.stats');
+
+// 2️⃣ Key Metrics (6 Indikator Utama)
+Route::get('/api/key-metrics', [LandingPageController::class, 'getKeyMetrics'])->name('api.key.metrics');
+
+// 3️⃣ Demografi KK
+Route::get('/api/demografi-kk', [LandingPageController::class, 'getDemografiKK'])->name('api.demografi.kk');
+
+// 4️⃣ Ekonomi
+Route::get('/api/ekonomi', [LandingPageController::class, 'getEkonomi'])->name('api.ekonomi');
+
+// 5️⃣ Bantuan Pemerintah
+Route::get('/api/bantuan', [LandingPageController::class, 'getBantuan'])->name('api.bantuan');
+
+// 6️⃣ Kesehatan
+Route::get('/api/kesehatan', [LandingPageController::class, 'getKesehatan'])->name('api.kesehatan');
+
+// 7️⃣ Pendidikan & Pekerjaan
+Route::get('/api/pendidikan-pekerjaan', [LandingPageController::class, 'getPendidikanPekerjaan'])->name('api.pendidikan.pekerjaan');
+
+// 8️⃣ Statistik Penduduk
+Route::get('/api/statistik-penduduk', [LandingPageController::class, 'getStatistikPenduduk'])->name('api.statistik.penduduk');
+
+// 9️⃣ Data Per Desa
+Route::get('/api/data-desa', [LandingPageController::class, 'getDataDesa'])->name('api.data.desa');
+
+// 🔟 Backward Compatibility (Old endpoint - akan memanggil semua endpoint sekaligus)
+Route::get('/api/statistics', [LandingPageController::class, 'getStatistics'])->name('api.statistics');
 
 Route::middleware(['auth'])->group(function () {
 
