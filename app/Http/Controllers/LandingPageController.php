@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 
 class LandingPageController extends Controller
 {
-    private const CACHE_TTL = 600;
+    private const CACHE_TTL = 7200;
 
     public function page()
     {
