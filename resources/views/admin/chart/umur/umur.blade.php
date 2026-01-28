@@ -164,7 +164,7 @@
                                                     <th>NIK</th>
                                                     <th>NAMA</th>
                                                     <th>KK</th>
-                                                    <th>JENIS KELAMIN</th>
+                                                    <th>JK</th>
                                                     <th>TANGGAL LAHIR</th>
                                                     <th>UMUR</th>
                                                     <th>ALAMAT</th>
@@ -319,7 +319,7 @@
                                                     <th>NIK</th>
                                                     <th>NAMA</th>
                                                     <th>KK</th>
-                                                    <th>JENIS KELAMIN</th>
+                                                    <th>JK</th>
                                                     <th>TANGGAL LAHIR</th>
                                                     <th>UMUR</th>
                                                     <th>ALAMAT</th>

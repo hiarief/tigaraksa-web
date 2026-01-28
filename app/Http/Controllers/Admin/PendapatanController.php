@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Cache;
 
 class PendapatanController extends Controller
 {
+    private const CACHE_TTL = 7200; // 2 jam
+
     public function pendapatan()
     {
         return view('admin.chart.pendapatan.pendapatan');
@@ -41,143 +44,167 @@ class PendapatanController extends Controller
     // 1. Statistik Dasar Kependudukan
     public function getStatistikDasar()
     {
-        $data = $this->getBaseQuery()->get();
+        $desaId = auth()->user()->desa;
 
-        $totalPenduduk = $data->count();
-        $totalKK = $data->unique('no_kk')->count();
-        $rataAnggotaPerKK = $totalKK > 0 ? round($totalPenduduk / $totalKK, 2) : 0;
+        return Cache::remember("pendapatan_statistik_dasar_{$desaId}", self::CACHE_TTL, function() {
+            $data = $this->getBaseQuery()->get();
 
-        $jenisKelamin = [
-            'Laki-laki' => $data->where('jenkel', 1)->count(),
-            'Perempuan' => $data->where('jenkel', 2)->count(),
-        ];
+            $totalPenduduk = $data->count();
+            $totalKK = $data->unique('no_kk')->count();
+            $rataAnggotaPerKK = $totalKK > 0 ? round($totalPenduduk / $totalKK, 2) : 0;
 
-        $umurData = $data->pluck('umur')->filter();
-        $statistikUmur = [
-            'rata_rata' => round($umurData->avg(), 2),
-            'median' => $umurData->median(),
-            'tertua' => $umurData->max(),
-            'termuda' => $umurData->min(),
-        ];
+            $jenisKelamin = [
+                'Laki-laki' => $data->where('jenkel', 1)->count(),
+                'Perempuan' => $data->where('jenkel', 2)->count(),
+            ];
 
-        return response()->json([
-            'total_penduduk' => $totalPenduduk,
-            'total_kk' => $totalKK,
-            'rata_anggota_per_kk' => $rataAnggotaPerKK,
-            'jenis_kelamin' => $jenisKelamin,
-            'statistik_umur' => $statistikUmur,
-        ]);
+            $umurData = $data->pluck('umur')->filter();
+            $statistikUmur = [
+                'rata_rata' => round($umurData->avg(), 2),
+                'median' => $umurData->median(),
+                'tertua' => $umurData->max(),
+                'termuda' => $umurData->min(),
+            ];
+
+            return [
+                'total_penduduk' => $totalPenduduk,
+                'total_kk' => $totalKK,
+                'rata_anggota_per_kk' => $rataAnggotaPerKK,
+                'jenis_kelamin' => $jenisKelamin,
+                'statistik_umur' => $statistikUmur,
+            ];
+        });
     }
 
     // 2. Distribusi Pendapatan
     public function getDistribusiPendapatan()
     {
-        $data = $this->getBaseQuery()->get();
+        $desaId = auth()->user()->desa;
 
-        $distribusi = $data->groupBy('pendapatan_perbulan')->map(function($item) use ($data) {
-            return [
-                'jumlah' => $item->count(),
-                'persentase' => round(($item->count() / $data->count()) * 100, 2)
-            ];
-        });
+        return Cache::remember("pendapatan_distribusi_{$desaId}", self::CACHE_TTL, function() {
+            $data = $this->getBaseQuery()->get();
 
-        // Urutkan berdasarkan kategori pendapatan
-        $urutan = ['0-1 Juta', '1-2 Juta', '2-3 Juta', '3-5 Juta', '>5 Juta'];
-        $sorted = [];
-        foreach ($urutan as $kategori) {
-            if (isset($distribusi[$kategori])) {
-                $sorted[$kategori] = $distribusi[$kategori];
+            $distribusi = $data->groupBy('pendapatan_perbulan')->map(function($item) use ($data) {
+                return [
+                    'jumlah' => $item->count(),
+                    'persentase' => round(($item->count() / $data->count()) * 100, 2)
+                ];
+            });
+
+            // Urutkan berdasarkan kategori pendapatan
+            $urutan = ['0-1 Juta', '1-2 Juta', '2-3 Juta', '3-5 Juta', '>5 Juta'];
+            $sorted = [];
+            foreach ($urutan as $kategori) {
+                if (isset($distribusi[$kategori])) {
+                    $sorted[$kategori] = $distribusi[$kategori];
+                }
             }
-        }
 
-        return response()->json($sorted);
+            return $sorted;
+        });
     }
 
     // 3. Pendapatan per Kelompok Umur
     public function getPendapatanPerUmur()
     {
-        $data = $this->getBaseQuery()->get();
+        $desaId = auth()->user()->desa;
 
-        $kelompokUmur = $data->map(function($item) {
-            if ($item->umur < 25) return '<25';
-            if ($item->umur <= 40) return '26-40';
-            if ($item->umur <= 60) return '41-60';
-            return '>60';
-        });
+        return Cache::remember("pendapatan_per_umur_{$desaId}", self::CACHE_TTL, function() {
+            $data = $this->getBaseQuery()->get();
 
-        $result = [];
-        foreach (['<25', '26-40', '41-60', '>60'] as $kelompok) {
-            $dataKelompok = $data->filter(function($item) use ($kelompok) {
-                $umur = $item->umur;
-                switch ($kelompok) {
-                    case '<25': return $umur < 25;
-                    case '26-40': return $umur >= 26 && $umur <= 40;
-                    case '41-60': return $umur >= 41 && $umur <= 60;
-                    case '>60': return $umur > 60;
-                }
+            $kelompokUmur = $data->map(function($item) {
+                if ($item->umur < 25) return '<25';
+                if ($item->umur <= 40) return '26-40';
+                if ($item->umur <= 60) return '41-60';
+                return '>60';
             });
 
-            $result[$kelompok] = $dataKelompok->groupBy('pendapatan_perbulan')
-                ->map(fn($item) => $item->count())->toArray();
-        }
+            $result = [];
+            foreach (['<25', '26-40', '41-60', '>60'] as $kelompok) {
+                $dataKelompok = $data->filter(function($item) use ($kelompok) {
+                    $umur = $item->umur;
+                    switch ($kelompok) {
+                        case '<25': return $umur < 25;
+                        case '26-40': return $umur >= 26 && $umur <= 40;
+                        case '41-60': return $umur >= 41 && $umur <= 60;
+                        case '>60': return $umur > 60;
+                    }
+                });
 
-        return response()->json($result);
+                $result[$kelompok] = $dataKelompok->groupBy('pendapatan_perbulan')
+                    ->map(fn($item) => $item->count())->toArray();
+            }
+
+            return $result;
+        });
     }
 
     // 4. Pendapatan per Jenis Kelamin
     public function getPendapatanPerJenkel()
     {
-        $data = $this->getBaseQuery()->get();
+        $desaId = auth()->user()->desa;
 
-        $result = [
-            'Laki-laki' => [],
-            'Perempuan' => []
-        ];
+        return Cache::remember("pendapatan_per_jenkel_{$desaId}", self::CACHE_TTL, function() {
+            $data = $this->getBaseQuery()->get();
 
-        foreach ([1, 2] as $jenkel) {
-            $jenkelLabel = $jenkel == 1 ? 'Laki-laki' : 'Perempuan';
-            $dataJenkel = $data->where('jenkel', $jenkel);
+            $result = [
+                'Laki-laki' => [],
+                'Perempuan' => []
+            ];
 
-            $result[$jenkelLabel] = $dataJenkel->groupBy('pendapatan_perbulan')
-                ->map(fn($item) => $item->count())->toArray();
-        }
+            foreach ([1, 2] as $jenkel) {
+                $jenkelLabel = $jenkel == 1 ? 'Laki-laki' : 'Perempuan';
+                $dataJenkel = $data->where('jenkel', $jenkel);
 
-        return response()->json($result);
+                $result[$jenkelLabel] = $dataJenkel->groupBy('pendapatan_perbulan')
+                    ->map(fn($item) => $item->count())->toArray();
+            }
+
+            return $result;
+        });
     }
 
     // 5. Pendapatan per RT/RW
     public function getPendapatanPerRT()
     {
-        $data = $this->getBaseQuery()->get();
+        $desaId = auth()->user()->desa;
 
-        $result = $data->groupBy('rt_rw')->map(function($items, $rt) use ($data) {
-            $totalRT = $items->count();
-            $rendah = $items->where('pendapatan_perbulan', '0-1 Juta')->count();
+        return Cache::remember("pendapatan_per_rt_{$desaId}", self::CACHE_TTL, function() {
+            $data = $this->getBaseQuery()->get();
 
-            return [
-                'total' => $totalRT,
-                'rendah' => $rendah,
-                'persentase_rendah' => $totalRT > 0 ? round(($rendah / $totalRT) * 100, 2) : 0
-            ];
-        })->sortByDesc('persentase_rendah')->take(10);
+            $result = $data->groupBy('rt_rw')->map(function($items, $rt) use ($data) {
+                $totalRT = $items->count();
+                $rendah = $items->where('pendapatan_perbulan', '0-1 Juta')->count();
 
-        return response()->json($result);
+                return [
+                    'total' => $totalRT,
+                    'rendah' => $rendah,
+                    'persentase_rendah' => $totalRT > 0 ? round(($rendah / $totalRT) * 100, 2) : 0
+                ];
+            })->sortByDesc('persentase_rendah')->take(10);
+
+            return $result;
+        });
     }
 
     // 6. Kelompok Rentan (Lansia Berpendapatan Rendah)
     public function getKelompokRentan()
     {
-        $data = $this->getBaseQuery()
-            ->where(DB::raw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE())'), '>=', 60)
-            ->whereIn('t1.pendapatan_perbulan', ['0-1 Juta', '1-2 Juta'])
-            ->get();
+        $desaId = auth()->user()->desa;
 
-        $distribusi = $data->groupBy('pendapatan_perbulan')->map(fn($item) => $item->count());
+        return Cache::remember("pendapatan_kelompok_rentan_{$desaId}", self::CACHE_TTL, function() {
+            $data = $this->getBaseQuery()
+                ->where(DB::raw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE())'), '>=', 60)
+                ->whereIn('t1.pendapatan_perbulan', ['0-1 Juta', '1-2 Juta'])
+                ->get();
 
-        return response()->json([
-            'total' => $data->count(),
-            'distribusi' => $distribusi
-        ]);
+            $distribusi = $data->groupBy('pendapatan_perbulan')->map(fn($item) => $item->count());
+
+            return [
+                'total' => $data->count(),
+                'distribusi' => $distribusi
+            ];
+        });
     }
 
     // 7. DataTables - Semua Penduduk
@@ -187,13 +214,15 @@ class PendapatanController extends Controller
         if ($request->has('get_rt_rw')) {
             $desaId = auth()->user()->desa;
 
-            $rtRwList = DB::table('t_kartu_keluarga as t2')
-                ->where('t2.desa', $desaId)
-                ->select(DB::raw("CONCAT(t2.rt,'/',t2.rw) as rt_rw"))
-                ->distinct()
-                ->orderByRaw("CAST(t2.rt AS UNSIGNED), CAST(t2.rw AS UNSIGNED)")
-                ->pluck('rt_rw')
-                ->toArray();
+            $rtRwList = Cache::remember("pendapatan_rt_rw_list_{$desaId}", self::CACHE_TTL, function() use ($desaId) {
+                return DB::table('t_kartu_keluarga as t2')
+                    ->where('t2.desa', $desaId)
+                    ->select(DB::raw("CONCAT(t2.rt,'/',t2.rw) as rt_rw"))
+                    ->distinct()
+                    ->orderByRaw("CAST(t2.rt AS UNSIGNED), CAST(t2.rw AS UNSIGNED)")
+                    ->pluck('rt_rw')
+                    ->toArray();
+            });
 
             return response()->json(['rt_rw_list' => $rtRwList]);
         }
@@ -202,6 +231,12 @@ class PendapatanController extends Controller
 
         return DataTables::of($data)
             ->addIndexColumn()
+            ->editColumn('no_nik', function ($row) {
+                return $this->maskNumber($row->no_nik);
+            })
+            ->editColumn('no_kk', function ($row) {
+                return $this->maskNumber($row->no_kk);
+            })
             ->editColumn('nama', fn($row) => strtoupper($row->nama))
             ->editColumn('kp', fn($row) => strtoupper($row->kp))
             ->editColumn('jenkel', function ($row) {
@@ -265,8 +300,13 @@ class PendapatanController extends Controller
             ->whereIn('t1.pendapatan_perbulan', ['0-1 Juta', '1-2 Juta']);
 
         return DataTables::of($data)
-
             ->addIndexColumn()
+            ->editColumn('no_nik', function ($row) {
+                return $this->maskNumber($row->no_nik);
+            })
+            ->editColumn('no_kk', function ($row) {
+                return $this->maskNumber($row->no_kk);
+            })
             ->editColumn('nama', fn($row) => strtoupper($row->nama))
             ->editColumn('kp', fn($row) => strtoupper($row->kp))
             ->editColumn('tgl_lahir', function ($row) {
@@ -275,7 +315,6 @@ class PendapatanController extends Controller
             ->editColumn('jenkel', function ($row) {
                 return $row->jenkel == 1 ? 'L' : 'P';
             })
-
             ->editColumn('punya_bpjs', function ($row) {
                 return $row->punya_bpjs == 'ya' ? '<span class="badge badge-success">Ya</span>' : '<span class="badge badge-danger">Tidak</span>';
             })
@@ -305,9 +344,51 @@ class PendapatanController extends Controller
             ->whereRaw("CONCAT(t2.rt,'/',t2.rw) = ?", [$rt_rw]);
 
         return DataTables::of($data)
+            ->editColumn('no_nik', function ($row) {
+                return $this->maskNumber($row->no_nik);
+            })
+            ->editColumn('no_kk', function ($row) {
+                return $this->maskNumber($row->no_kk);
+            })
             ->addColumn('jenkel_label', function($row) {
                 return $row->jenkel == 1 ? 'Laki-laki' : 'Perempuan';
             })
             ->make(true);
+    }
+
+    private function maskNumber($number)
+    {
+        if (!$number || strlen($number) < 16) {
+            return $number;
+        }
+
+        return substr($number, 0, 3)
+            . str_repeat('*', 10)
+            . substr($number, -3);
+    }
+
+    /**
+     * Method untuk clear cache ketika ada update data
+     * Panggil method ini di controller yang handle CRUD
+     */
+    public function clearCache()
+    {
+        $desaId = auth()->user()->desa;
+
+        $cacheKeys = [
+            "pendapatan_statistik_dasar_{$desaId}",
+            "pendapatan_distribusi_{$desaId}",
+            "pendapatan_per_umur_{$desaId}",
+            "pendapatan_per_jenkel_{$desaId}",
+            "pendapatan_per_rt_{$desaId}",
+            "pendapatan_kelompok_rentan_{$desaId}",
+            "pendapatan_rt_rw_list_{$desaId}",
+        ];
+
+        foreach ($cacheKeys as $key) {
+            Cache::forget($key);
+        }
+
+        return response()->json(['message' => 'Cache cleared successfully']);
     }
 }

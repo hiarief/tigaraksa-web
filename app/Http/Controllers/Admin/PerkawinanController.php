@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Cache;
 
 class PerkawinanController extends Controller
 {
+    private const CACHE_TTL = 7200;
+
     public function index()
     {
         return view('admin.chart.perkawinan.perkawinan');
@@ -17,48 +20,55 @@ class PerkawinanController extends Controller
     public function getData(Request $request)
     {
         $desaId = auth()->user()->desa;
+        $rtRw = $request->rt_rw ?? 'all';
+        $kp = $request->kp ?? 'all';
+        $jenkel = $request->jenkel ?? 'all';
 
-        $query = DB::table('t_kartu_keluarga_anggota as t1')
-            ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-            ->leftJoin('indonesia_villages as t3', 't3.code', '=', 't2.desa')
-            ->where('t2.desa', $desaId)
-            ->select([
-                't1.no_nik',
-                't1.nama',
-                't2.no_kk',
-                't2.kp',
-                't1.jenkel',
-                't1.tgl_lahir',
-                DB::raw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) AS umur'),
-                DB::raw("CONCAT(t2.rt,'/',t2.rw) AS rt_rw"),
-                't3.name AS desa',
-                't1.sts_perkawinan',
-                't1.status_kawin_tercatat',
+        $cacheKey = "perkawinan_data_{$desaId}_{$rtRw}_{$kp}_{$jenkel}";
+
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($desaId, $request) {
+            $query = DB::table('t_kartu_keluarga_anggota as t1')
+                ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                ->leftJoin('indonesia_villages as t3', 't3.code', '=', 't2.desa')
+                ->where('t2.desa', $desaId)
+                ->select([
+                    't1.no_nik',
+                    't1.nama',
+                    't2.no_kk',
+                    't2.kp',
+                    't1.jenkel',
+                    't1.tgl_lahir',
+                    DB::raw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) AS umur'),
+                    DB::raw("CONCAT(t2.rt,'/',t2.rw) AS rt_rw"),
+                    't3.name AS desa',
+                    't1.sts_perkawinan',
+                    't1.status_kawin_tercatat',
+                ]);
+
+            // Filter berdasarkan request
+            if ($request->has('rt_rw') && $request->rt_rw != '') {
+                $query->whereRaw("CONCAT(t2.rt,'/',t2.rw) = ?", [$request->rt_rw]);
+            }
+
+            if ($request->has('kp') && $request->kp != '') {
+                $query->where('t2.kp', $request->kp);
+            }
+
+            if ($request->has('jenkel') && $request->jenkel != '') {
+                $query->where('t1.jenkel', $request->jenkel);
+            }
+
+            $data = $query->get();
+
+            // Hitung statistik
+            $statistics = $this->calculateStatistics($data);
+
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+                'statistics' => $statistics
             ]);
-
-        // Filter berdasarkan request
-        if ($request->has('rt_rw') && $request->rt_rw != '') {
-            $query->whereRaw("CONCAT(t2.rt,'/',t2.rw) = ?", [$request->rt_rw]);
-        }
-
-        if ($request->has('kp') && $request->kp != '') {
-            $query->where('t2.kp', $request->kp);
-        }
-
-        if ($request->has('jenkel') && $request->jenkel != '') {
-            $query->where('t1.jenkel', $request->jenkel);
-        }
-
-        $data = $query->get();
-
-        // Hitung statistik
-        $statistics = $this->calculateStatistics($data);
-
-        return response()->json([
-            'success' => true,
-            'data' => $data,
-            'statistics' => $statistics
-        ]);
+        });
     }
 
     public function getDataTable(Request $request)
@@ -159,6 +169,12 @@ class PerkawinanController extends Controller
 
         return DataTables::of($query)
             ->addIndexColumn()
+            ->editColumn('no_nik', function ($row) {
+                return $this->maskNumber($row->no_nik);
+            })
+            ->editColumn('no_kk', function ($row) {
+                return $this->maskNumber($row->no_kk);
+            })
             ->editColumn('nama', fn($row) => strtoupper($row->nama))
             ->editColumn('kp', fn($row) => strtoupper($row->kp))
             ->editColumn('jenis_kelamin', function ($row) {
@@ -252,22 +268,36 @@ class PerkawinanController extends Controller
     public function getFilterOptions()
     {
         $desaId = auth()->user()->desa;
+        $cacheKey = "perkawinan_filter_options_{$desaId}";
 
-        $rtRw = DB::table('t_kartu_keluarga')
-            ->where('desa', $desaId)
-            ->select(DB::raw("DISTINCT CONCAT(rt,'/',rw) AS rt_rw"))
-            ->orderByRaw("CAST(rt AS UNSIGNED), CAST(rw AS UNSIGNED)")
-            ->pluck('rt_rw');
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($desaId) {
+            $rtRw = DB::table('t_kartu_keluarga')
+                ->where('desa', $desaId)
+                ->select(DB::raw("DISTINCT CONCAT(rt,'/',rw) AS rt_rw"))
+                ->orderByRaw("CAST(rt AS UNSIGNED), CAST(rw AS UNSIGNED)")
+                ->pluck('rt_rw');
 
-        $kampung = DB::table('t_kartu_keluarga')
-            ->where('desa', $desaId)
-            ->distinct()
-            ->pluck('kp');
+            $kampung = DB::table('t_kartu_keluarga')
+                ->where('desa', $desaId)
+                ->distinct()
+                ->pluck('kp');
 
-        return response()->json([
-            'success' => true,
-            'rt_rw' => $rtRw,
-            'kampung' => $kampung
-        ]);
+            return response()->json([
+                'success' => true,
+                'rt_rw' => $rtRw,
+                'kampung' => $kampung
+            ]);
+        });
+    }
+
+    private function maskNumber($number)
+    {
+        if (!$number || strlen($number) < 16) {
+            return $number;
+        }
+
+        return substr($number, 0, 3)
+            . str_repeat('*', 10)
+            . substr($number, -3);
     }
 }

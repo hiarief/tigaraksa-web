@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Cache;
 
 class KepemilikanRumahController extends Controller
 {
+    private const CACHE_TTL = 7200; // 2 jam
+
     public function kepemilikanRumah()
     {
         return view('admin.chart.kepemilikan-rumah.kepemilikan-rumah');
@@ -19,13 +22,15 @@ class KepemilikanRumahController extends Controller
     {
         $desaId = auth()->user()->desa;
 
-        $data = DB::table('t_kartu_keluarga_anggota as t1')
-            ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-            ->where('t2.desa', $desaId)
-            ->where('t1.sts_hub_kel', 1)
-            ->select('t1.kepemilikan_rumah', DB::raw('COUNT(*) as total'))
-            ->groupBy('t1.kepemilikan_rumah')
-            ->get();
+        $data = Cache::remember("kepemilikan_rumah_per_nik_{$desaId}", self::CACHE_TTL, function() use ($desaId) {
+            return DB::table('t_kartu_keluarga_anggota as t1')
+                ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                ->where('t2.desa', $desaId)
+                ->where('t1.sts_hub_kel', 1)
+                ->select('t1.kepemilikan_rumah', DB::raw('COUNT(*) as total'))
+                ->groupBy('t1.kepemilikan_rumah')
+                ->get();
+        });
 
         return response()->json($data);
     }
@@ -35,13 +40,15 @@ class KepemilikanRumahController extends Controller
     {
         $desaId = auth()->user()->desa;
 
-        $data = DB::table('t_kartu_keluarga_anggota as t1')
-            ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-            ->where('t2.desa', $desaId)
-            ->where('t1.sts_hub_kel', 1)
-            ->select('t1.kepemilikan_rumah', DB::raw('COUNT(DISTINCT t2.id) as total_kk'))
-            ->groupBy('t1.kepemilikan_rumah')
-            ->get();
+        $data = Cache::remember("kepemilikan_rumah_per_kk_{$desaId}", self::CACHE_TTL, function() use ($desaId) {
+            return DB::table('t_kartu_keluarga_anggota as t1')
+                ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                ->where('t2.desa', $desaId)
+                ->where('t1.sts_hub_kel', 1)
+                ->select('t1.kepemilikan_rumah', DB::raw('COUNT(DISTINCT t2.id) as total_kk'))
+                ->groupBy('t1.kepemilikan_rumah')
+                ->get();
+        });
 
         return response()->json($data);
     }
@@ -51,21 +58,23 @@ class KepemilikanRumahController extends Controller
     {
         $desaId = auth()->user()->desa;
 
-        $data = DB::table('t_kartu_keluarga_anggota as t1')
-            ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-            ->where('t2.desa', $desaId)
-            ->where('t1.sts_hub_kel', 1)
-            ->select(
-                DB::raw("CASE
-                    WHEN t1.kepemilikan_rumah IN ('Ngontrak', 'Menumpang', 'Lainnya') THEN 'Rentan'
-                    WHEN t1.kepemilikan_rumah = 'Orang Tua' THEN 'Semi Rentan'
-                    WHEN t1.kepemilikan_rumah = 'Milik Sendiri' THEN 'Aman'
-                    ELSE 'Tidak Diketahui'
-                END as kategori_kerentanan"),
-                DB::raw('COUNT(DISTINCT t2.id) as total_kk')
-            )
-            ->groupBy('kategori_kerentanan')
-            ->get();
+        $data = Cache::remember("kepemilikan_rumah_kerentanan_{$desaId}", self::CACHE_TTL, function() use ($desaId) {
+            return DB::table('t_kartu_keluarga_anggota as t1')
+                ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                ->where('t2.desa', $desaId)
+                ->where('t1.sts_hub_kel', 1)
+                ->select(
+                    DB::raw("CASE
+                        WHEN t1.kepemilikan_rumah IN ('Ngontrak', 'Menumpang', 'Lainnya') THEN 'Rentan'
+                        WHEN t1.kepemilikan_rumah = 'Orang Tua' THEN 'Semi Rentan'
+                        WHEN t1.kepemilikan_rumah = 'Milik Sendiri' THEN 'Aman'
+                        ELSE 'Tidak Diketahui'
+                    END as kategori_kerentanan"),
+                    DB::raw('COUNT(DISTINCT t2.id) as total_kk')
+                )
+                ->groupBy('kategori_kerentanan')
+                ->get();
+        });
 
         return response()->json($data);
     }
@@ -75,22 +84,24 @@ class KepemilikanRumahController extends Controller
     {
         $desaId = auth()->user()->desa;
 
-        $data = DB::table('t_kartu_keluarga_anggota as t1')
-            ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-            ->where('t2.desa', $desaId)
-            ->where('t1.sts_hub_kel', 1)
-            ->select(
-                't1.kepemilikan_rumah',
-                DB::raw("CASE
-                    WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) < 30 THEN '<30 Tahun'
-                    WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 30 AND 45 THEN '30-45 Tahun'
-                    WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 46 AND 60 THEN '46-60 Tahun'
-                    ELSE '>60 Tahun'
-                END as kelompok_umur"),
-                DB::raw('COUNT(*) as total')
-            )
-            ->groupBy('t1.kepemilikan_rumah', 'kelompok_umur')
-            ->get();
+        $data = Cache::remember("kepemilikan_rumah_by_umur_{$desaId}", self::CACHE_TTL, function() use ($desaId) {
+            return DB::table('t_kartu_keluarga_anggota as t1')
+                ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                ->where('t2.desa', $desaId)
+                ->where('t1.sts_hub_kel', 1)
+                ->select(
+                    't1.kepemilikan_rumah',
+                    DB::raw("CASE
+                        WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) < 30 THEN '<30 Tahun'
+                        WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 30 AND 45 THEN '30-45 Tahun'
+                        WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 46 AND 60 THEN '46-60 Tahun'
+                        ELSE '>60 Tahun'
+                    END as kelompok_umur"),
+                    DB::raw('COUNT(*) as total')
+                )
+                ->groupBy('t1.kepemilikan_rumah', 'kelompok_umur')
+                ->get();
+        });
 
         return response()->json($data);
     }
@@ -100,18 +111,20 @@ class KepemilikanRumahController extends Controller
     {
         $desaId = auth()->user()->desa;
 
-        $data = DB::table('t_kartu_keluarga_anggota as t1')
-            ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-            ->where('t2.desa', $desaId)
-            ->where('t1.sts_hub_kel', 1)
-            ->select(
-                DB::raw("CONCAT(t2.rt,'/',t2.rw) AS rt_rw"),
-                't1.kepemilikan_rumah',
-                DB::raw('COUNT(DISTINCT t2.id) as total_kk')
-            )
-            ->groupBy('rt_rw', 't1.kepemilikan_rumah')
-            ->orderBy('rt_rw')
-            ->get();
+        $data = Cache::remember("kepemilikan_rumah_per_wilayah_{$desaId}", self::CACHE_TTL, function() use ($desaId) {
+            return DB::table('t_kartu_keluarga_anggota as t1')
+                ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                ->where('t2.desa', $desaId)
+                ->where('t1.sts_hub_kel', 1)
+                ->select(
+                    DB::raw("CONCAT(t2.rt,'/',t2.rw) AS rt_rw"),
+                    't1.kepemilikan_rumah',
+                    DB::raw('COUNT(DISTINCT t2.id) as total_kk')
+                )
+                ->groupBy('rt_rw', 't1.kepemilikan_rumah')
+                ->orderBy('rt_rw')
+                ->get();
+        });
 
         return response()->json($data);
     }
@@ -121,37 +134,39 @@ class KepemilikanRumahController extends Controller
     {
         $desaId = auth()->user()->desa;
 
-        // KK dengan status kepemilikan rumah berbeda dalam 1 KK
-        $anomali = DB::table('t_kartu_keluarga_anggota as t1')
-            ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-            ->where('t2.desa', $desaId)
-            ->select('t2.id', DB::raw('COUNT(DISTINCT t1.kepemilikan_rumah) as jumlah_status'))
-            ->groupBy('t2.id')
-            ->having('jumlah_status', '>', 1)
-            ->get()
-            ->count();
+        $data = Cache::remember("kepemilikan_rumah_anomali_{$desaId}", self::CACHE_TTL, function() use ($desaId) {
+            // KK dengan status kepemilikan rumah berbeda dalam 1 KK
+            $anomali = DB::table('t_kartu_keluarga_anggota as t1')
+                ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                ->where('t2.desa', $desaId)
+                ->select('t2.id', DB::raw('COUNT(DISTINCT t1.kepemilikan_rumah) as jumlah_status'))
+                ->groupBy('t2.id')
+                ->having('jumlah_status', '>', 1)
+                ->get()
+                ->count();
 
-        // Total KK
-        $totalKK = DB::table('t_kartu_keluarga')
-            ->where('desa', $desaId)
-            ->count();
+            // Total KK
+            $totalKK = DB::table('t_kartu_keluarga')
+                ->where('desa', $desaId)
+                ->count();
 
-        // KK tanpa data kepemilikan
-        $tanpaData = DB::table('t_kartu_keluarga as t2')
-            ->leftJoin('t_kartu_keluarga_anggota as t1', 't2.id', '=', 't1.no_kk')
-            ->where('t2.desa', $desaId)
-            ->where(function($query) {
-                $query->whereNull('t1.kepemilikan_rumah')
-                      ->orWhere('t1.kepemilikan_rumah', '');
-            })
-            ->distinct('t2.id')
-            ->count('t2.id');
+            // KK tanpa data kepemilikan
+            $tanpaData = DB::table('t_kartu_keluarga as t2')
+                ->leftJoin('t_kartu_keluarga_anggota as t1', 't2.id', '=', 't1.no_kk')
+                ->where('t2.desa', $desaId)
+                ->where(function($query) {
+                    $query->whereNull('t1.kepemilikan_rumah')
+                          ->orWhere('t1.kepemilikan_rumah', '');
+                })
+                ->distinct('t2.id')
+                ->count('t2.id');
 
-        $data = [
-            ['kategori' => 'KK Normal', 'total' => $totalKK - $anomali - $tanpaData],
-            ['kategori' => 'KK Anomali (>1 Status)', 'total' => $anomali],
-            ['kategori' => 'KK Tanpa Data', 'total' => $tanpaData],
-        ];
+            return [
+                ['kategori' => 'KK Normal', 'total' => $totalKK - $anomali - $tanpaData],
+                ['kategori' => 'KK Anomali (>1 Status)', 'total' => $anomali],
+                ['kategori' => 'KK Tanpa Data', 'total' => $tanpaData],
+            ];
+        });
 
         return response()->json($data);
     }
@@ -161,26 +176,30 @@ class KepemilikanRumahController extends Controller
     {
         $desaId = auth()->user()->desa;
 
-        $rwList = DB::table('t_kartu_keluarga')
-            ->where('desa', $desaId)
-            ->distinct()
-            ->orderBy('rw')
-            ->pluck('rw')
-            ->filter()
-            ->values();
+        $data = Cache::remember("kepemilikan_rumah_rw_rt_list_{$desaId}", self::CACHE_TTL, function() use ($desaId) {
+            $rwList = DB::table('t_kartu_keluarga')
+                ->where('desa', $desaId)
+                ->distinct()
+                ->orderBy('rw')
+                ->pluck('rw')
+                ->filter()
+                ->values();
 
-        $rtList = DB::table('t_kartu_keluarga')
-            ->where('desa', $desaId)
-            ->distinct()
-            ->orderBy('rt')
-            ->pluck('rt')
-            ->filter()
-            ->values();
+            $rtList = DB::table('t_kartu_keluarga')
+                ->where('desa', $desaId)
+                ->distinct()
+                ->orderBy('rt')
+                ->pluck('rt')
+                ->filter()
+                ->values();
 
-        return response()->json([
-            'rw_list' => $rwList,
-            'rt_list' => $rtList
-        ]);
+            return [
+                'rw_list' => $rwList,
+                'rt_list' => $rtList
+            ];
+        });
+
+        return response()->json($data);
     }
 
     // API untuk mendapatkan RT berdasarkan RW
@@ -189,16 +208,18 @@ class KepemilikanRumahController extends Controller
         $desaId = auth()->user()->desa;
         $rw = $request->get('rw');
 
-        $rtList = DB::table('t_kartu_keluarga')
-            ->where('desa', $desaId)
-            ->where('rw', $rw)
-            ->distinct()
-            ->orderBy('rt')
-            ->pluck('rt')
-            ->filter()
-            ->values();
+        $data = Cache::remember("kepemilikan_rumah_rt_by_rw_{$desaId}_{$rw}", self::CACHE_TTL, function() use ($desaId, $rw) {
+            return DB::table('t_kartu_keluarga')
+                ->where('desa', $desaId)
+                ->where('rw', $rw)
+                ->distinct()
+                ->orderBy('rt')
+                ->pluck('rt')
+                ->filter()
+                ->values();
+        });
 
-        return response()->json(['rt_list' => $rtList]);
+        return response()->json(['rt_list' => $data]);
     }
 
     // DataTables - Data Lengkap Kepala Keluarga
@@ -273,6 +294,12 @@ class KepemilikanRumahController extends Controller
 
         return DataTables::of($query)
             ->addIndexColumn()
+            ->editColumn('no_nik', function ($row) {
+                return $this->maskNumber($row->no_nik);
+            })
+            ->editColumn('no_kk', function ($row) {
+                return $this->maskNumber($row->no_kk);
+            })
             ->editColumn('nama', fn($row) => strtoupper($row->nama))
             ->editColumn('kp', fn($row) => strtoupper($row->kp))
             ->editColumn('jenkel', function ($row) {
@@ -291,80 +318,50 @@ class KepemilikanRumahController extends Controller
             ->make(true);
     }
 
-    // // Export to Excel
-    // public function export(Request $request)
-    // {
-    //     $desaId = auth()->user()->desa;
+    private function maskNumber($number)
+    {
+        if (!$number || strlen($number) < 16) {
+            return $number;
+        }
 
-    //     // Subquery untuk mendeteksi anomali KK
-    //     $anomaliKK = DB::table('t_kartu_keluarga_anggota')
-    //         ->select('no_kk', DB::raw('COUNT(DISTINCT kepemilikan_rumah) as jumlah_status'))
-    //         ->groupBy('no_kk')
-    //         ->havingRaw('COUNT(DISTINCT kepemilikan_rumah) > 1');
+        return substr($number, 0, 3)
+            . str_repeat('*', 10)
+            . substr($number, -3);
+    }
 
-    //     $query = DB::table('t_kartu_keluarga_anggota as t1')
-    //         ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-    //         ->leftJoin('indonesia_villages as t3', 't3.code', '=', 't2.desa')
-    //         ->leftJoinSub($anomaliKK, 'anomali', function($join) {
-    //             $join->on('t2.id', '=', 'anomali.no_kk');
-    //         })
-    //         ->where('t2.desa', $desaId)
-    //         ->where('t1.sts_hub_kel', 1)
-    //         ->select([
-    //             't1.no_nik',
-    //             't1.nama',
-    //             't2.no_kk',
-    //             't2.kp',
-    //             't1.jenkel',
-    //             't1.tgl_lahir',
-    //             't2.rt',
-    //             't2.rw',
-    //             DB::raw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) AS umur'),
-    //             't3.name AS desa',
-    //             't1.kepemilikan_rumah',
-    //             DB::raw('IF(anomali.jumlah_status > 1, "Anomali", "Normal") as status_anomali')
-    //         ]);
+    /**
+     * Method untuk clear cache ketika ada update data
+     * Panggil method ini di controller yang handle CRUD
+     */
+    public function clearCache()
+    {
+        $desaId = auth()->user()->desa;
 
-    //     // Apply filters
-    //     if ($request->has('kepemilikan') && $request->kepemilikan != '') {
-    //         $query->where('t1.kepemilikan_rumah', $request->kepemilikan);
-    //     }
+        $cacheKeys = [
+            "kepemilikan_rumah_per_nik_{$desaId}",
+            "kepemilikan_rumah_per_kk_{$desaId}",
+            "kepemilikan_rumah_kerentanan_{$desaId}",
+            "kepemilikan_rumah_by_umur_{$desaId}",
+            "kepemilikan_rumah_per_wilayah_{$desaId}",
+            "kepemilikan_rumah_anomali_{$desaId}",
+            "kepemilikan_rumah_rw_rt_list_{$desaId}",
+        ];
 
-    //     if ($request->has('kerentanan') && $request->kerentanan != '') {
-    //         if ($request->kerentanan == 'Rentan') {
-    //             $query->whereIn('t1.kepemilikan_rumah', ['Ngontrak', 'Menumpang', 'Lainnya']);
-    //         } elseif ($request->kerentanan == 'Semi Rentan') {
-    //             $query->where('t1.kepemilikan_rumah', 'Orang Tua');
-    //         } elseif ($request->kerentanan == 'Aman') {
-    //             $query->where('t1.kepemilikan_rumah', 'Milik Sendiri');
-    //         }
-    //     }
+        foreach ($cacheKeys as $key) {
+            Cache::forget($key);
+        }
 
-    //     if ($request->has('rw') && $request->rw != '') {
-    //         $query->where('t2.rw', $request->rw);
-    //     }
+        // Clear cache RT by RW (semua RW)
+        $rwList = DB::table('t_kartu_keluarga')
+            ->where('desa', $desaId)
+            ->distinct()
+            ->pluck('rw')
+            ->filter();
 
-    //     if ($request->has('rt') && $request->rt != '') {
-    //         $query->where('t2.rt', $request->rt);
-    //     }
+        foreach ($rwList as $rw) {
+            Cache::forget("kepemilikan_rumah_rt_by_rw_{$desaId}_{$rw}");
+        }
 
-    //     if ($request->has('anomali') && $request->anomali != '') {
-    //         if ($request->anomali == 'anomali') {
-    //             $query->havingRaw('status_anomali = "Anomali"');
-    //         } elseif ($request->anomali == 'normal') {
-    //             $query->havingRaw('status_anomali = "Normal"');
-    //         }
-    //     }
-
-    //     $data = $query->get();
-
-    //     // Generate Excel file
-    //     $filename = 'kepemilikan_rumah_' . date('YmdHis') . '.xlsx';
-
-    //     // You can use Laravel Excel package here
-    //     // return Excel::download(new KepemilikanRumahExport($data), $filename);
-
-    //     // For now, return JSON (you need to implement Excel export)
-    //     return response()->json(['message' => 'Export feature needs Laravel Excel package']);
-    // }
+        return response()->json(['message' => 'Cache cleared successfully']);
+    }
 }
