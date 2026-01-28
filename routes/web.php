@@ -8,6 +8,7 @@ use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\Admin\AdminDesaController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PekerjaanController;
+use App\Http\Controllers\Admin\DataHilangController;
 use App\Http\Controllers\Admin\PendapatanController;
 use App\Http\Controllers\Admin\PendidikanController;
 use App\Http\Controllers\Admin\PerkawinanController;
@@ -16,17 +17,20 @@ use App\Http\Controllers\Admin\KartuKeluargaController;
 use App\Http\Controllers\Admin\KepemilikanRumahController;
 use App\Http\Controllers\Admin\BantuanPemerintahController;
 
-Route::get('/', [LandingPageController::class, 'page'])->name('page');
-Route::get('/api/basic-stats', [LandingPageController::class, 'getBasicStats'])->name('api.basic.stats');
-Route::get('/api/key-metrics', [LandingPageController::class, 'getKeyMetrics'])->name('api.key.metrics');
-Route::get('/api/demografi-kk', [LandingPageController::class, 'getDemografiKK'])->name('api.demografi.kk');
-Route::get('/api/ekonomi', [LandingPageController::class, 'getEkonomi'])->name('api.ekonomi');
-Route::get('/api/bantuan', [LandingPageController::class, 'getBantuan'])->name('api.bantuan');
-Route::get('/api/kesehatan', [LandingPageController::class, 'getKesehatan'])->name('api.kesehatan');
-Route::get('/api/pendidikan-pekerjaan', [LandingPageController::class, 'getPendidikanPekerjaan'])->name('api.pendidikan.pekerjaan');
-Route::get('/api/statistik-penduduk', [LandingPageController::class, 'getStatistikPenduduk'])->name('api.statistik.penduduk');
-Route::get('/api/data-desa', [LandingPageController::class, 'getDataDesa'])->name('api.data.desa');
-Route::get('/api/statistics', [LandingPageController::class, 'getStatistics'])->name('api.statistics');
+Route::get('/', [LandingPageController::class, 'page'])->name('landing.page');
+Route::prefix('api')->group(function () {
+    Route::get('/basic-stats', [LandingPageController::class, 'getBasicStats'])->name('api.basic.stats');
+    Route::get('/key-metrics', [LandingPageController::class, 'getKeyMetrics'])->name('api.key.metrics');
+    Route::get('/demografi-kk', [LandingPageController::class, 'getDemografiKK'])->name('api.demografi.kk');
+    Route::get('/ekonomi', [LandingPageController::class, 'getEkonomi'])->name('api.ekonomi');
+    Route::get('/bantuan', [LandingPageController::class, 'getBantuan'])->name('api.bantuan');
+    Route::get('/kesehatan', [LandingPageController::class, 'getKesehatan'])->name('api.kesehatan');
+    Route::get('/pendidikan-pekerjaan', [LandingPageController::class, 'getPendidikanPekerjaan'])->name('api.pendidikan.pekerjaan');
+    Route::get('/statistik-penduduk', [LandingPageController::class, 'getStatistikPenduduk'])->name('api.statistik.penduduk');
+    Route::get('/data-desa', [LandingPageController::class, 'getDataDesa'])->name('api.data.desa');
+    Route::get('/all-stats', [LandingPageController::class, 'getAllStats'])->name('api.all.stats');
+    Route::post('/clear-cache', [LandingPageController::class, 'clearCache'])->name('api.clear.cache');
+});
 
 Route::middleware(['auth'])->group(function () {
 
@@ -54,7 +58,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [AdminDesaController::class, 'index'])->name('index');
         Route::get('/statistics', [AdminDesaController::class, 'getStatistics'])->name('statistics');
         Route::get('/datatables', [AdminDesaController::class, 'getDatatables'])->name('datatables');
-        Route::get('/data-hilang', [AdminDesaController::class, 'dataHilang'])->name('data.hilang');
+    });
+
+    Route::group(['prefix' => '/data-hilang', 'as' => 'data.hilang.'], function () {
+        Route::get('/', [DataHilangController::class, 'index'])->name('index');
+        Route::get('/kepala-keluarga-ganda', [DataHilangController::class, 'checkKepalaKeluargaGanda'])->name('kepala.ganda');
     });
 
     Route::group(['prefix' => '/pendidikan', 'as' => 'pendidikan.'], function () {

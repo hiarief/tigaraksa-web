@@ -150,8 +150,8 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('admin.desa.data.hilang') }}"
-                        class="nav-link {{ Route::is('admin.desa.data.hilang*') ? 'active' : '' }}">
+                    <a href="{{ route('data.hilang.index') }}"
+                        class="nav-link {{ Route::is('data.hilang.index*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-triangle-exclamation text-danger"></i>
                         <p>Laporan Data Hilang</p>
                     </a>

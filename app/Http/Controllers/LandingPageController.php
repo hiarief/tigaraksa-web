@@ -10,195 +10,232 @@ use Illuminate\Support\Facades\Cache;
 
 class LandingPageController extends Controller
 {
-    private const CACHE_TTL = 7200;
+    private const CACHE_TTL = 21600; // 6 hours
 
     public function page()
     {
-        $kk = DB::table('t_kartu_keluarga')->count();
-        $nik = DB::table('t_kartu_keluarga_anggota')->count();
-        $totalDesa = DB::table('t_kartu_keluarga')
-            ->distinct('desa')
-            ->count('desa');
+        try {
+            $basicStats = DB::table('t_kartu_keluarga as t1')
+                ->leftJoin('t_kartu_keluarga_anggota as t2', 't1.id', '=', 't2.no_kk')
+                ->selectRaw(
+                    '
+                    COUNT(DISTINCT t1.id) as total_kk,
+                    COUNT(t2.id) as total_nik,
+                    COUNT(DISTINCT t1.desa) as total_desa
+                ',
+                )
+                ->first();
 
-        return view('landing-page.page', compact('kk', 'nik', 'totalDesa'));
+            return view('landing-page.page', [
+                'kk' => $basicStats->total_kk ?? 0,
+                'nik' => $basicStats->total_nik ?? 0,
+                'totalDesa' => $basicStats->total_desa ?? 0,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in page: ' . $e->getMessage());
+            return view('landing-page.page', [
+                'kk' => 0,
+                'nik' => 0,
+                'totalDesa' => 0,
+            ]);
+        }
+    }
+
+    public function clearCache()
+    {
+        try {
+            Cache::flush();
+            return response()->json(['message' => 'Cache cleared successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     // ========================================
-    // 1️⃣ BASIC STATS (Paling Ringan - Load Pertama)
+    // 1️⃣ BASIC STATS
     // ========================================
     public function getBasicStats()
     {
         try {
-            return Cache::remember('basic_stats', self::CACHE_TTL, function () {
-                return response()->json([
-                    'total_kk' => DB::table('t_kartu_keluarga')->count(),
-                    'total_penduduk' => DB::table('t_kartu_keluarga_anggota')->count(),
-                    'total_desa' => DB::table('t_kartu_keluarga')->distinct('desa')->count('desa'),
-                ]);
+            $data = Cache::remember('lp_basic_stats', self::CACHE_TTL, function () {
+                $stats = DB::table('t_kartu_keluarga as t1')
+                    ->leftJoin('t_kartu_keluarga_anggota as t2', 't1.id', '=', 't2.no_kk')
+                    ->selectRaw(
+                        '
+                        COUNT(DISTINCT t1.id) as total_kk,
+                        COUNT(t2.id) as total_penduduk,
+                        COUNT(DISTINCT t1.desa) as total_desa
+                    ',
+                    )
+                    ->first();
+
+                return [
+                    'total_kk' => $stats->total_kk ?? 0,
+                    'total_penduduk' => $stats->total_penduduk ?? 0,
+                    'total_desa' => $stats->total_desa ?? 0,
+                ];
             });
+
+            return response()
+                ->json($data)
+                ->header('Cache-Control', 'public, max-age=' . self::CACHE_TTL);
         } catch (\Exception $e) {
             Log::error('Error in getBasicStats: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to load basic stats'], 500);
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return response()->json(
+                [
+                    'error' => 'Failed to load basic stats',
+                    'message' => config('app.debug') ? $e->getMessage() : 'Internal server error',
+                ],
+                500,
+            );
         }
     }
 
     // ========================================
-    // 2️⃣ KEY METRICS (6 Indikator Utama)
+    // 2️⃣ KEY METRICS
     // ========================================
     public function getKeyMetrics()
     {
         try {
-            return Cache::remember('key_metrics', self::CACHE_TTL, function () {
-                $totalKK = DB::table('t_kartu_keluarga')->count();
-
-                // Subquery untuk Kepala Keluarga
-                $kkSubquery = DB::table('t_kartu_keluarga as t1')
-                    ->join('t_kartu_keluarga_anggota as t2', function($join) {
-                        $join->on('t1.id', '=', 't2.no_kk')
-                             ->where('t2.sts_hub_kel', '=', 1);
-                    });
-
-                // 1. Total KK (sudah ada di atas)
-
-                // 2. Pendapatan Rendah
-                $pendapatanRendah = (clone $kkSubquery)
-                    ->where('t2.pendapatan_perbulan', '0-1 Juta')
-                    ->count();
-                $persentasePendapatanRendah = $totalKK > 0 ? round(($pendapatanRendah / $totalKK) * 100, 1) : 0;
-
-                // 3. Lansia
-                $jumlahLansia = (clone $kkSubquery)
-                    ->whereRaw('TIMESTAMPDIFF(YEAR, t2.tgl_lahir, CURDATE()) >= 60')
-                    ->count();
-                $persentaseLansia = $totalKK > 0 ? round(($jumlahLansia / $totalKK) * 100, 1) : 0;
-
-                // 4. Layak Belum Dapat Bantuan
-                $layakBelumDapat = DB::table('t_kartu_keluarga as t1')
-                    ->join('t_kartu_keluarga_anggota as t2', function($join) {
-                        $join->on('t1.id', '=', 't2.no_kk')
-                             ->where('t2.sts_hub_kel', '=', 1);
+            $data = Cache::remember('lp_key_metrics', self::CACHE_TTL, function () {
+                $metrics = DB::table('t_kartu_keluarga as t1')
+                    ->join('t_kartu_keluarga_anggota as t2', function ($join) {
+                        $join->on('t1.id', '=', 't2.no_kk')->where('t2.sts_hub_kel', '=', 1);
                     })
-                    ->join('bantuan_pemerintah as t3', 't2.bantuan_pemerintah', '=', 't3.Id')
-                    ->where('t2.tanya_bantuanpemerintah', 'Layak')
-                    ->where('t3.nama', 'Belum Pernah Dapat Bantuan')
-                    ->count();
-                $persentaseLayakBelumDapat = $totalKK > 0 ? round(($layakBelumDapat / $totalKK) * 100, 1) : 0;
+                    ->leftJoin('bantuan_pemerintah as bp', 't2.bantuan_pemerintah', '=', 'bp.Id')
+                    ->selectRaw(
+                        "
+                        COUNT(*) as total_kk,
+                        SUM(CASE WHEN t2.pendapatan_perbulan = '0-1 Juta' THEN 1 ELSE 0 END) as pendapatan_rendah,
+                        SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t2.tgl_lahir, CURDATE()) >= 60 THEN 1 ELSE 0 END) as jumlah_lansia,
+                        SUM(CASE
+                            WHEN t2.tanya_bantuanpemerintah = 'Layak'
+                            AND bp.nama = 'Belum Pernah Dapat Bantuan'
+                            THEN 1 ELSE 0
+                        END) as layak_belum_dapat,
+                        SUM(CASE
+                            WHEN t2.punya_bpjs = 'tidak' OR t2.punya_bpjs IS NULL
+                            THEN 1 ELSE 0
+                        END) as tidak_bpjs,
+                        SUM(CASE
+                            WHEN TIMESTAMPDIFF(YEAR, t2.tgl_lahir, CURDATE()) >= 60
+                            AND t2.pendapatan_perbulan = '0-1 Juta'
+                            AND bp.nama = 'Belum Pernah Dapat Bantuan'
+                            THEN 1 ELSE 0
+                        END) as sangat_rentan,
+                        SUM(CASE
+                            WHEN TIMESTAMPDIFF(YEAR, t2.tgl_lahir, CURDATE()) >= 60
+                            AND bp.nama = 'Belum Pernah Dapat Bantuan'
+                            THEN 1 ELSE 0
+                        END) as lansia_belum_bantuan
+                    ",
+                    )
+                    ->first();
 
-                // 5. Tanpa BPJS
-                $tidakBPJS = (clone $kkSubquery)
-                    ->where(function($query) {
-                        $query->where('t2.punya_bpjs', 'tidak')
-                              ->orWhereNull('t2.punya_bpjs');
-                    })
-                    ->count();
-                $persentaseTidakBPJS = $totalKK > 0 ? round(($tidakBPJS / $totalKK) * 100, 1) : 0;
+                $total = $metrics->total_kk ?: 1;
 
-                // 6. Keluarga Sangat Rentan
-                $keluargaSangatRentan = DB::table('t_kartu_keluarga as t1')
-                    ->join('t_kartu_keluarga_anggota as t2', function($join) {
-                        $join->on('t1.id', '=', 't2.no_kk')
-                             ->where('t2.sts_hub_kel', '=', 1);
-                    })
-                    ->join('bantuan_pemerintah as t3', 't2.bantuan_pemerintah', '=', 't3.Id')
-                    ->whereRaw('TIMESTAMPDIFF(YEAR, t2.tgl_lahir, CURDATE()) >= 60')
-                    ->where('t2.pendapatan_perbulan', '0-1 Juta')
-                    ->where('t3.nama', 'Belum Pernah Dapat Bantuan')
-                    ->count();
-
-                // Lansia Belum Bantuan
-                $lansiaBlmBantuan = DB::table('t_kartu_keluarga as t1')
-                    ->join('t_kartu_keluarga_anggota as t2', function($join) {
-                        $join->on('t1.id', '=', 't2.no_kk')
-                             ->where('t2.sts_hub_kel', '=', 1);
-                    })
-                    ->join('bantuan_pemerintah as t3', 't2.bantuan_pemerintah', '=', 't3.Id')
-                    ->whereRaw('TIMESTAMPDIFF(YEAR, t2.tgl_lahir, CURDATE()) >= 60')
-                    ->where('t3.nama', 'Belum Pernah Dapat Bantuan')
-                    ->count();
-
-                return response()->json([
-                    'total_kk' => $totalKK,
-                    'pendapatan_rendah' => $pendapatanRendah,
-                    'persentase_pendapatan_rendah' => $persentasePendapatanRendah,
-                    'jumlah_lansia' => $jumlahLansia,
-                    'persentase_lansia' => $persentaseLansia,
-                    'layak_belum_dapat' => $layakBelumDapat,
-                    'persentase_layak_belum_dapat' => $persentaseLayakBelumDapat,
-                    'tidak_punya_bpjs' => $tidakBPJS,
-                    'persentase_tidak_bpjs' => $persentaseTidakBPJS,
-                    'keluarga_sangat_rentan' => $keluargaSangatRentan,
-                    'lansia_belum_bantuan' => $lansiaBlmBantuan,
-                ]);
+                return [
+                    'total_kk' => (int) $metrics->total_kk,
+                    'pendapatan_rendah' => (int) $metrics->pendapatan_rendah,
+                    'persentase_pendapatan_rendah' => round(($metrics->pendapatan_rendah / $total) * 100, 1),
+                    'jumlah_lansia' => (int) $metrics->jumlah_lansia,
+                    'persentase_lansia' => round(($metrics->jumlah_lansia / $total) * 100, 1),
+                    'layak_belum_dapat' => (int) $metrics->layak_belum_dapat,
+                    'persentase_layak_belum_dapat' => round(($metrics->layak_belum_dapat / $total) * 100, 1),
+                    'tidak_punya_bpjs' => (int) $metrics->tidak_bpjs,
+                    'persentase_tidak_bpjs' => round(($metrics->tidak_bpjs / $total) * 100, 1),
+                    'keluarga_sangat_rentan' => (int) $metrics->sangat_rentan,
+                    'lansia_belum_bantuan' => (int) $metrics->lansia_belum_bantuan,
+                ];
             });
+
+            return response()
+                ->json($data)
+                ->header('Cache-Control', 'public, max-age=' . self::CACHE_TTL);
         } catch (\Exception $e) {
             Log::error('Error in getKeyMetrics: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to load key metrics'], 500);
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return response()->json(
+                [
+                    'error' => 'Failed to load key metrics',
+                    'message' => config('app.debug') ? $e->getMessage() : 'Internal server error',
+                ],
+                500,
+            );
         }
     }
 
     // ========================================
-    // 3️⃣ DEMOGRAFI KK (Gender & Age)
+    // 3️⃣ DEMOGRAFI KK
     // ========================================
     public function getDemografiKK()
     {
         try {
-            return Cache::remember('demografi_kk', self::CACHE_TTL, function () {
-                // Jenis Kelamin Kepala Keluarga
-                $genderKK = DB::table('t_kartu_keluarga as t1')
-                    ->join('t_kartu_keluarga_anggota as t2', function($join) {
-                        $join->on('t1.id', '=', 't2.no_kk')
-                             ->where('t2.sts_hub_kel', '=', 1);
+            $data = Cache::remember('lp_demografi_kk', self::CACHE_TTL, function () {
+                $stats = DB::table('t_kartu_keluarga as t1')
+                    ->join('t_kartu_keluarga_anggota as t2', function ($join) {
+                        $join->on('t1.id', '=', 't2.no_kk')->where('t2.sts_hub_kel', '=', 1);
                     })
-                    ->select('t2.jenkel', DB::raw('count(*) as total'))
-                    ->groupBy('t2.jenkel')
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        return [$item->jenkel == 1 ? 'laki_laki' : 'perempuan' => $item->total];
-                    });
-
-                // Kelompok Usia Kepala Keluarga
-                $ageGroupsKK = DB::table('t_kartu_keluarga as t1')
-                    ->join('t_kartu_keluarga_anggota as t2', function($join) {
-                        $join->on('t1.id', '=', 't2.no_kk')
-                             ->where('t2.sts_hub_kel', '=', 1);
-                    })
-                    ->selectRaw("
+                    ->selectRaw(
+                        "
+                        SUM(CASE WHEN t2.jenkel = 1 THEN 1 ELSE 0 END) as laki_laki,
+                        SUM(CASE WHEN t2.jenkel = 2 THEN 1 ELSE 0 END) as perempuan,
                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t2.tgl_lahir, CURDATE()) < 25 THEN 1 ELSE 0 END) as muda,
                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t2.tgl_lahir, CURDATE()) BETWEEN 25 AND 44 THEN 1 ELSE 0 END) as produktif,
                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t2.tgl_lahir, CURDATE()) BETWEEN 45 AND 59 THEN 1 ELSE 0 END) as pra_lansia,
                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t2.tgl_lahir, CURDATE()) >= 60 THEN 1 ELSE 0 END) as lansia
-                    ")
+                    ",
+                    )
                     ->first();
 
-                return response()->json([
-                    'gender_kk' => $genderKK,
-                    'age_groups_kk' => $ageGroupsKK,
-                ]);
+                return [
+                    'gender_kk' => [
+                        'laki_laki' => (int) $stats->laki_laki,
+                        'perempuan' => (int) $stats->perempuan,
+                    ],
+                    'age_groups_kk' => [
+                        'muda' => (int) $stats->muda,
+                        'produktif' => (int) $stats->produktif,
+                        'pra_lansia' => (int) $stats->pra_lansia,
+                        'lansia' => (int) $stats->lansia,
+                    ],
+                ];
             });
+
+            return response()
+                ->json($data)
+                ->header('Cache-Control', 'public, max-age=' . self::CACHE_TTL);
         } catch (\Exception $e) {
             Log::error('Error in getDemografiKK: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to load demografi KK'], 500);
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return response()->json(
+                [
+                    'error' => 'Failed to load demografi KK',
+                    'message' => config('app.debug') ? $e->getMessage() : 'Internal server error',
+                ],
+                500,
+            );
         }
     }
 
     // ========================================
-    // 4️⃣ EKONOMI (Pendapatan & Kepemilikan Rumah)
+    // 4️⃣ EKONOMI
     // ========================================
     public function getEkonomi()
     {
         try {
-            return Cache::remember('ekonomi', self::CACHE_TTL, function () {
-                // Distribusi Pendapatan KK
-                $pendapatanKK = DB::table('t_kartu_keluarga as t1')
-                    ->join('t_kartu_keluarga_anggota as t2', function($join) {
-                        $join->on('t1.id', '=', 't2.no_kk')
-                             ->where('t2.sts_hub_kel', '=', 1);
+            $data = Cache::remember('lp_ekonomi', self::CACHE_TTL, function () {
+                $pendapatan = DB::table('t_kartu_keluarga as t1')
+                    ->join('t_kartu_keluarga_anggota as t2', function ($join) {
+                        $join->on('t1.id', '=', 't2.no_kk')->where('t2.sts_hub_kel', '=', 1);
                     })
-                    ->select('t2.pendapatan_perbulan as nama', DB::raw('count(*) as total'))
+                    ->select('t2.pendapatan_perbulan as nama', DB::raw('COUNT(*) as total'))
                     ->whereNotNull('t2.pendapatan_perbulan')
                     ->where('t2.pendapatan_perbulan', '!=', '')
                     ->groupBy('t2.pendapatan_perbulan')
-                    ->orderByRaw("
+                    ->orderByRaw(
+                        "
                         CASE t2.pendapatan_perbulan
                             WHEN '0-1 Juta' THEN 1
                             WHEN '1-2 Juta' THEN 2
@@ -206,129 +243,176 @@ class LandingPageController extends Controller
                             WHEN '3-5 Juta' THEN 4
                             ELSE 5
                         END
-                    ")
+                    ",
+                    )
                     ->get();
 
-                // Kepemilikan Rumah
-                $kepemilikanRumah = DB::table('t_kartu_keluarga as t1')
-                    ->join('t_kartu_keluarga_anggota as t2', function($join) {
-                        $join->on('t1.id', '=', 't2.no_kk')
-                             ->where('t2.sts_hub_kel', '=', 1);
+                $rumah = DB::table('t_kartu_keluarga as t1')
+                    ->join('t_kartu_keluarga_anggota as t2', function ($join) {
+                        $join->on('t1.id', '=', 't2.no_kk')->where('t2.sts_hub_kel', '=', 1);
                     })
-                    ->select('t2.kepemilikan_rumah as nama', DB::raw('count(*) as total'))
+                    ->select('t2.kepemilikan_rumah as nama', DB::raw('COUNT(*) as total'))
                     ->whereNotNull('t2.kepemilikan_rumah')
                     ->where('t2.kepemilikan_rumah', '!=', '')
                     ->groupBy('t2.kepemilikan_rumah')
                     ->orderBy('total', 'desc')
                     ->get();
 
-                return response()->json([
-                    'pendapatan_kk' => $pendapatanKK,
-                    'kepemilikan_rumah' => $kepemilikanRumah,
-                ]);
+                return [
+                    'pendapatan_kk' => $pendapatan,
+                    'kepemilikan_rumah' => $rumah,
+                ];
             });
+
+            return response()
+                ->json($data)
+                ->header('Cache-Control', 'public, max-age=' . self::CACHE_TTL);
         } catch (\Exception $e) {
             Log::error('Error in getEkonomi: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to load ekonomi'], 500);
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return response()->json(
+                [
+                    'error' => 'Failed to load ekonomi',
+                    'message' => config('app.debug') ? $e->getMessage() : 'Internal server error',
+                ],
+                500,
+            );
         }
     }
 
     // ========================================
-    // 5️⃣ BANTUAN PEMERINTAH
+    // 5️⃣ BANTUAN
     // ========================================
     public function getBantuan()
     {
         try {
-            return Cache::remember('bantuan', self::CACHE_TTL, function () {
-                // Layak vs Tidak Layak
-                $kelayakanBantuan = DB::table('t_kartu_keluarga as t1')
-                    ->join('t_kartu_keluarga_anggota as t2', function($join) {
-                        $join->on('t1.id', '=', 't2.no_kk')
-                             ->where('t2.sts_hub_kel', '=', 1);
+            $data = Cache::remember('lp_bantuan', self::CACHE_TTL, function () {
+                $stats = DB::table('t_kartu_keluarga as t1')
+                    ->join('t_kartu_keluarga_anggota as t2', function ($join) {
+                        $join->on('t1.id', '=', 't2.no_kk')->where('t2.sts_hub_kel', '=', 1);
                     })
-                    ->select('t2.tanya_bantuanpemerintah', DB::raw('count(*) as total'))
-                    ->whereNotNull('t2.tanya_bantuanpemerintah')
-                    ->groupBy('t2.tanya_bantuanpemerintah')
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        return [strtolower($item->tanya_bantuanpemerintah) => $item->total];
-                    });
+                    ->selectRaw(
+                        "
+                        SUM(CASE WHEN t2.tanya_bantuanpemerintah = 'Layak' THEN 1 ELSE 0 END) as layak,
+                        SUM(CASE WHEN t2.tanya_bantuanpemerintah = 'Tidak Layak' THEN 1 ELSE 0 END) as tidak_layak
+                    ",
+                    )
+                    ->first();
 
-                // Jenis Bantuan yang Diterima
                 $jenisBantuan = DB::table('t_kartu_keluarga as t1')
-                    ->join('t_kartu_keluarga_anggota as t2', function($join) {
-                        $join->on('t1.id', '=', 't2.no_kk')
-                             ->where('t2.sts_hub_kel', '=', 1);
+                    ->join('t_kartu_keluarga_anggota as t2', function ($join) {
+                        $join->on('t1.id', '=', 't2.no_kk')->where('t2.sts_hub_kel', '=', 1);
                     })
-                    ->join('bantuan_pemerintah as t3', 't2.bantuan_pemerintah', '=', 't3.Id')
-                    ->select('t3.nama', DB::raw('count(*) as total'))
-                    ->groupBy('t3.nama')
+                    ->join('bantuan_pemerintah as bp', 't2.bantuan_pemerintah', '=', 'bp.Id')
+                    ->select('bp.nama', DB::raw('COUNT(*) as total'))
+                    ->groupBy('bp.nama')
                     ->orderBy('total', 'desc')
                     ->get();
 
-                return response()->json([
-                    'kelayakan_bantuan' => $kelayakanBantuan,
+                return [
+                    'kelayakan_bantuan' => [
+                        'layak' => (int) $stats->layak,
+                        'tidak layak' => (int) $stats->tidak_layak,
+                    ],
                     'jenis_bantuan' => $jenisBantuan,
-                ]);
+                ];
             });
+
+            return response()
+                ->json($data)
+                ->header('Cache-Control', 'public, max-age=' . self::CACHE_TTL);
         } catch (\Exception $e) {
             Log::error('Error in getBantuan: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to load bantuan'], 500);
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return response()->json(
+                [
+                    'error' => 'Failed to load bantuan',
+                    'message' => config('app.debug') ? $e->getMessage() : 'Internal server error',
+                ],
+                500,
+            );
         }
     }
 
     // ========================================
-    // 6️⃣ KESEHATAN (BPJS & Sakit Kronis)
+    // 6️⃣ KESEHATAN
     // ========================================
     public function getKesehatan()
     {
         try {
-            return Cache::remember('kesehatan', self::CACHE_TTL, function () {
-                // Kepemilikan BPJS KK
-                $bpjsKK = DB::table('t_kartu_keluarga as t1')
-                    ->join('t_kartu_keluarga_anggota as t2', function($join) {
-                        $join->on('t1.id', '=', 't2.no_kk')
-                             ->where('t2.sts_hub_kel', '=', 1);
+            $data = Cache::remember('lp_kesehatan', self::CACHE_TTL, function () {
+                // BPJS Stats (tanpa join dulu)
+                $bpjsStats = DB::table('t_kartu_keluarga as t1')
+                    ->join('t_kartu_keluarga_anggota as t2', function ($join) {
+                        $join->on('t1.id', '=', 't2.no_kk')->where('t2.sts_hub_kel', '=', 1);
                     })
-                    ->selectRaw("
-                        SUM(CASE WHEN t2.punya_bpjs = 'ya' THEN 1 ELSE 0 END) as punya_bpjs,
-                        SUM(CASE WHEN t2.punya_bpjs = 'tidak' OR t2.punya_bpjs IS NULL THEN 1 ELSE 0 END) as tidak_punya_bpjs
-                    ")
+                    ->selectRaw(
+                        "
+                    SUM(CASE WHEN t2.punya_bpjs = 'ya' THEN 1 ELSE 0 END) as punya_bpjs,
+                    SUM(CASE WHEN t2.punya_bpjs = 'tidak' OR t2.punya_bpjs IS NULL THEN 1 ELSE 0 END) as tidak_punya_bpjs
+                ",
+                    )
                     ->first();
 
-                // Jenis BPJS
+                // Jenis BPJS (tanpa join dulu)
                 $jenisBPJS = DB::table('t_kartu_keluarga as t1')
-                    ->join('t_kartu_keluarga_anggota as t2', function($join) {
-                        $join->on('t1.id', '=', 't2.no_kk')
-                             ->where('t2.sts_hub_kel', '=', 1);
+                    ->join('t_kartu_keluarga_anggota as t2', function ($join) {
+                        $join->on('t1.id', '=', 't2.no_kk')->where('t2.sts_hub_kel', '=', 1);
                     })
-                    ->select('t2.jenis_bpjs', DB::raw('count(*) as total'))
+                    ->select('t2.jenis_bpjs', DB::raw('COUNT(*) as total'))
                     ->where('t2.punya_bpjs', 'ya')
                     ->whereNotNull('t2.jenis_bpjs')
+                    ->where('t2.jenis_bpjs', '!=', '')
                     ->groupBy('t2.jenis_bpjs')
                     ->get();
 
-                // Penyakit Kronis (Agregat)
-                $sakitKronis = DB::table('t_kartu_keluarga as t1')
-                    ->join('t_kartu_keluarga_anggota as t2', function($join) {
-                        $join->on('t1.id', '=', 't2.no_kk')
-                             ->where('t2.sts_hub_kel', '=', 1);
+                // Sakit Kronis - QUERY TERPISAH untuk avoid timeout
+                $sakitKronisRaw = DB::table('t_kartu_keluarga as t1')
+                    ->join('t_kartu_keluarga_anggota as t2', function ($join) {
+                        $join->on('t1.id', '=', 't2.no_kk')->where('t2.sts_hub_kel', '=', 1);
                     })
-                    ->join('m_sakit_kronis as t3', 't2.sakitkronis', '=', 't3.id')
-                    ->select('t3.nama', DB::raw('count(*) as total'))
-                    ->groupBy('t3.nama')
+                    ->select('t2.sakitkronis', DB::raw('COUNT(*) as total'))
+                    ->whereNotNull('t2.sakitkronis')
+                    ->where('t2.sakitkronis', '>', 0)
+                    ->groupBy('t2.sakitkronis')
                     ->orderBy('total', 'desc')
                     ->get();
 
-                return response()->json([
-                    'bpjs_kk' => $bpjsKK,
+                // Ambil nama sakit kronis dari master
+                $sakitKronisIds = $sakitKronisRaw->pluck('sakitkronis')->toArray();
+                $sakitKronisNames = [];
+
+                if (!empty($sakitKronisIds)) {
+                    $sakitKronisNames = DB::table('m_sakit_kronis')->whereIn('id', $sakitKronisIds)->pluck('nama', 'id')->toArray();
+                }
+
+                // Gabungkan hasil
+                $sakitKronis = $sakitKronisRaw->map(function ($item) use ($sakitKronisNames) {
+                    return (object) [
+                        'nama' => $sakitKronisNames[$item->sakitkronis] ?? 'Unknown',
+                        'total' => $item->total,
+                    ];
+                });
+
+                return [
+                    'bpjs_kk' => $bpjsStats,
                     'jenis_bpjs' => $jenisBPJS,
                     'sakit_kronis' => $sakitKronis,
-                ]);
+                ];
             });
+
+            return response()
+                ->json($data)
+                ->header('Cache-Control', 'public, max-age=' . self::CACHE_TTL);
         } catch (\Exception $e) {
             Log::error('Error in getKesehatan: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to load kesehatan'], 500);
+            return response()->json(
+                [
+                    'error' => 'Failed to load kesehatan',
+                    'message' => config('app.debug') ? $e->getMessage() : 'Internal server error',
+                ],
+                500,
+            );
         }
     }
 
@@ -338,161 +422,174 @@ class LandingPageController extends Controller
     public function getPendidikanPekerjaan()
     {
         try {
-            return Cache::remember('pendidikan_pekerjaan', self::CACHE_TTL, function () {
-                // Pendidikan KK
-                $pendidikanKK = DB::table('t_kartu_keluarga as t1')
-                    ->join('t_kartu_keluarga_anggota as t2', function($join) {
-                        $join->on('t1.id', '=', 't2.no_kk')
-                             ->where('t2.sts_hub_kel', '=', 1);
+            $data = Cache::remember('lp_pendidikan_pekerjaan', self::CACHE_TTL, function () {
+                // Pendidikan - QUERY TERPISAH
+                $pendidikanRaw = DB::table('t_kartu_keluarga as t1')
+                    ->join('t_kartu_keluarga_anggota as t2', function ($join) {
+                        $join->on('t1.id', '=', 't2.no_kk')->where('t2.sts_hub_kel', '=', 1);
                     })
-                    ->join('m_pendidikan_keluarga as t3', 't2.pendidikan', '=', 't3.id')
-                    ->select('t3.nama', DB::raw('count(*) as total'))
-                    ->groupBy('t3.nama')
+                    ->select('t2.pendidikan', DB::raw('COUNT(*) as total'))
+                    ->whereNotNull('t2.pendidikan')
+                    ->where('t2.pendidikan', '>', 0)
+                    ->groupBy('t2.pendidikan')
                     ->orderBy('total', 'desc')
                     ->get();
 
-                // Pekerjaan KK
-                $pekerjaanKK = DB::table('t_kartu_keluarga as t1')
-                    ->join('t_kartu_keluarga_anggota as t2', function($join) {
-                        $join->on('t1.id', '=', 't2.no_kk')
-                             ->where('t2.sts_hub_kel', '=', 1);
+                $pendidikanIds = $pendidikanRaw->pluck('pendidikan')->toArray();
+                $pendidikanNames = [];
+
+                if (!empty($pendidikanIds)) {
+                    $pendidikanNames = DB::table('m_pendidikan_keluarga')->whereIn('id', $pendidikanIds)->pluck('nama', 'id')->toArray();
+                }
+
+                $pendidikan = $pendidikanRaw->map(function ($item) use ($pendidikanNames) {
+                    return (object) [
+                        'nama' => $pendidikanNames[$item->pendidikan] ?? 'Unknown',
+                        'total' => $item->total,
+                    ];
+                });
+
+                // Pekerjaan - QUERY TERPISAH
+                $pekerjaanRaw = DB::table('t_kartu_keluarga as t1')
+                    ->join('t_kartu_keluarga_anggota as t2', function ($join) {
+                        $join->on('t1.id', '=', 't2.no_kk')->where('t2.sts_hub_kel', '=', 1);
                     })
-                    ->join('m_pekerjaan as t3', 't2.jns_pekerjaan', '=', 't3.id')
-                    ->select('t3.nama', DB::raw('count(*) as total'))
-                    ->groupBy('t3.nama')
+                    ->select('t2.jns_pekerjaan', DB::raw('COUNT(*) as total'))
+                    ->whereNotNull('t2.jns_pekerjaan')
+                    ->where('t2.jns_pekerjaan', '>', 0)
+                    ->groupBy('t2.jns_pekerjaan')
                     ->orderBy('total', 'desc')
                     ->limit(10)
                     ->get();
 
-                return response()->json([
-                    'pendidikan_kk' => $pendidikanKK,
-                    'pekerjaan_kk' => $pekerjaanKK,
-                ]);
+                $pekerjaanIds = $pekerjaanRaw->pluck('jns_pekerjaan')->toArray();
+                $pekerjaanNames = [];
+
+                if (!empty($pekerjaanIds)) {
+                    $pekerjaanNames = DB::table('m_pekerjaan')->whereIn('id', $pekerjaanIds)->pluck('nama', 'id')->toArray();
+                }
+
+                $pekerjaan = $pekerjaanRaw->map(function ($item) use ($pekerjaanNames) {
+                    return (object) [
+                        'nama' => $pekerjaanNames[$item->jns_pekerjaan] ?? 'Unknown',
+                        'total' => $item->total,
+                    ];
+                });
+
+                return [
+                    'pendidikan_kk' => $pendidikan,
+                    'pekerjaan_kk' => $pekerjaan,
+                ];
             });
+
+            return response()
+                ->json($data)
+                ->header('Cache-Control', 'public, max-age=' . self::CACHE_TTL);
         } catch (\Exception $e) {
             Log::error('Error in getPendidikanPekerjaan: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to load pendidikan & pekerjaan'], 500);
+            return response()->json(
+                [
+                    'error' => 'Failed to load pendidikan & pekerjaan',
+                    'message' => config('app.debug') ? $e->getMessage() : 'Internal server error',
+                ],
+                500,
+            );
         }
     }
 
     // ========================================
-    // 8️⃣ STATISTIK PENDUDUK (Semua Anggota)
+    // 8️⃣ STATISTIK PENDUDUK
     // ========================================
     public function getStatistikPenduduk()
     {
         try {
-            return Cache::remember('statistik_penduduk', self::CACHE_TTL, function () {
-                // Gender Stats (Semua Penduduk)
-                $genderStats = DB::table('t_kartu_keluarga_anggota')
-                    ->select('jenkel', DB::raw('count(*) as total'))
-                    ->groupBy('jenkel')
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        return [$item->jenkel == 1 ? 'laki_laki' : 'perempuan' => $item->total];
-                    });
-
-                // Age Stats (Semua Penduduk)
-                $ageStats = DB::table('t_kartu_keluarga_anggota')
-                    ->selectRaw("
-                        SUM(CASE WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) < 5 THEN 1 ELSE 0 END) as balita,
-                        SUM(CASE WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 5 AND 17 THEN 1 ELSE 0 END) as anak,
-                        SUM(CASE WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 18 AND 59 THEN 1 ELSE 0 END) as dewasa,
-                        SUM(CASE WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) >= 60 THEN 1 ELSE 0 END) as lansia
-                    ")
+            $data = Cache::remember('lp_statistik_penduduk', self::CACHE_TTL, function () {
+                // Gender & Age (query cepat, tanpa join)
+                $stats = DB::table('t_kartu_keluarga_anggota')
+                    ->selectRaw(
+                        "
+                    SUM(CASE WHEN jenkel = 1 THEN 1 ELSE 0 END) as laki_laki,
+                    SUM(CASE WHEN jenkel = 2 THEN 1 ELSE 0 END) as perempuan,
+                    SUM(CASE WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) < 5 THEN 1 ELSE 0 END) as balita,
+                    SUM(CASE WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 5 AND 17 THEN 1 ELSE 0 END) as anak,
+                    SUM(CASE WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 18 AND 59 THEN 1 ELSE 0 END) as dewasa,
+                    SUM(CASE WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) >= 60 THEN 1 ELSE 0 END) as lansia
+                ",
+                    )
                     ->first();
 
-                // Agama Stats
-                $agamaStats = DB::table('t_kartu_keluarga_anggota as t1')
-                    ->join('m_agama as t2', 't1.agama', '=', 't2.id')
-                    ->select('t2.nama', DB::raw('count(*) as total'))
-                    ->groupBy('t2.nama')
-                    ->orderBy('total', 'desc')
-                    ->get();
+                // Agama - QUERY TERPISAH
+                $agamaRaw = DB::table('t_kartu_keluarga_anggota')->select('agama', DB::raw('COUNT(*) as total'))->whereNotNull('agama')->where('agama', '>', 0)->groupBy('agama')->orderBy('total', 'desc')->get();
 
-                return response()->json([
-                    'gender' => $genderStats,
-                    'age' => $ageStats,
-                    'agama' => $agamaStats,
-                ]);
+                $agamaIds = $agamaRaw->pluck('agama')->toArray();
+                $agamaNames = [];
+
+                if (!empty($agamaIds)) {
+                    $agamaNames = DB::table('m_agama')->whereIn('id', $agamaIds)->pluck('nama', 'id')->toArray();
+                }
+
+                $agama = $agamaRaw->map(function ($item) use ($agamaNames) {
+                    return (object) [
+                        'nama' => $agamaNames[$item->agama] ?? 'Unknown',
+                        'total' => $item->total,
+                    ];
+                });
+
+                return [
+                    'gender' => [
+                        'laki_laki' => (int) $stats->laki_laki,
+                        'perempuan' => (int) $stats->perempuan,
+                    ],
+                    'age' => [
+                        'balita' => (int) $stats->balita,
+                        'anak' => (int) $stats->anak,
+                        'dewasa' => (int) $stats->dewasa,
+                        'lansia' => (int) $stats->lansia,
+                    ],
+                    'agama' => $agama,
+                ];
             });
+
+            return response()
+                ->json($data)
+                ->header('Cache-Control', 'public, max-age=' . self::CACHE_TTL);
         } catch (\Exception $e) {
             Log::error('Error in getStatistikPenduduk: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to load statistik penduduk'], 500);
+            return response()->json(
+                [
+                    'error' => 'Failed to load statistik penduduk',
+                    'message' => config('app.debug') ? $e->getMessage() : 'Internal server error',
+                ],
+                500,
+            );
         }
     }
 
     // ========================================
-    // 9️⃣ DATA PER DESA
+    // 9️⃣ DATA DESA
     // ========================================
     public function getDataDesa()
     {
         try {
-            return Cache::remember('data_desa', self::CACHE_TTL, function () {
-                // Statistik Per Desa
-                $desaStats = DB::table('t_kartu_keluarga as t1')
-                    ->join('indonesia_villages as t2', 't1.desa', '=', 't2.code')
-                    ->select(
-                        't2.name as nama_desa',
-                        DB::raw('COUNT(DISTINCT t1.id) as jumlah_kk')
-                    )
-                    ->groupBy('t2.name')
-                    ->orderBy('jumlah_kk', 'desc')
-                    ->get();
+            $data = Cache::remember('lp_data_desa', self::CACHE_TTL, function () {
+                $desa = DB::table('t_kartu_keluarga as kk')->join('indonesia_villages as v', 'kk.desa', '=', 'v.code')->leftJoin('t_kartu_keluarga_anggota as a', 'kk.id', '=', 'a.no_kk')->select('v.name as nama_desa', DB::raw('COUNT(DISTINCT kk.id) as jumlah_kk'), DB::raw('COUNT(a.id) as jumlah_penduduk'))->groupBy('v.name')->orderBy('jumlah_kk', 'desc')->get();
 
-                // Hitung jumlah penduduk per desa
-                foreach ($desaStats as $desa) {
-                    $desa->jumlah_penduduk = DB::table('t_kartu_keluarga as t1')
-                        ->join('t_kartu_keluarga_anggota as t2', 't1.id', '=', 't2.no_kk')
-                        ->join('indonesia_villages as t3', 't1.desa', '=', 't3.code')
-                        ->where('t3.name', $desa->nama_desa)
-                        ->count();
-                }
-
-                return response()->json([
-                    'desa' => $desaStats,
-                ]);
+                return ['desa' => $desa];
             });
+
+            return response()
+                ->json($data)
+                ->header('Cache-Control', 'public, max-age=' . self::CACHE_TTL);
         } catch (\Exception $e) {
             Log::error('Error in getDataDesa: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to load data desa'], 500);
-        }
-    }
-
-    // ========================================
-    // 🔟 BACKWARD COMPATIBILITY (Optional)
-    // ========================================
-    public function getStatistics()
-    {
-        try {
-            // Panggil semua endpoint dan gabungkan hasilnya
-            $basic = json_decode($this->getBasicStats()->getContent(), true);
-            $keyMetrics = json_decode($this->getKeyMetrics()->getContent(), true);
-            $demografi = json_decode($this->getDemografiKK()->getContent(), true);
-            $ekonomi = json_decode($this->getEkonomi()->getContent(), true);
-            $bantuan = json_decode($this->getBantuan()->getContent(), true);
-            $kesehatan = json_decode($this->getKesehatan()->getContent(), true);
-            $pendidikanPekerjaan = json_decode($this->getPendidikanPekerjaan()->getContent(), true);
-            $penduduk = json_decode($this->getStatistikPenduduk()->getContent(), true);
-            $desa = json_decode($this->getDataDesa()->getContent(), true);
-
-            return response()->json(array_merge(
-                ['basic' => $basic],
-                $keyMetrics,
-                $demografi,
-                $ekonomi,
-                $bantuan,
-                $kesehatan,
-                $pendidikanPekerjaan,
-                $penduduk,
-                $desa
-            ));
-
-        } catch (\Exception $e) {
-            Log::error('Error in getStatistics: ' . $e->getMessage());
-            return response()->json([
-                'error' => 'Failed to load statistics',
-                'message' => $e->getMessage()
-            ], 500);
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return response()->json(
+                [
+                    'error' => 'Failed to load data desa',
+                    'message' => config('app.debug') ? $e->getMessage() : 'Internal server error',
+                ],
+                500,
+            );
         }
     }
 }
