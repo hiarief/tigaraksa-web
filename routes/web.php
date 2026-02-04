@@ -152,9 +152,15 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/create', [KartuKeluargaController::class, 'create'])->name('create');
             Route::post('/create', [KartuKeluargaController::class, 'store'])->name('store');
             Route::get('/edit/{id}', [KartuKeluargaController::class, 'edit'])->name('edit');
-            Route::post('/edit/{id}', [KartuKeluargaController::class, 'update'])->name('update');
+            Route::put('/edit/{id}', [KartuKeluargaController::class, 'update'])->name('update');
             Route::get('/show/{id}', [KartuKeluargaController::class, 'show'])->name('show');
+            Route::get('/print/{id}', [KartuKeluargaController::class, 'print'])->name('print');
             Route::post('/delete/{id}', [KartuKeluargaController::class, 'delete'])->name('delete');
+            Route::get('/trash', [KartuKeluargaController::class, 'trash'])->name('trash');
+            Route::get('/trash/data', [KartuKeluargaController::class, 'trashData'])->name('trash.data');
+            Route::get('/trash/data', [KartuKeluargaController::class, 'trashData'])->name('trash.data');
+            Route::post('/{id}/restore', [KartuKeluargaController::class, 'restore'])->name('restore');
+            Route::post('/{id}/delete-permanent', [KartuKeluargaController::class, 'deletePermanent'])->name('delete.permanent');
         });
     });
 

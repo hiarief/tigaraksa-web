@@ -1,5 +1,5 @@
 @extends('admin.layout.main')
-@section('title', 'Kartu Keluarga')
+@section('title', 'Data Kartu Keluarga yang Dihapus')
 @section('content')
 
     <div class="row">
@@ -8,19 +8,20 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="card-title">
-                            <a href="{{ route('kependudukan.kartu.keluarga.create') }}"
-                                class="btn btn-sm bg-gradient-primary">
-                                <i class="fa-solid fa-plus"></i> Tambah
+                            <a href="{{ route('kependudukan.kartu.keluarga.index') }}" class="btn btn-sm bg-gradient-secondary">
+                                <i class="fas fa-arrow-left"></i> Kembali ke Data Aktif
                             </a>
-                            <a href="{{ route('kependudukan.kartu.keluarga.trash') }}" class="btn btn-sm bg-gradient-danger">
-                                <i class="fas fa-trash"></i> Data Terhapus
-                            </a>
+                        </div>
+                        <div>
+                            <span class="badge badge-danger">
+                                <i class="fas fa-trash"></i> Data yang Dihapus
+                            </span>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
                     {{-- Alert Success/Error --}}
-                    @if (session('success'))
+                    @if(session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             <i class="fas fa-check-circle"></i> {{ session('success') }}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -29,7 +30,7 @@
                         </div>
                     @endif
 
-                    @if (session('error'))
+                    @if(session('error'))
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -38,18 +39,31 @@
                         </div>
                     @endif
 
+                    {{-- Info Box --}}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Informasi:</strong>
+                        Data yang ada di halaman ini adalah data yang sudah dihapus. Anda dapat melakukan:
+                        <ul class="mb-0 mt-2">
+                            <li><strong>Restore</strong>: Mengembalikan data ke tabel utama</li>
+                            <li><strong>Hapus Permanen</strong>: Menghapus data secara permanen (tidak dapat dikembalikan)</li>
+                        </ul>
+                    </div>
+
                     <div class="table-responsive">
-                        <table id="kartu-keluarga-table"
+                        <table id="trash-table"
                             class="table-bordered table-hover table-striped rounded-0 table-sm table py-0 text-sm">
                             <thead>
                                 <tr class="text-center">
                                     <th rowspan="2" style="width: 1%">NO</th>
-                                    <th rowspan="2" style="width: 1%">AKSI</th>
+                                    <th rowspan="2" style="width: 10%">AKSI</th>
                                     <th colspan="2">NOMOR</th>
                                     <th rowspan="2">NAMA</th>
                                     <th rowspan="2">TANGGAL LAHIR</th>
                                     <th rowspan="2">TEMPAT LAHIR</th>
                                     <th rowspan="2">ALAMAT</th>
+                                    <th rowspan="2">DIHAPUS OLEH</th>
+                                    <th rowspan="2">WAKTU DIHAPUS</th>
                                 </tr>
                                 <tr class="text-center">
                                     <th>KK</th>
@@ -68,12 +82,12 @@
 @endsection
 
 @push('styles')
-    {{-- Optional: Tambahkan SweetAlert2 CSS jika belum ada di layout --}}
+    {{-- SweetAlert2 CSS --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 @endpush
 
 @push('scripts')
-    {{-- Optional: Tambahkan SweetAlert2 JS jika belum ada di layout --}}
+    {{-- SweetAlert2 JS --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
@@ -81,7 +95,7 @@
             // ============================================================
             // DATATABLE INITIALIZATION
             // ============================================================
-            $('#kartu-keluarga-table').DataTable({
+            $('#trash-table').DataTable({
                 responsive: false,
                 autoWidth: false,
                 processing: true,
@@ -90,9 +104,9 @@
                 paging: true,
                 searching: true,
                 info: true,
-                ajax: "{{ route('kependudukan.kartu.keluarga.index.data') }}",
+                ajax: "{{ route('kependudukan.kartu.keluarga.trash.data') }}",
                 order: [
-                    [8, 'desc'] // Order by created_at
+                    [9, 'desc'] // Order by deleted_at
                 ],
                 columns: [{
                         data: 'DT_RowIndex',
@@ -111,27 +125,27 @@
                     },
                     {
                         data: 'no_kk',
-                        name: 'no_kk',
+                        name: 'kk.no_kk',
                         class: 'text-center nowrap',
                     },
                     {
                         data: 'no_nik',
-                        name: 'no_nik',
+                        name: 'anggota.no_nik',
                         class: 'text-center nowrap',
                     },
                     {
                         data: 'nama',
-                        name: 'nama',
+                        name: 'anggota.nama',
                         class: 'text-center nowrap',
                     },
                     {
                         data: 'tgl_lahir',
-                        name: 'tgl_lahir',
+                        name: 'anggota.tgl_lahir',
                         class: 'text-center nowrap',
                     },
                     {
                         data: 'tmpt_lahir',
-                        name: 'tmpt_lahir',
+                        name: 'anggota.tmpt_lahir',
                         class: 'text-center nowrap',
                     },
                     {
@@ -142,10 +156,16 @@
                         class: 'text-center',
                     },
                     {
-                        data: 'created_at',
-                        name: 't1.created_at',
-                        visible: false,
-                        searchable: false
+                        data: 'deleted_by_name',
+                        name: 'deleted_by_name',
+                        class: 'text-center nowrap',
+                        orderable: false,
+                        searchable: false,
+                    },
+                    {
+                        data: 'deleted_at',
+                        name: 'kk.deleted_at',
+                        class: 'text-center nowrap',
                     }
                 ],
                 language: {
@@ -169,25 +189,23 @@
         });
 
         // ============================================================
-        // FUNCTION DELETE DATA
-        // Menggunakan SweetAlert2 untuk konfirmasi yang lebih baik
+        // FUNCTION RESTORE DATA
         // ============================================================
-        function deleteData(id) {
+        function restoreData(id) {
             Swal.fire({
-                title: 'Konfirmasi Hapus',
-                text: "Data Kartu Keluarga dan semua anggotanya akan dipindahkan ke tabel backup. Apakah Anda yakin?",
-                icon: 'warning',
+                title: 'Konfirmasi Restore',
+                html: "Data Kartu Keluarga dan semua anggotanya akan dikembalikan ke tabel utama.<br><strong>Apakah Anda yakin?</strong>",
+                icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: '<i class="fas fa-trash"></i> Ya, Hapus!',
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-undo"></i> Ya, Restore!',
                 cancelButtonText: '<i class="fas fa-times"></i> Batal',
                 reverseButtons: true,
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
                     return $.ajax({
-                        url: "{{ route('kependudukan.kartu.keluarga.delete', ':id') }}".replace(':id',
-                            id),
+                        url: "{{ route('kependudukan.kartu.keluarga.restore', ':id') }}".replace(':id', id),
                         type: "POST",
                         data: {
                             _token: "{{ csrf_token() }}"
@@ -198,21 +216,84 @@
                 allowOutsideClick: () => !Swal.isLoading()
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Cek response dari server
                     if (result.value && result.value.success) {
-                        // Berhasil dihapus
                         Swal.fire({
                             title: 'Berhasil!',
-                            text: result.value.message || 'Data berhasil dihapus',
+                            text: result.value.message || 'Data berhasil di-restore',
                             icon: 'success',
                             timer: 2000,
                             showConfirmButton: false
                         });
 
-                        // Reload DataTable tanpa reset pagination
-                        $('#kartu-keluarga-table').DataTable().ajax.reload(null, false);
+                        // Reload DataTable
+                        $('#trash-table').DataTable().ajax.reload(null, false);
                     } else {
-                        // Gagal dihapus
+                        Swal.fire({
+                            title: 'Gagal!',
+                            text: (result.value && result.value.message) || 'Gagal restore data',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                }
+            }).catch((error) => {
+                console.error('Error:', error);
+
+                let errorMessage = 'Terjadi kesalahan saat restore data';
+
+                if (error.responseJSON && error.responseJSON.message) {
+                    errorMessage = error.responseJSON.message;
+                }
+
+                Swal.fire({
+                    title: 'Error!',
+                    text: errorMessage,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+        }
+
+        // ============================================================
+        // FUNCTION DELETE PERMANENT
+        // ============================================================
+        function deletePermanent(id) {
+            Swal.fire({
+                title: 'Konfirmasi Hapus Permanen',
+                html: "<strong class='text-danger'>PERHATIAN!</strong><br>Data akan dihapus secara permanen dan <strong>TIDAK DAPAT DIKEMBALIKAN</strong>.<br><br>Apakah Anda yakin?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-trash-alt"></i> Ya, Hapus Permanen!',
+                cancelButtonText: '<i class="fas fa-times"></i> Batal',
+                reverseButtons: true,
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    return $.ajax({
+                        url: "{{ route('kependudukan.kartu.keluarga.delete.permanent', ':id') }}".replace(':id', id),
+                        type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}"
+                        },
+                        dataType: 'json'
+                    });
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (result.value && result.value.success) {
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: result.value.message || 'Data berhasil dihapus permanen',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+
+                        // Reload DataTable
+                        $('#trash-table').DataTable().ajax.reload(null, false);
+                    } else {
                         Swal.fire({
                             title: 'Gagal!',
                             text: (result.value && result.value.message) || 'Gagal menghapus data',
@@ -222,16 +303,12 @@
                     }
                 }
             }).catch((error) => {
-                // Error dari AJAX
                 console.error('Error:', error);
 
                 let errorMessage = 'Terjadi kesalahan saat menghapus data';
 
-                // Cek apakah ada response error dari server
                 if (error.responseJSON && error.responseJSON.message) {
                     errorMessage = error.responseJSON.message;
-                } else if (error.statusText) {
-                    errorMessage = 'Error: ' + error.statusText;
                 }
 
                 Swal.fire({

@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="{!! asset('assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') !!}">
     <link rel="stylesheet" href="{!! asset('assets/plugins/jquery-ui/jquery-ui.css') !!}">
     <link rel="stylesheet" href="{!! asset('assets/plugins/chart.js/Chart.min.css') !!}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
     <script>
         if (window.location.protocol === 'https:') {
             var meta = document.createElement('meta');
@@ -121,6 +123,18 @@
     <script src="{!! asset('assets/plugins/chart.js/Chart.min.js') !!}"></script>
     <script src="{{ asset('assets/plugins/chart.js/chart2.js') }}"></script>
     <script src="{{ asset('assets/plugins/chart.js/chartjs-plugin-datalabels.js') }}"></script>
+    <script src="{{ asset('assets/plugins/select2/js/select2.full.min.js') }}"></script>
+    <script>
+        $(function() {
+            //Initialize Select2 Elements
+            $('.select2').select2()
+
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        });
+    </script>
     <script>
         $(function() {
             // Make table headers resizable
