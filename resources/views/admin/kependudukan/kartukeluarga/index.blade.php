@@ -68,14 +68,9 @@
 @endsection
 
 @push('styles')
-    {{-- Optional: Tambahkan SweetAlert2 CSS jika belum ada di layout --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 @endpush
 
 @push('scripts')
-    {{-- Optional: Tambahkan SweetAlert2 JS jika belum ada di layout --}}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
         $(document).ready(function() {
             // ============================================================
@@ -111,27 +106,27 @@
                     },
                     {
                         data: 'no_kk',
-                        name: 'no_kk',
+                        name: 't2.no_kk',
                         class: 'text-center nowrap',
                     },
                     {
                         data: 'no_nik',
-                        name: 'no_nik',
+                        name: 't1.no_nik',
                         class: 'text-center nowrap',
                     },
                     {
                         data: 'nama',
-                        name: 'nama',
+                        name: 't1.nama',
                         class: 'text-center nowrap',
                     },
                     {
                         data: 'tgl_lahir',
-                        name: 'tgl_lahir',
+                        name: 't1.tgl_lahir',
                         class: 'text-center nowrap',
                     },
                     {
                         data: 'tmpt_lahir',
-                        name: 'tmpt_lahir',
+                        name: 't1.tmpt_lahir',
                         class: 'text-center nowrap',
                     },
                     {
@@ -139,7 +134,6 @@
                         name: 'alamat',
                         orderable: false,
                         searchable: false,
-                        class: 'text-center',
                     },
                     {
                         data: 'created_at',

@@ -132,7 +132,8 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('kependudukan.anggota.keluarga.index') }}"
+                        class="nav-link {{ Route::is('kependudukan.anggota.keluarga.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user-friends text-teal"></i>
                         <p>Anggota Keluarga</p>
                     </a>

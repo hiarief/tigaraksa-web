@@ -8,7 +8,8 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="card-title">
-                            <a href="{{ route('kependudukan.kartu.keluarga.index') }}" class="btn btn-sm bg-gradient-secondary">
+                            <a href="{{ route('kependudukan.kartu.keluarga.index') }}"
+                                class="btn btn-sm bg-gradient-secondary">
                                 <i class="fas fa-arrow-left"></i> Kembali ke Data Aktif
                             </a>
                         </div>
@@ -21,7 +22,7 @@
                 </div>
                 <div class="card-body">
                     {{-- Alert Success/Error --}}
-                    @if(session('success'))
+                    @if (session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             <i class="fas fa-check-circle"></i> {{ session('success') }}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -30,7 +31,7 @@
                         </div>
                     @endif
 
-                    @if(session('error'))
+                    @if (session('error'))
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -46,7 +47,8 @@
                         Data yang ada di halaman ini adalah data yang sudah dihapus. Anda dapat melakukan:
                         <ul class="mb-0 mt-2">
                             <li><strong>Restore</strong>: Mengembalikan data ke tabel utama</li>
-                            <li><strong>Hapus Permanen</strong>: Menghapus data secara permanen (tidak dapat dikembalikan)</li>
+                            <li><strong>Hapus Permanen</strong>: Menghapus data secara permanen (tidak dapat dikembalikan)
+                            </li>
                         </ul>
                     </div>
 
@@ -82,14 +84,9 @@
 @endsection
 
 @push('styles')
-    {{-- SweetAlert2 CSS --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 @endpush
 
 @push('scripts')
-    {{-- SweetAlert2 JS --}}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
         $(document).ready(function() {
             // ============================================================
@@ -205,7 +202,8 @@
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
                     return $.ajax({
-                        url: "{{ route('kependudukan.kartu.keluarga.restore', ':id') }}".replace(':id', id),
+                        url: "{{ route('kependudukan.kartu.keluarga.restore', ':id') }}".replace(':id',
+                            id),
                         type: "POST",
                         data: {
                             _token: "{{ csrf_token() }}"
@@ -271,7 +269,8 @@
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
                     return $.ajax({
-                        url: "{{ route('kependudukan.kartu.keluarga.delete.permanent', ':id') }}".replace(':id', id),
+                        url: "{{ route('kependudukan.kartu.keluarga.delete.permanent', ':id') }}"
+                            .replace(':id', id),
                         type: "POST",
                         data: {
                             _token: "{{ csrf_token() }}"

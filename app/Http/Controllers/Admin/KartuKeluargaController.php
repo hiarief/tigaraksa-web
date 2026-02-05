@@ -33,6 +33,7 @@ class KartuKeluargaController extends Controller
                 ->where('t2.desa', $desaId)
                 ->where('t1.sts_mati', 0)
                 ->where('t3.id', $userId)
+                ->orderByDesc('t1.created_at')
                 ->select([
                     't2.id',
                     't2.no_kk as no_kk',
@@ -45,7 +46,7 @@ class KartuKeluargaController extends Controller
                     't2.rw',
                     't5.name as desa',
                     't4.name as kecamatan',
-                    't1.created_at',
+                    't1.created_at as created_at',
                     't1.id as anggota_id'
                 ]);
 
@@ -64,7 +65,7 @@ class KartuKeluargaController extends Controller
 
                     $viewUrl   = route('kependudukan.kartu.keluarga.show', Crypt::encrypt($row->id));
                     $editUrl   = route('kependudukan.kartu.keluarga.edit', Crypt::encrypt($row->id));
-                    $deleteUrl = route('kependudukan.kartu.keluarga.delete', Crypt::encrypt($row->anggota_id));
+                    $deleteUrl = route('kependudukan.kartu.keluarga.delete', Crypt::encrypt($row->id));
 
                     return '
                         <div class="btn-group btn-group-sm text-center" role="group">
@@ -96,7 +97,7 @@ class KartuKeluargaController extends Controller
         }
     }
 
-     public function create()
+    public function create()
     {
         // Ambil data RT yang tersedia
         $rtList = DB::table('m_rt_rw')
@@ -505,8 +506,7 @@ class KartuKeluargaController extends Controller
                 'sts_perkawinan' => $validated['sts_perkawinan'],
                 'status_kawin_tercatat' => $validated['status_kawin_tercatat'] ?? null,
                 'sts_hub_kel' => $validated['sts_hub_kel'], // 1 = Kepala Keluarga
-                'sts_kwn' => $validated['sts_kwn'],
-                'kewarganegaraan' => $validated['sts_kwn'], // Duplikasi untuk field kewarganegaraan
+                'sts_kwn' => $validated['sts_kwn'], // Duplikasi untuk field kewarganegaraan
                 'tanya_bantuanpemerintah' => $validated['tanya_bantuanpemerintah'],
                 'bantuan_pemerintah' => $validated['bantuan_pemerintah'] ?? null,
                 'sakitkronis' => $validated['sakitkronis'],
@@ -948,7 +948,6 @@ class KartuKeluargaController extends Controller
                     'status_kawin_tercatat' => $validated['status_kawin_tercatat'] ?? null,
                     'sts_hub_kel' => $validated['sts_hub_kel'],
                     'sts_kwn' => $validated['sts_kwn'],
-                    'kewarganegaraan' => $validated['sts_kwn'],
                     'tanya_bantuanpemerintah' => $validated['tanya_bantuanpemerintah'],
                     'bantuan_pemerintah' => $validated['bantuan_pemerintah'] ?? null,
                     'sakitkronis' => $validated['sakitkronis'],
@@ -1209,7 +1208,6 @@ class KartuKeluargaController extends Controller
                     'status_kawin_tercatat' => $anggota->status_kawin_tercatat,
                     'sts_hub_kel' => $anggota->sts_hub_kel,
                     'sts_kwn' => $anggota->sts_kwn,
-                    'kewarganegaraan' => $anggota->kewarganegaraan,
                     'tanya_bantuanpemerintah' => $anggota->tanya_bantuanpemerintah,
                     'bantuan_pemerintah' => $anggota->bantuan_pemerintah,
                     'sakitkronis' => $anggota->sakitkronis,
@@ -1479,7 +1477,6 @@ class KartuKeluargaController extends Controller
                     'status_kawin_tercatat' => $anggota->status_kawin_tercatat,
                     'sts_hub_kel' => $anggota->sts_hub_kel,
                     'sts_kwn' => $anggota->sts_kwn,
-                    'kewarganegaraan' => $anggota->kewarganegaraan,
                     'tanya_bantuanpemerintah' => $anggota->tanya_bantuanpemerintah,
                     'bantuan_pemerintah' => $anggota->bantuan_pemerintah,
                     'sakitkronis' => $anggota->sakitkronis,
