@@ -209,7 +209,8 @@ class KartuKeluargaAnggotaController extends Controller
                     't4.name as kecamatan',
                     't6.name as kabkot',
                     't7.name as provinsi',
-                    't1.id as anggota_id'
+                    't1.id as anggota_id',
+                    't1.kepemilikan_rumah'
                 ]);
 
             return DataTables::of($data)
@@ -241,6 +242,7 @@ class KartuKeluargaAnggotaController extends Controller
                                 data-provinsi="'.$row->provinsi.'"
                                 data-kabkot="'.$row->kabkot.'"
                                 data-kecamatan="'.$row->kecamatan.'"
+                                data-kepemilikan_rumah="'.$row->kepemilikan_rumah.'"
                                 data-desa="'.$row->desa.'">Pilih
                             </button>';
                     return $btn;
@@ -601,7 +603,7 @@ class KartuKeluargaAnggotaController extends Controller
                 ->leftJoin('indonesia_districts as t5', 't5.code', '=', 't2.kecamatan')
                 ->leftJoin('indonesia_villages as t6', 't6.code', '=', 't2.desa')
                 ->where('t1.id', $anggotaId)
-                ->where('t1.user_id', auth()->id())
+                // ->where('t1.user_id', auth()->id())
                 ->select([
                     't1.*',
                     't2.id as kk_id',
@@ -873,7 +875,7 @@ class KartuKeluargaAnggotaController extends Controller
             // Cek apakah data exists dan milik user yang login
             $existingData = DB::table('t_kartu_keluarga_anggota')
                 ->where('id', $anggotaId)
-                ->where('user_id', auth()->id())
+                // ->where('user_id', auth()->id())
                 ->first();
 
             if (!$existingData) {

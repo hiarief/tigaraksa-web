@@ -483,8 +483,11 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="kepemilikan_rumah">Kepemilikan Rumah <span
-                                            class="text-danger">*</span></label>
-                                    <select name="kepemilikan_rumah" id="kepemilikan_rumah"
+                                            class="text-danger">*</span>(Ikut Kepala Keluarga)</label>
+                                    <input type="text" class="form-control form-control text-sm"
+                                        style="text-transform:uppercase" name="kepemilikan_rumah"
+                                        value="{{ old('kepemilikan_rumah') }}" id="kepemilikan_rumah" readonly required>
+                                    {{--  <select name="kepemilikan_rumah" id="kepemilikan_rumah"
                                         class="form-control form-control-sm select2 @error('kepemilikan_rumah') is-invalid @enderror"
                                         required>
                                         <option value="" hidden>Pilih Kepemilikan Rumah</option>
@@ -499,7 +502,7 @@
                                         </option>
                                         <option value="Lainnya"
                                             {{ old('kepemilikan_rumah') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
-                                    </select>
+                                    </select>  --}}
                                     @error('kepemilikan_rumah')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
@@ -809,6 +812,7 @@
                 var kodepos = $(this).data('kodepos');
                 var desa = $(this).data('desa');
                 var kecamatan = $(this).data('kecamatan');
+                var kepemilikan_rumah = $(this).data('kepemilikan_rumah');
                 var kabkot = $(this).data('kabkot');
                 var provinsi = $(this).data('provinsi');
 
@@ -821,6 +825,7 @@
                 $('#kodepos').val(kodepos);
                 $('#desa').val(desa);
                 $('#kecamatan').val(kecamatan);
+                $('#kepemilikan_rumah').val(kepemilikan_rumah);
                 $('#kabkot').val(kabkot);
                 $('#provinsi').val(provinsi);
 
