@@ -48,9 +48,9 @@
                                     <th rowspan="2" style="width: 1%">AKSI</th>
                                     <th colspan="2">NOMOR</th>
                                     <th rowspan="2">NAMA</th>
-                                    <th rowspan="2">TANGGAL LAHIR</th>
+                                    <th rowspan="2">TGL LAHIR</th>
                                     <th rowspan="2">TEMPAT LAHIR</th>
-                                    <th rowspan="2">HUBUNGAN KELUARGA</th>
+                                    <th rowspan="2">HUB KELUARGA</th>
                                     <th rowspan="2">ALAMAT</th>
                                 </tr>
                                 <tr class="text-center">
@@ -119,7 +119,7 @@
                     {
                         data: 'nama',
                         name: 'nama',
-                        class: 'text-center nowrap',
+                        class: 'nowrap',
                     },
                     {
                         data: 'tgl_lahir',
@@ -141,7 +141,6 @@
                         name: 'alamat',
                         orderable: false,
                         searchable: false,
-                        class: 'text-center',
                     },
                     {
                         data: 'created_at',
@@ -150,23 +149,6 @@
                         searchable: false
                     }
                 ],
-                language: {
-                    processing: "Memuat data...",
-                    search: "Cari:",
-                    lengthMenu: "Tampilkan _MENU_ data",
-                    info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                    infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
-                    infoFiltered: "(difilter dari _MAX_ total data)",
-                    loadingRecords: "Memuat...",
-                    zeroRecords: "Data tidak ditemukan",
-                    emptyTable: "Tidak ada data yang tersedia",
-                    paginate: {
-                        first: "Pertama",
-                        last: "Terakhir",
-                        next: "Selanjutnya",
-                        previous: "Sebelumnya"
-                    }
-                }
             });
         });
 

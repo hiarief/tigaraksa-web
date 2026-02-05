@@ -57,8 +57,7 @@ class KartuKeluargaController extends Controller
                 ->editColumn('tgl_lahir', fn($row) => date('d-m-Y', strtotime($row->tgl_lahir)))
                 ->addColumn('alamat', function($row) {
                     return strtoupper(
-                        $row->kp . ', RT. ' . $row->rt . '/' . $row->rw .
-                        ', DS. ' . $row->desa . ', KEC. ' . $row->kecamatan
+                        $row->kp . ', RT. ' . $row->rt . '/' . $row->rw
                     );
                 })
                 ->addColumn('aksi', function ($row) {

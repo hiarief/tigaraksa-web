@@ -57,7 +57,7 @@ class KartuKeluargaAnggotaController extends Controller
                 ->editColumn('hubungan_keluarga', fn($row) => strtoupper($row->hubungan_keluarga))
                 ->editColumn('tmpt_lahir', fn($row) => strtoupper($row->tmpt_lahir))
                 ->editColumn('tgl_lahir', fn($row) => date('d-m-Y', strtotime($row->tgl_lahir)))
-                ->addColumn('alamat', function($row) { return strtoupper( $row->kp . ', RT. ' . $row->rt . '/' . $row->rw . ', DS. ' . $row->desa . ', KEC. ' . $row->kecamatan ); })
+                ->addColumn('alamat', function($row) { return strtoupper( $row->kp . ', RT. ' . $row->rt . '/' . $row->rw); })
                 ->addColumn('aksi', function ($row) {
 
                     $viewUrl   = route('kependudukan.kartu.keluarga.show', Crypt::encrypt($row->id));
