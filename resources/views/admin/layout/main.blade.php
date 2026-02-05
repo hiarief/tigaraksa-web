@@ -9,7 +9,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title') | 3RAKSA</title>
-    <link rel="icon" href="{{ asset('assets/images/wjk.png') }}" type="image/x-icon" />
+    <link rel="icon" href="{{ asset('assets/img/desa.png') }}" type="image/x-icon" />
     <meta name="csrf-token" content="{!! csrf_token() !!}">
     {{--  <link rel="stylesheet"Zro:300,400,400i,700&display=fallback">  --}}
     <link rel="stylesheet" href="{!! asset('assets/plugins/font-family/font.css') !!}">
