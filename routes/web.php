@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\KependudukanController;
 use App\Http\Controllers\Admin\KartuKeluargaController;
 use App\Http\Controllers\Admin\KepemilikanRumahController;
 use App\Http\Controllers\Admin\BantuanPemerintahController;
+use App\Http\Controllers\Admin\KartuKeluargaAnggotaController;
 
 Route::get('/', [LandingPageController::class, 'page'])->name('landing.page');
 Route::prefix('api')->group(function () {
@@ -161,6 +162,26 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/trash/data', [KartuKeluargaController::class, 'trashData'])->name('trash.data');
             Route::post('/{id}/restore', [KartuKeluargaController::class, 'restore'])->name('restore');
             Route::post('/{id}/delete-permanent', [KartuKeluargaController::class, 'deletePermanent'])->name('delete.permanent');
+        });
+
+        Route::group(['prefix' => '/anggota-keluarga', 'as' => 'anggota.keluarga.'], function () {
+            Route::get('/index', [KartuKeluargaAnggotaController::class, 'index'])->name('index');
+            Route::get('/index-data', [KartuKeluargaAnggotaController::class, 'indexData'])->name('index.data');
+            Route::get('/index-data/kepala-keluarga', [KartuKeluargaAnggotaController::class, 'kepalaKeluarga'])->name('index.kepala.keluarga.data');
+            Route::get('/create', [KartuKeluargaAnggotaController::class, 'create'])->name('create');
+            Route::post('/create', [KartuKeluargaAnggotaController::class, 'store'])->name('store');
+            Route::get('/edit/{id}', [KartuKeluargaAnggotaController::class, 'edit'])->name('edit');
+            Route::put('/edit/{id}', [KartuKeluargaAnggotaController::class, 'update'])->name('update');
+            Route::get('/show/{id}', [KartuKeluargaAnggotaController::class, 'show'])->name('show');
+            Route::get('/print/{id}', [KartuKeluargaAnggotaController::class, 'print'])->name('print');
+            Route::post('/delete/{id}', [KartuKeluargaAnggotaController::class, 'delete'])->name('delete');
+            Route::get('/trash', [KartuKeluargaAnggotaController::class, 'trash'])->name('trash');
+            Route::get('/trash/data', [KartuKeluargaAnggotaController::class, 'trashData'])->name('trash.data');
+            Route::get('/trash/data', [KartuKeluargaAnggotaController::class, 'trashData'])->name('trash.data');
+            Route::post('/{id}/restore', [KartuKeluargaAnggotaController::class, 'restore'])->name('restore');
+            Route::post('/{id}/delete-permanent', [KartuKeluargaAnggotaController::class, 'deletePermanent'])->name('delete.permanent');
+            Route::post('/restore-all', [KartuKeluargaAnggotaController::class, 'restoreAll'])->name('restore.all');
+            Route::post('/delete-all-permanent', [KartuKeluargaAnggotaController::class, 'deleteAllPermanent'])->name('delete.all.permanent');
         });
     });
 
