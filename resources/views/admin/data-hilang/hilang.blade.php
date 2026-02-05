@@ -139,17 +139,18 @@
                                         <tr class="nowrap text-center">
                                             <th style="width: 1%">No</th>
                                             <th>NIK</th>
-                                            <th>No KK</th>
-                                            <th>Nama</th>
-                                            <th>Tanggal Lahir</th>
-                                            <th>Umur</th>
+                                            <th>NO KK</th>
+                                            <th>NAMA</th>
+                                            <th>TGL LAHIR</th>
+                                            <th>UMUR</th>
                                             <th>JK</th>
-                                            <th>Hub. Keluarga</th>
+                                            <th>HUB KELUARGA</th>
                                             <th>RT/RW</th>
-                                            <th>Desa</th>
-                                            <th>Kategori Anomali</th>
-                                            <th width="20%">Detail Anomali</th>
-                                            <th width="1%">Aksi</th>
+                                            <th>DESA</th>
+                                            <th>KATEGORI ANOMALI</th>
+                                            <th width="20%">DETAIL ANOMALI</th>
+                                            <th>UNSER INPUT</th>
+                                            <th width="1%">AKSI</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -275,7 +276,7 @@
                             data: null,
                             className: 'text-center nowrap',
                             render: function(data) {
-                                return 'RT ' + data.rt + ' / RW ' + data.rw;
+                                return +data.rt + ' / ' + data.rw;
                             }
                         },
                         {
@@ -290,6 +291,10 @@
                         {
                             data: 'detail_anomali',
                             orderable: false
+                        },
+                        {
+                            data: 'user_input',
+                            className: 'text-center nowrap'
                         },
                         {
                             data: 'aksi',
