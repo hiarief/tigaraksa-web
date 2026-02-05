@@ -1,15 +1,17 @@
 <aside class="main-sidebar sidebar-dark-warning elevation-4">
 
-    <a href="{{ route('dashboard.index') }}" class="brand-link">
-        <img src="http://3raksa.id/images/siode.png" class="brand-image img-circle elevation-3">
-        <span class="brand-text font-weight-light">TIGARAKSA</span>
+    <a href="{{ route('dashboard.index') }}" class="brand-link"
+        style="padding: 0.8rem 1rem; display: flex; align-items: center; justify-content: center; background: #ffffff; border-bottom: 1px solid #e0e0e0;">
+        <img src="{{ asset('assets/img/siode.png') }}" alt="SIODE Logo"
+            style="max-height: 21px; width: auto; object-fit: contain;">
     </a>
     <div
         class="sidebar os-host os-theme-light os-host-overflow os-host-overflow-y os-host-resize-disabled os-host-transition os-host-scrollbar-horizontal-hidden">
 
         <div class="user-panel d-flex mb-2 mt-2 pb-2">
             <div class="image">
-                <img src="{{ asset('assets/img/AdminLTELogo.png') }}" class="img-circle elevation-2">
+                <img src="{{ asset('assets/img/desa.png') }}"
+                    style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 0.1px solid #000000;">
             </div>
             <div class="info">
                 <span class="d-block text-sm text-white">
@@ -198,7 +200,6 @@
                         <i class="fas fa-user-secret nav-icon bounce-icon"></i>
                         <p>Audit</p>
                     </a>
-                </li>
                 </li>
 
                 <li class="nav-header">KELUAR</li>
