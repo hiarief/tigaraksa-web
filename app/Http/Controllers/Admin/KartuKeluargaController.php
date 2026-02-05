@@ -1030,7 +1030,7 @@ class KartuKeluargaController extends Controller
                     't8.nama as pendidikan',
                     't9.nama as pekerjaan',
                     't10.nama as golongan_darah',
-                    't1.kewarganegaraan',
+                    't1.sts_kwn',
                     DB::raw("
                         CASE
                             WHEN UPPER(t1.sts_perkawinan) = 'KAWIN'
@@ -1069,6 +1069,7 @@ class KartuKeluargaController extends Controller
                 ->join('m_pekerjaan as t9', 't9.id', '=', 't1.jns_pekerjaan')
                 ->join('m_gol_darah as t10', 't10.id', '=', 't1.gol_darah')
                 ->join('m_jenis_kelamin as t11', 't11.id', '=', 't1.jenkel')
+                ->join('m_kewarganegaraan as t14', 't14.id', '=', 't1.sts_kwn')
                 ->where('t2.id', $id)
                 ->where('t1.sts_mati', 0)
                 ->select([
@@ -1095,7 +1096,7 @@ class KartuKeluargaController extends Controller
                     't8.nama as pendidikan',
                     't9.nama as pekerjaan',
                     't10.nama as golongan_darah',
-                    't1.kewarganegaraan',
+                    't14.nama as sts_kwn',
                     DB::raw("
                         CASE
                             WHEN UPPER(t1.sts_perkawinan) = 'KAWIN'

@@ -476,7 +476,7 @@
                             <td class="text-center" style="font-size: 6.5pt;">
                                 {{ strtoupper($anggota->hubungan_keluarga) }}</td>
                             <td class="text-center" style="font-size: 6.5pt;">
-                                {{ strtoupper($anggota->kewarganegaraan ?? 'WNI') }}</td>
+                                {{ strtoupper($anggota->sts_kwn ?? 'WNI') }}</td>
                             <td class="text-center" style="font-size: 6.5pt;">{{ $anggota->no_paspor ?? '' }}</td>
                             <td class="text-center" style="font-size: 6.5pt;">{{ $anggota->no_kitas ?? '' }}</td>
                             <td style="font-size: 6.5pt;">{{ $anggota->nm_ayah ?? '' }}</td>
