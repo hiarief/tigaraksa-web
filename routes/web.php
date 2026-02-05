@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\UmurController;
 use App\Http\Controllers\Admin\ChartController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\Admin\AdminDesaController;
+use App\Http\Controllers\Admin\Auth\RoleController;
+use App\Http\Controllers\Admin\Auth\UserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PekerjaanController;
 use App\Http\Controllers\Admin\DataHilangController;
@@ -14,6 +16,7 @@ use App\Http\Controllers\Admin\PendidikanController;
 use App\Http\Controllers\Admin\PerkawinanController;
 use App\Http\Controllers\Admin\KependudukanController;
 use App\Http\Controllers\Admin\KartuKeluargaController;
+use App\Http\Controllers\Admin\Auth\PermissionController;
 use App\Http\Controllers\Admin\KepemilikanRumahController;
 use App\Http\Controllers\Admin\BantuanPemerintahController;
 use App\Http\Controllers\Admin\KartuKeluargaAnggotaController;
@@ -34,6 +37,43 @@ Route::prefix('api')->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+
+    Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+        // Users routes
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::get('/', [UserController::class, 'index'])->name('index');
+            Route::get('/create', [UserController::class, 'create'])->name('create');
+            Route::post('/', [UserController::class, 'store'])->name('store');
+            Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [UserController::class, 'update'])->name('update');
+            Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
+        });
+
+        // Roles routes
+        Route::prefix('roles')->name('roles.')->group(function () {
+            Route::get('/', [RoleController::class, 'index'])->name('index');
+            Route::get('/create', [RoleController::class, 'create'])->name('create');
+            Route::post('/', [RoleController::class, 'store'])->name('store');
+            Route::get('/{id}/edit', [RoleController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [RoleController::class, 'update'])->name('update');
+            Route::delete('/{id}', [RoleController::class, 'destroy'])->name('destroy');
+
+            // Sub-routes dengan nama lebih spesifik
+            Route::get('/get-users/{id}', [RoleController::class, 'getUsersByRole'])->name('get.users');
+            Route::get('/get-permissions/{id}', [RoleController::class, 'getPermissionsByRole'])->name('get.permissions');
+        });
+
+        // Permissions routes
+        Route::prefix('permissions')->name('permissions.')->group(function () {
+            Route::get('/', [PermissionController::class, 'index'])->name('index');
+            Route::get('/create', [PermissionController::class, 'create'])->name('create');
+            Route::post('/', [PermissionController::class, 'store'])->name('store');
+            Route::get('/{id}/edit', [PermissionController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [PermissionController::class, 'update'])->name('update');
+            Route::delete('/{id}', [PermissionController::class, 'destroy'])->name('destroy');
+            Route::post('/bulk-delete', [PermissionController::class, 'bulkDelete'])->name('bulk-delete');
+        });
+    });
 
     Route::group(['prefix' => '/dashboard', 'as' => 'dashboard.'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');

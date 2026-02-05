@@ -124,6 +124,8 @@
     <script src="{{ asset('assets/plugins/chart.js/chart2.js') }}"></script>
     <script src="{{ asset('assets/plugins/chart.js/chartjs-plugin-datalabels.js') }}"></script>
     <script src="{{ asset('assets/plugins/select2/js/select2.full.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/moment/moment.min.js') }}"></script>
+    {{--  <script src="{{ asset('assets/plugins/moment/locale/id.js') }}"></script>  --}}
     <script>
         $(function() {
             //Initialize Select2 Elements

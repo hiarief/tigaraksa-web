@@ -158,70 +158,48 @@
                     </a>
                 </li>
 
+                <li class="nav-header">USER MANAGE</li>
 
-                {{--  @can('users-manage')
-                    <li class="nav-header">USER MANAGE</li>
-
-                    <li class="nav-item {!! request()->is('user-manage') || request()->is('user-manage/*') ? 'menu-open' : '' !!}">
-                        <a href="#" class="nav-link {!! request()->is('user-manage') || request()->is('user-manage/*') ? 'active' : '' !!}">
-                            <i class="nav-icon fas fa-user-cog bounce-icon"></i>
-                            <p>
-                                User Manage
-                                <i class="right fas fa-angle-left bounce-icon"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="{{ route('permissions.index') }}" class="nav-link {!! request()->is('user-manage/permissions') || request()->is('user-manage/permissions/*') ? 'active' : '' !!}">
-                                    <i class="fas fa-user-tag nav-icon bounce-icon"></i>
-                                    <p>Permission</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('roles.index') }}" class="nav-link {!! request()->is('user-manage/roles') || request()->is('user-manage/roles/*') ? 'active' : '' !!}">
-                                    <i class="fas fa-user-shield nav-icon bounce-icon"></i>
-                                    <p>Role</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('users.index') }}" class="nav-link {!! request()->is('user-manage/users') || request()->is('user-manage/users/*') ? 'active' : '' !!}">
-                                    <i class="fas fa-users nav-icon bounce-icon"></i>
-                                    <p>User</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="fas fa-user-alt nav-icon bounce-icon"></i>
-                                    <p>Profil</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="fas fa-user-lock nav-icon bounce-icon"></i>
-                                    <p>Password</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="" class="nav-link">
-                                    <i class="fas fa-user-secret nav-icon bounce-icon"></i>
-                                    <p>Audit</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('logs') }}" class="nav-link">
-                                    <i class="fas fa-user-clock nav-icon bounce-icon"></i>
-                                    <p>Log</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('keylock.index') }}" class="nav-link">
-                                    <i class="fas fa-lock nav-icon bounce-icon"></i>
-                                    <p>Keylock</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                @endcan  --}}
+                <li class="nav-item">
+                    <a href="{{ route('admin.permissions.index') }}"
+                        class="nav-link {{ Route::is('admin.permissions.index*') ? 'active' : '' }}">
+                        <i class="fas fa-user-tag nav-icon bounce-icon"></i>
+                        <p>Permission</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.roles.index') }}"
+                        class="nav-link {{ Route::is('admin.roles.index*') ? 'active' : '' }}">
+                        <i class="fas fa-user-shield nav-icon bounce-icon"></i>
+                        <p>Role</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.users.index') }}"
+                        class="nav-link {{ Route::is('admin.users.index*') ? 'active' : '' }}">
+                        <i class="fas fa-users nav-icon bounce-icon"></i>
+                        <p>User</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-user-alt nav-icon bounce-icon"></i>
+                        <p>Profil</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-user-lock nav-icon bounce-icon"></i>
+                        <p>Password</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="" class="nav-link">
+                        <i class="fas fa-user-secret nav-icon bounce-icon"></i>
+                        <p>Audit</p>
+                    </a>
+                </li>
+                </li>
 
                 <li class="nav-header">KELUAR</li>
 
