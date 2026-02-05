@@ -70,20 +70,6 @@
 @endsection
 
 @push('styles')
-    <style>
-        .swal2-html-container.text-left {
-            text-align: left !important;
-        }
-
-        .swal2-html-container .alert-info {
-            background-color: #d1ecf1;
-            border-color: #bee5eb;
-            color: #0c5460;
-            padding: 12px;
-            border-radius: 5px;
-            border-left: 4px solid #17a2b8;
-        }
-    </style>
 @endpush
 
 @push('scripts')
@@ -101,11 +87,10 @@
                 paging: true,
                 searching: true,
                 info: true,
-                order: [
-                    [9, 'desc']
-                ],
-
                 ajax: "{{ route('kependudukan.anggota.keluarga.index.data') }}",
+                order: [
+                    [8, 'desc'] // Order by created_at
+                ],
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -123,32 +108,32 @@
                     },
                     {
                         data: 'no_kk',
-                        name: 't2.no_kk',
+                        name: 'no_kk',
                         class: 'text-center nowrap',
                     },
                     {
                         data: 'no_nik',
-                        name: 't1.no_nik',
+                        name: 'no_nik',
                         class: 'text-center nowrap',
                     },
                     {
                         data: 'nama',
-                        name: 't1.nama',
+                        name: 'nama',
                         class: 'text-center nowrap',
                     },
                     {
                         data: 'tgl_lahir',
-                        name: 't1.tgl_lahir',
+                        name: 'tgl_lahir',
                         class: 'text-center nowrap',
                     },
                     {
                         data: 'tmpt_lahir',
-                        name: 't1.tmpt_lahir',
+                        name: 'tmpt_lahir',
                         class: 'text-center nowrap',
                     },
                     {
                         data: 'hubungan_keluarga',
-                        name: 't6.nama',
+                        name: 'hubungan_keluarga',
                         class: 'text-center nowrap',
                     },
                     {
@@ -156,6 +141,7 @@
                         name: 'alamat',
                         orderable: false,
                         searchable: false,
+                        class: 'text-center',
                     },
                     {
                         data: 'created_at',
@@ -164,6 +150,23 @@
                         searchable: false
                     }
                 ],
+                language: {
+                    processing: "Memuat data...",
+                    search: "Cari:",
+                    lengthMenu: "Tampilkan _MENU_ data",
+                    info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                    infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+                    infoFiltered: "(difilter dari _MAX_ total data)",
+                    loadingRecords: "Memuat...",
+                    zeroRecords: "Data tidak ditemukan",
+                    emptyTable: "Tidak ada data yang tersedia",
+                    paginate: {
+                        first: "Pertama",
+                        last: "Terakhir",
+                        next: "Selanjutnya",
+                        previous: "Sebelumnya"
+                    }
+                }
             });
         });
 
@@ -171,14 +174,10 @@
         // FUNCTION DELETE DATA
         // Menggunakan SweetAlert2 untuk konfirmasi yang lebih baik
         // ============================================================
-        // ============================================================
-        // FUNCTION DELETE DATA
-        // Menggunakan SweetAlert2 untuk konfirmasi yang lebih baik
-        // ============================================================
         function deleteData(id) {
             Swal.fire({
                 title: 'Konfirmasi Hapus',
-                text: "Data akan dipindahkan ke tabel backup. Apakah Anda yakin?",
+                text: "Data Kartu Keluarga dan semua anggotanya akan dipindahkan ke tabel backup. Apakah Anda yakin?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -189,7 +188,7 @@
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
                     return $.ajax({
-                        url: "{{ route('kependudukan.anggota.keluarga.delete', ':id') }}".replace(':id',
+                        url: "{{ route('kependudukan.kartu.keluarga.delete', ':id') }}".replace(':id',
                             id),
                         type: "POST",
                         data: {
@@ -214,27 +213,6 @@
 
                         // Reload DataTable tanpa reset pagination
                         $('#kartu-keluarga-table').DataTable().ajax.reload(null, false);
-                    } else if (result.value && result.value.is_kepala_keluarga) {
-                        // Kasus khusus: Kepala Keluarga tidak bisa dihapus
-                        Swal.fire({
-                            title: '<i class="fas fa-user-shield text-warning"></i> ' + result.value
-                                .message,
-                            html: '<div class="text-left">' +
-                                '<p class="mb-2"><strong>Detail:</strong></p>' +
-                                '<p class="text-muted mb-3">' + result.value.details + '</p>' +
-                                '<div class="alert alert-info mb-0">' +
-                                '<strong><i class="fas fa-lightbulb"></i> Saran:</strong><br>' +
-                                result.value.suggestion +
-                                '</div>' +
-                                '</div>',
-                            icon: 'warning',
-                            confirmButtonText: '<i class="fas fa-check"></i> Mengerti',
-                            confirmButtonColor: '#3085d6',
-                            width: '600px',
-                            customClass: {
-                                htmlContainer: 'text-left'
-                            }
-                        });
                     } else {
                         // Gagal dihapus
                         Swal.fire({
@@ -250,48 +228,20 @@
                 console.error('Error:', error);
 
                 let errorMessage = 'Terjadi kesalahan saat menghapus data';
-                let isKepalaKeluarga = false;
 
                 // Cek apakah ada response error dari server
-                if (error.responseJSON) {
-                    if (error.responseJSON.is_kepala_keluarga) {
-                        // Kasus khusus: Kepala Keluarga
-                        isKepalaKeluarga = true;
-                        Swal.fire({
-                            title: '<i class="fas fa-user-shield text-warning"></i> ' + error.responseJSON
-                                .message,
-                            html: '<div class="text-left">' +
-                                '<p class="mb-2"><strong>Detail:</strong></p>' +
-                                '<p class="text-muted mb-3">' + error.responseJSON.details + '</p>' +
-                                '<div class="alert alert-info mb-0">' +
-                                '<strong><i class="fas fa-lightbulb"></i> Saran:</strong><br>' +
-                                error.responseJSON.suggestion +
-                                '</div>' +
-                                '</div>',
-                            icon: 'warning',
-                            confirmButtonText: '<i class="fas fa-check"></i> Mengerti',
-                            confirmButtonColor: '#3085d6',
-                            width: '600px',
-                            customClass: {
-                                htmlContainer: 'text-left'
-                            }
-                        });
-                    } else if (error.responseJSON.message) {
-                        errorMessage = error.responseJSON.message;
-                    }
+                if (error.responseJSON && error.responseJSON.message) {
+                    errorMessage = error.responseJSON.message;
                 } else if (error.statusText) {
                     errorMessage = 'Error: ' + error.statusText;
                 }
 
-                // Tampilkan error biasa jika bukan kasus kepala keluarga
-                if (!isKepalaKeluarga) {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: errorMessage,
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
+                Swal.fire({
+                    title: 'Error!',
+                    text: errorMessage,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             });
         }
     </script>
