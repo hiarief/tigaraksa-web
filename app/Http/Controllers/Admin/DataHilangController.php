@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Crypt;
 use Yajra\DataTables\Facades\DataTables;
-use Carbon\Carbon;
 
 class DataHilangController extends Controller
 {
@@ -126,7 +127,38 @@ class DataHilangController extends Controller
                     $details .= '</ul>';
                     return $details;
                 })
-                ->rawColumns(['anomali_badge', 'detail_anomali'])
+                ->addColumn('aksi', function ($row) {
+
+                    $viewUrl   = route('kependudukan.kartu.keluarga.show', Crypt::encrypt($row->kk_id));
+                    $editUrl   = route('kependudukan.anggota.keluarga.edit', Crypt::encrypt($row->anggota_id));
+                    $deleteUrl = route('kependudukan.anggota.keluarga.delete', Crypt::encrypt($row->anggota_id));
+
+                    return '
+                        <div class="btn-group btn-group-sm text-center" role="group">
+                            <a href="'.$viewUrl.'"
+                            class="btn bg-gradient-info"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Lihat">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+
+                            <a href="'.$editUrl.'"
+                            class="btn bg-gradient-warning"
+                            title="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+
+                            <button type="button"
+                                class="btn bg-gradient-danger"
+                                title="Hapus"
+                                onclick="deleteData(\''.Crypt::encrypt($row->anggota_id).'\')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    ';
+                })
+                ->rawColumns(['anomali_badge', 'detail_anomali', 'aksi'])
                 ->make(true);
         }
 
