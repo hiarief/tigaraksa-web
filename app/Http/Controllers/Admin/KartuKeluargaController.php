@@ -62,35 +62,50 @@ class KartuKeluargaController extends Controller
                 })
                 ->addColumn('aksi', function ($row) {
 
-                    $viewUrl   = route('kependudukan.kartu.keluarga.show', Crypt::encrypt($row->id));
-                    $editUrl   = route('kependudukan.kartu.keluarga.edit', Crypt::encrypt($row->id));
-                    $deleteUrl = route('kependudukan.kartu.keluarga.delete', Crypt::encrypt($row->id));
+                $buttons = '<div class="btn-group btn-group-sm text-center" role="group">';
 
-                    return '
-                        <div class="btn-group btn-group-sm text-center" role="group">
-                            <a href="'.$viewUrl.'"
-                            class="btn bg-gradient-info"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="Lihat">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
+                if (auth()->user()->can('kepala-keluarga-show')) {
+                    $viewUrl = route('kependudukan.kartu.keluarga.show', Crypt::encrypt($row->id));
 
-                            <a href="'.$editUrl.'"
-                            class="btn bg-gradient-warning"
-                            title="Edit">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </a>
-
-                            <button type="button"
-                                class="btn bg-gradient-danger"
-                                title="Hapus"
-                                onclick="deleteData('.$row->id.')">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
+                    $buttons .= '
+                        <a href="'.$viewUrl.'"
+                        class="btn bg-gradient-info"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Lihat">
+                        <i class="fa-solid fa-eye"></i>
+                        </a>
                     ';
-                })
+                }
+
+                if (auth()->user()->can('kepala-keluarga-edit')) {
+                    $editUrl = route('kependudukan.kartu.keluarga.edit', Crypt::encrypt($row->id));
+
+                    $buttons .= '
+                        <a href="'.$editUrl.'"
+                        class="btn bg-gradient-warning"
+                        title="Edit">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                    ';
+                }
+
+                if (auth()->user()->can('kepala-keluarga-delete')) {
+                    $buttons .= '
+                        <button type="button"
+                            class="btn bg-gradient-danger"
+                            title="Hapus"
+                            onclick="deleteData('.$row->id.')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    ';
+                }
+
+                $buttons .= '</div>';
+
+                return $buttons;
+            })
+
                 ->rawColumns(['aksi'])
                 ->make(true);
         }

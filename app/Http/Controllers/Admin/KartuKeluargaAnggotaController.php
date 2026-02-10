@@ -64,8 +64,12 @@ class KartuKeluargaAnggotaController extends Controller
                     $editUrl   = route('kependudukan.anggota.keluarga.edit', Crypt::encrypt($row->anggota_id));
                     $deleteUrl = route('kependudukan.anggota.keluarga.delete', Crypt::encrypt($row->anggota_id));
 
-                    return '
-                        <div class="btn-group btn-group-sm text-center" role="group">
+                    $btnView = '';
+                    $btnEdit = '';
+                    $btnDelete = '';
+
+                    if (auth()->user()->can('anggota-keluarga-view')) {
+                        $btnView = '
                             <a href="'.$viewUrl.'"
                             class="btn bg-gradient-info"
                             target="_blank"
@@ -73,22 +77,39 @@ class KartuKeluargaAnggotaController extends Controller
                             title="Lihat">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
+                        ';
+                    }
 
+                    if (auth()->user()->can('anggota-keluarga-edit')) {
+                        $btnEdit = '
                             <a href="'.$editUrl.'"
                             class="btn bg-gradient-warning"
                             title="Edit">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </a>
+                        ';
+                    }
 
+                    if (auth()->user()->can('anggota-keluarga-delete')) {
+                        $btnDelete = '
                             <button type="button"
                                 class="btn bg-gradient-danger"
                                 title="Hapus"
                                 onclick="deleteData(\''.Crypt::encrypt($row->anggota_id).'\')">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
+                        ';
+                    }
+
+                    return '
+                        <div class="btn-group btn-group-sm text-center" role="group">
+                            '.$btnView.'
+                            '.$btnEdit.'
+                            '.$btnDelete.'
                         </div>
                     ';
                 })
+
                 ->rawColumns(['aksi'])
                 ->make(true);
         }

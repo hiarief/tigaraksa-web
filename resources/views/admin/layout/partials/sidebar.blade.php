@@ -146,21 +146,24 @@
                     @can('data-keluarga')
                         <li class="nav-header">DATA KELUARGA</li>
 
-                        <li class="nav-item">
-                            <a href="{{ route('kependudukan.kartu.keluarga.index') }}"
-                                class="nav-link {{ Route::is('kependudukan.kartu.keluarga.*') ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-id-card text-teal"></i>
-                                <p>Kepala Keluarga</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('kependudukan.anggota.keluarga.index') }}"
-                                class="nav-link {{ Route::is('kependudukan.anggota.keluarga.*') ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-user-friends text-teal"></i>
-                                <p>Anggota Keluarga</p>
-                            </a>
-                        </li>
+                        @can('kepala-keluarga')
+                            <li class="nav-item">
+                                <a href="{{ route('kependudukan.kartu.keluarga.index') }}"
+                                    class="nav-link {{ Route::is('kependudukan.kartu.keluarga.*') ? 'active' : '' }}">
+                                    <i class="nav-icon fas fa-id-card text-teal"></i>
+                                    <p>Kepala Keluarga</p>
+                                </a>
+                            </li>
+                        @endcan
+                        @can('anggota-keluarga')
+                            <li class="nav-item">
+                                <a href="{{ route('kependudukan.anggota.keluarga.index') }}"
+                                    class="nav-link {{ Route::is('kependudukan.anggota.keluarga.*') ? 'active' : '' }}">
+                                    <i class="nav-icon fas fa-user-friends text-teal"></i>
+                                    <p>Anggota Keluarga</p>
+                                </a>
+                            </li>
+                        @endcan
                     @endcan
 
                     @can('administrasi-desa')

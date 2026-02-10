@@ -8,15 +8,19 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="card-title">
-                            <a href="{{ route('kependudukan.anggota.keluarga.create') }}"
-                                class="btn btn-sm bg-gradient-primary">
-                                <i class="fa-solid fa-plus"></i> Tambah
-                            </a>
-                            <a href="{{ route('kependudukan.anggota.keluarga.trash') }}"
-                                class="btn btn-sm bg-gradient-danger">
-                                <i class="fas fa-trash"></i> Data Terhapus
-                            </a>
-                        </div>
+                            @can('anggota-keluarga-create')
+                                <a href="{{ route('kependudukan.anggota.keluarga.create') }}"
+                                    class="btn btn-sm bg-gradient-primary">
+                                    <i class="fa-solid fa-plus"></i> Tambah
+                                </a>
+                            @endcan
+                            @can('anggota-keluarga-trash')
+                                <a href="{{ route('kependudukan.anggota.keluarga.trash') }}"
+                                    class="btn btn-sm bg-gradient-danger">
+                                    <i class="fas fa-trash"></i> Data Terhapus
+                                </a>
+                            </div>
+                        @endcan
                     </div>
                 </div>
                 <div class="card-body">
