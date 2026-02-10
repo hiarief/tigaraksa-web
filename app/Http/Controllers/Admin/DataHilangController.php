@@ -104,7 +104,9 @@ class DataHilangController extends Controller
             return DataTables::of($anomaliData)
                 ->addIndexColumn()
                 ->editColumn('nama', fn($row) => strtoupper($row->nama))
-                ->editColumn('user_input', fn($row) => strtoupper($row->user_input))
+                ->editColumn('user_input', function ($row) {
+                    return strtoupper($row->user_input ?? '-');
+                })
                 ->addColumn('umur', function ($row) {
                     try {
                         if (!empty($row->tanggal_lahir)) {
