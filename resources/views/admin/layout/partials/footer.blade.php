@@ -3,6 +3,6 @@
     <div class="d-none d-sm-inline float-right">
         @yield('title')
     </div>
-    <strong>Copyright &copy; 2022-{{ date('Y') }} <a href="https://wjkcikande.com">PT. Wonokoyo Jaya
-            Kusuma</a>.</strong>
+    <strong>Copyright &copy; 2025-{{ date('Y') }} <a href="#">Samudera Intermedia Sejahter
+            (SAIN)</a>.</strong>
 </footer>
