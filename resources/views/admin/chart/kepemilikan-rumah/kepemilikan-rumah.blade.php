@@ -3,235 +3,347 @@
 @section('content-header', 'Statistik Kepemilikan Rumah')
 
 @section('content')
+
+    <!-- Premium Info Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
+            <div class="info-box-premium bg-gradient-info elevation-3">
+                <div class="info-box-premium-icon">
+                    <div class="icon-circle bg-white">
+                        <i class="fas fa-home text-info"></i>
+                    </div>
+                </div>
+                <div class="info-box-premium-content">
+                    <span class="info-box-premium-text">Total Kepala Keluarga</span>
+                    <span class="info-box-premium-number" id="total-kk">
+                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
+                    </span>
+                    <div class="progress-premium">
+                        <div class="progress-bar bg-white"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
+            <div class="info-box-premium bg-gradient-success elevation-3">
+                <div class="info-box-premium-icon">
+                    <div class="icon-circle bg-white">
+                        <i class="fas fa-check-circle text-success"></i>
+                    </div>
+                </div>
+                <div class="info-box-premium-content">
+                    <span class="info-box-premium-text">Milik Sendiri</span>
+                    <span class="info-box-premium-number" id="milik-sendiri">
+                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
+                    </span>
+                    <div class="progress-premium">
+                        <div class="progress-bar bg-white"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
+            <div class="info-box-premium bg-gradient-warning elevation-3">
+                <div class="info-box-premium-icon">
+                    <div class="icon-circle bg-white">
+                        <i class="fas fa-exclamation-triangle text-warning"></i>
+                    </div>
+                </div>
+                <div class="info-box-premium-content">
+                    <span class="info-box-premium-text">KK Rentan Perumahan</span>
+                    <span class="info-box-premium-number" id="rentan">
+                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
+                    </span>
+                    <div class="progress-premium">
+                        <div class="progress-bar bg-white"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="info-box-premium bg-gradient-danger elevation-3">
+                <div class="info-box-premium-icon">
+                    <div class="icon-circle bg-white">
+                        <i class="fas fa-times-circle text-danger"></i>
+                    </div>
+                </div>
+                <div class="info-box-premium-content">
+                    <span class="info-box-premium-text">Data Anomali</span>
+                    <span class="info-box-premium-number" id="anomali">
+                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
+                    </span>
+                    <div class="progress-premium">
+                        <div class="progress-bar bg-white"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1 - Premium Design -->
     <div class="row">
-        <div class="col-sm">
-
-            <div class="row mb-4">
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-info">
-                        <div class="inner">
-                            <h3 id="total-kk">-</h3>
-                            <p>Total Kepala Keluarga</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-home"></i>
-                        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card card-widget-premium elevation-3">
+                <div class="card-header-premium bg-gradient-primary">
+                    <div class="card-header-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <div class="card-header-text">
+                        <h3 class="card-title-premium">Distribusi Kepemilikan Rumah</h3>
+                        <p class="card-subtitle-premium">Status kepemilikan per kepala keluarga</p>
+                    </div>
+                    <div class="card-tools-premium">
+                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-success">
-                        <div class="inner">
-                            <h3 id="milik-sendiri">-</h3>
-                            <p>Milik Sendiri</p>
+                <div class="card-body-premium">
+                    <div id="loading-distribusi" class="loading-premium">
+                        <div class="spinner-premium">
+                            <div class="double-bounce1"></div>
+                            <div class="double-bounce2"></div>
                         </div>
-                        <div class="icon">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
+                        <p class="loading-text">Memproses data...</p>
                     </div>
-                </div>
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-warning">
-                        <div class="inner">
-                            <h3 id="rentan">-</h3>
-                            <p>KK Rentan Perumahan</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-danger">
-                        <div class="inner">
-                            <h3 id="anomali">-</h3>
-                            <p>Data Anomali</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-times-circle"></i>
-                        </div>
-                    </div>
+                    <canvas id="chartDistribusiKK" style="display:none; max-height: 350px;"></canvas>
                 </div>
             </div>
+        </div>
 
-            <!-- Charts Row 1 -->
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-chart-pie mr-1"></i>
-                                Distribusi Kepemilikan Rumah (Per KK)
-                            </h3>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="chartDistribusiKK" height="250"></canvas>
-                        </div>
-                        <div class="overlay" id="loading-distribusi">
-                            <i class="fas fa-2x fa-sync-alt fa-spin"></i>
-                        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card card-widget-premium elevation-3">
+                <div class="card-header-premium bg-gradient-warning">
+                    <div class="card-header-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="card-header-text">
+                        <h3 class="card-title-premium">Tingkat Kerentanan Perumahan</h3>
+                        <p class="card-subtitle-premium">Klasifikasi keamanan kepemilikan rumah</p>
+                    </div>
+                    <div class="card-tools-premium">
+                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
                     </div>
                 </div>
-
-                <div class="col-lg-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-chart-bar mr-1"></i>
-                                Tingkat Kerentanan Perumahan
-                            </h3>
+                <div class="card-body-premium">
+                    <div id="loading-kerentanan" class="loading-premium">
+                        <div class="spinner-premium">
+                            <div class="double-bounce1"></div>
+                            <div class="double-bounce2"></div>
                         </div>
-                        <div class="card-body">
-                            <canvas id="chartKerentanan" height="250"></canvas>
-                        </div>
-                        <div class="overlay" id="loading-kerentanan">
-                            <i class="fas fa-2x fa-sync-alt fa-spin"></i>
-                        </div>
+                        <p class="loading-text">Memproses data...</p>
                     </div>
+                    <canvas id="chartKerentanan" style="display:none; max-height: 350px;"></canvas>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- Charts Row 2 -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-chart-bar mr-1"></i>
-                                Kepemilikan Rumah Berdasarkan Kelompok Umur Kepala Keluarga
-                            </h3>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="chartUmur" height="215"></canvas>
-                        </div>
-                        <div class="overlay" id="loading-umur">
-                            <i class="fas fa-2x fa-sync-alt fa-spin"></i>
-                        </div>
+    <!-- Charts Row 2 - Premium Design -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card card-widget-premium elevation-3">
+                <div class="card-header-premium bg-gradient-success">
+                    <div class="card-header-icon">
+                        <i class="fas fa-users"></i>
                     </div>
+                    <div class="card-header-text">
+                        <h3 class="card-title-premium">Kepemilikan Rumah Berdasarkan Kelompok Umur</h3>
+                        <p class="card-subtitle-premium">Analisis kepemilikan berdasarkan usia kepala keluarga</p>
+                    </div>
+                    <div class="card-tools-premium">
+                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body-premium">
+                    <div id="loading-umur" class="loading-premium">
+                        <div class="spinner-premium">
+                            <div class="double-bounce1"></div>
+                            <div class="double-bounce2"></div>
+                        </div>
+                        <p class="loading-text">Memproses data...</p>
+                    </div>
+                    <canvas id="chartUmur" style="display:none; max-height: 400px;"></canvas>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- Charts Row 3 -->
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-chart-line mr-1"></i>
-                                Distribusi Kepemilikan Rumah Per RT/RW
-                            </h3>
-                        </div>
-                        <div class="card-body" style="overflow-x: auto;">
-                            <canvas id="chartWilayah" height="250"></canvas>
-                        </div>
-                        <div class="overlay" id="loading-wilayah">
-                            <i class="fas fa-2x fa-sync-alt fa-spin"></i>
-                        </div>
+    <!-- Charts Row 3 - Premium Design -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card card-widget-premium elevation-3">
+                <div class="card-header-premium bg-gradient-info">
+                    <div class="card-header-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="card-header-text">
+                        <h3 class="card-title-premium">Distribusi Kepemilikan Per RT/RW</h3>
+                        <p class="card-subtitle-premium">Pemetaan kepemilikan rumah per wilayah</p>
+                    </div>
+                    <div class="card-tools-premium">
+                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
                     </div>
                 </div>
-
-                <div class="col-lg-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-chart-pie mr-1"></i>
-                                Validasi & Kualitas Data
-                            </h3>
+                <div class="card-body-premium" style="overflow-x: auto;">
+                    <div id="loading-wilayah" class="loading-premium">
+                        <div class="spinner-premium">
+                            <div class="double-bounce1"></div>
+                            <div class="double-bounce2"></div>
                         </div>
-                        <div class="card-body">
-                            <canvas id="chartAnomali" height="250"></canvas>
-                        </div>
-                        <div class="overlay" id="loading-anomali">
-                            <i class="fas fa-2x fa-sync-alt fa-spin"></i>
-                        </div>
+                        <p class="loading-text">Memproses data...</p>
                     </div>
+                    <canvas id="chartWilayah" style="display:none; max-height: 400px;"></canvas>
                 </div>
             </div>
+        </div>
 
-            <!-- DataTable Section -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-table mr-1"></i>
-                                Data Kepala Keluarga
-                            </h3>
+        <div class="col-lg-4 mb-4">
+            <div class="card card-widget-premium elevation-3">
+                <div class="card-header-premium bg-gradient-danger">
+                    <div class="card-header-icon">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="card-header-text">
+                        <h3 class="card-title-premium">Validasi & Kualitas Data</h3>
+                        <p class="card-subtitle-premium">Status validasi data kepemilikan</p>
+                    </div>
+                    <div class="card-tools-premium">
+                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body-premium">
+                    <div id="loading-anomali" class="loading-premium">
+                        <div class="spinner-premium">
+                            <div class="double-bounce1"></div>
+                            <div class="double-bounce2"></div>
                         </div>
-                        <div class="card-body">
-                            <!-- Filter -->
-                            <div class="row mb-3">
-                                <div class="col-md-3">
-                                    <label>Filter Kepemilikan Rumah:</label>
-                                    <select id="filter-kepemilikan" class="form-control">
-                                        <option value="">Semua</option>
-                                        <option value="Milik Sendiri">Milik Sendiri</option>
-                                        <option value="Orang Tua">Orang Tua</option>
-                                        <option value="Ngontrak">Ngontrak</option>
-                                        <option value="Menumpang">Menumpang</option>
-                                        <option value="Lainnya">Lainnya</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label>Filter Kerentanan:</label>
-                                    <select id="filter-kerentanan" class="form-control">
-                                        <option value="">Semua</option>
-                                        <option value="Aman">Aman (Milik Sendiri)</option>
-                                        <option value="Semi Rentan">Semi Rentan (Orang Tua)</option>
-                                        <option value="Rentan">Rentan (Ngontrak/Menumpang)</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label>Filter RW:</label>
-                                    <select id="filter-rw" class="form-control">
-                                        <option value="">Semua RW</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label>Filter RT:</label>
-                                    <select id="filter-rt" class="form-control">
-                                        <option value="">Semua RT</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label>Filter Anomali:</label>
-                                    <select id="filter-anomali" class="form-control">
-                                        <option value="">Semua</option>
-                                        <option value="anomali">Hanya Anomali</option>
-                                        <option value="normal">Hanya Normal</option>
-                                    </select>
-                                </div>
+                        <p class="loading-text">Memproses data...</p>
+                    </div>
+                    <canvas id="chartAnomali" style="display:none; max-height: 400px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DataTable Section - Premium Design -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-widget-premium elevation-3">
+                <div class="card-header-premium bg-gradient-dark">
+                    <div class="card-header-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="card-header-text">
+                        <h3 class="card-title-premium">Data Kepala Keluarga</h3>
+                        <p class="card-subtitle-premium">Eksplorasi data dengan filter multi-dimensi</p>
+                    </div>
+                    <div class="card-tools-premium">
+                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body-premium p-0">
+                    <!-- Filter Section -->
+                    <div class="filter-section-premium">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="filter-label-premium">
+                                    <i class="fas fa-home mr-2"></i>Kepemilikan Rumah
+                                </label>
+                                <select id="filter-kepemilikan" class="form-control select2-premium">
+                                    <option value="">Semua</option>
+                                    <option value="Milik Sendiri">Milik Sendiri</option>
+                                    <option value="Orang Tua">Orang Tua</option>
+                                    <option value="Ngontrak">Ngontrak</option>
+                                    <option value="Menumpang">Menumpang</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <button id="btn-reset-filter" class="btn btn-secondary">
-                                        <i class="fas fa-redo"></i> Reset Semua Filter
-                                    </button>
-                                    {{--  <button id="btn-export" class="btn btn-success ml-2">
-                                        <i class="fas fa-file-excel"></i> Export ke Excel
-                                    </button>  --}}
-                                </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="filter-label-premium">
+                                    <i class="fas fa-shield-alt mr-2"></i>Tingkat Kerentanan
+                                </label>
+                                <select id="filter-kerentanan" class="form-control select2-premium">
+                                    <option value="">Semua</option>
+                                    <option value="Aman">Aman (Milik Sendiri)</option>
+                                    <option value="Semi Rentan">Semi Rentan (Orang Tua)</option>
+                                    <option value="Rentan">Rentan (Ngontrak/Menumpang)</option>
+                                </select>
                             </div>
-                            <div class="table-responsive">
-                                <!-- Table -->
-                                <table id="table-kepemilikan" class="table-bordered table-striped table">
-                                    <thead>
-                                        <tr class="nowrap text-center">
-                                            <th>No</th>
-                                            <th>NIK</th>
-                                            <th>Nama</th>
-                                            <th>No. KK</th>
-                                            <th>Kampung</th>
-                                            <th>RW</th>
-                                            <th>RT</th>
-                                            <th>JK</th>
-                                            <th>Tanggal Lahir</th>
-                                            <th>Umur</th>
-                                            <th>Kepemilikan Rumah</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                </table>
+                            <div class="col-md-2 mb-3">
+                                <label class="filter-label-premium">
+                                    <i class="fas fa-map-marker-alt mr-2"></i>RW
+                                </label>
+                                <select id="filter-rw" class="form-control select2-premium">
+                                    <option value="">Semua RW</option>
+                                </select>
                             </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="filter-label-premium">
+                                    <i class="fas fa-location-arrow mr-2"></i>RT
+                                </label>
+                                <select id="filter-rt" class="form-control select2-premium">
+                                    <option value="">Semua RT</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="filter-label-premium">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>Filter Anomali
+                                </label>
+                                <select id="filter-anomali" class="form-control select2-premium">
+                                    <option value="">Semua</option>
+                                    <option value="anomali">Hanya Anomali</option>
+                                    <option value="normal">Hanya Normal</option>
+                                </select>
+                            </div>
+                            <div class="col-md-8 d-flex align-items-end justify-content-end mb-3 text-right">
+                                <button id="btn-reset-filter" class="btn btn-reset-premium elevation-2 mr-2">
+                                    <i class="fas fa-redo mr-2"></i>Reset Filter
+                                </button>
+                                <button id="btn-export" class="btn btn-export-premium elevation-2">
+                                    <i class="fas fa-file-excel mr-2"></i>Export Excel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table Section -->
+                    <div class="table-container-premium">
+                        <div class="table-responsive">
+                            <table class="table-premium" id="table-kepemilikan">
+                                <thead>
+                                    <tr>
+                                        <th width="5%">No</th>
+                                        <th>NIK</th>
+                                        <th>Nama</th>
+                                        <th>No. KK</th>
+                                        <th>Kampung</th>
+                                        <th>RW</th>
+                                        <th>RT</th>
+                                        <th>JK</th>
+                                        <th>Tanggal Lahir</th>
+                                        <th>Umur</th>
+                                        <th>Kepemilikan Rumah</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -241,45 +353,6 @@
 @endsection
 
 @push('styles')
-    <style>
-        .small-box .icon {
-            top: -10px;
-            right: 10px;
-        }
-
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .card {
-            position: relative;
-        }
-
-        .badge-anomali {
-            background-color: #dc3545;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-        }
-
-        .badge-normal {
-            background-color: #28a745;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-        }
-    </style>
 @endpush
 
 @push('scripts')
@@ -287,18 +360,24 @@
         $(document).ready(function() {
             // Color palette
             const colors = {
-                milikSendiri: '#28a745',
-                orangTua: '#17a2b8',
-                ngontrak: '#ffc107',
-                menumpang: '#fd7e14',
-                lainnya: '#6c757d',
-                aman: '#28a745',
-                semiRentan: '#ffc107',
-                rentan: '#dc3545',
-                normal: '#007bff',
-                anomali: '#dc3545',
-                tanpaData: '#6c757d'
+                milikSendiri: 'rgba(40, 167, 69, 0.8)',
+                orangTua: 'rgba(23, 162, 184, 0.8)',
+                ngontrak: 'rgba(255, 193, 7, 0.8)',
+                menumpang: 'rgba(253, 126, 20, 0.8)',
+                lainnya: 'rgba(108, 117, 125, 0.8)',
+                aman: 'rgba(40, 167, 69, 0.8)',
+                semiRentan: 'rgba(255, 193, 7, 0.8)',
+                rentan: 'rgba(220, 53, 69, 0.8)',
+                normal: 'rgba(0, 123, 255, 0.8)',
+                anomali: 'rgba(220, 53, 69, 0.8)',
+                tanpaData: 'rgba(108, 117, 125, 0.8)'
             };
+
+            // Initialize Select2
+            $('.select2-premium').select2({
+                theme: 'bootstrap4',
+                width: '100%'
+            });
 
             // Load RW and RT options
             loadRwRtOptions();
@@ -315,8 +394,23 @@
                 info: true,
                 lengthMenu: [
                     [10, 25, 50, 100, -1],
-                    [10, 25, 50, 100, "All"]
+                    [10, 25, 50, 100, "Semua"]
                 ],
+                language: {
+                    processing: '<div class="spinner-premium"><div class="double-bounce1"></div><div class="double-bounce2"></div></div><p class="loading-text">Memproses data...</p>',
+                    lengthMenu: 'Tampilkan _MENU_ data per halaman',
+                    zeroRecords: 'Data tidak ditemukan',
+                    info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                    infoEmpty: 'Tidak ada data tersedia',
+                    infoFiltered: '(disaring dari _MAX_ total data)',
+                    search: 'Pencarian:',
+                    paginate: {
+                        first: '<i class="fas fa-angle-double-left"></i>',
+                        last: '<i class="fas fa-angle-double-right"></i>',
+                        next: '<i class="fas fa-angle-right"></i>',
+                        previous: '<i class="fas fa-angle-left"></i>'
+                    }
+                },
                 ajax: {
                     url: '{{ route('kepemilikan.rumah.datatable') }}',
                     data: function(d) {
@@ -332,65 +426,72 @@
                         name: 'DT_RowIndex',
                         orderable: false,
                         searchable: false,
-                        class: 'text-center nowrap'
+                        className: 'text-center'
                     },
                     {
                         data: 'no_nik',
                         name: 'no_nik',
-                        class: 'text-center nowrap'
+                        className: 'text-center'
                     },
                     {
                         data: 'nama',
-                        name: 'nama',
-                        class: 'nowrap'
+                        name: 'nama'
                     },
                     {
                         data: 'no_kk',
                         name: 'no_kk',
-                        class: 'text-center nowrap'
+                        className: 'text-center'
                     },
                     {
                         data: 'kp',
-                        name: 'kp',
-                        class: 'nowrap'
+                        name: 'kp'
                     },
                     {
                         data: 'rw',
                         name: 'rw',
-                        class: 'text-center nowrap'
+                        className: 'text-center'
                     },
                     {
                         data: 'rt',
                         name: 'rt',
-                        class: 'text-center nowrap'
+                        className: 'text-center'
                     },
                     {
                         data: 'jenkel',
                         name: 'jenkel',
-                        class: 'text-center nowrap',
+                        className: 'text-center',
+                        render: data => data == 1 ?
+                            '<span class="badge-status-premium badge-primary-premium">L</span>' :
+                            '<span class="badge-status-premium badge-danger-premium">P</span>'
                     },
                     {
                         data: 'tgl_lahir',
                         name: 'tgl_lahir',
-                        class: 'text-center nowrap'
+                        className: 'text-center'
                     },
                     {
                         data: 'umur',
                         name: 'umur',
-                        class: 'text-center nowrap'
+                        className: 'text-center'
                     },
                     {
                         data: 'kepemilikan_rumah',
                         name: 'kepemilikan_rumah',
-                        class: 'text-center nowrap'
+                        className: 'text-center'
                     },
                     {
                         data: 'status_anomali',
                         name: 'status_anomali',
-                        class: 'text-center nowrap',
-                        orderable: false
+                        className: 'text-center',
+                        orderable: false,
+                        render: data => {
+                            if (data && data.includes('Anomali')) {
+                                return '<span class="badge-status-premium badge-anomali-premium">Anomali</span>';
+                            }
+                            return '<span class="badge-status-premium badge-normal-premium">Normal</span>';
+                        }
                     }
-                ],
+                ]
             });
 
             // Load RW/RT Options
@@ -399,14 +500,12 @@
                     url: '{{ route('kepemilikan.rumah.rw.rt.list') }}',
                     method: 'GET',
                     success: function(data) {
-                        // Populate RW dropdown
                         const rwSelect = $('#filter-rw');
                         rwSelect.empty().append('<option value="">Semua RW</option>');
                         data.rw_list.forEach(rw => {
                             rwSelect.append(`<option value="${rw}">${rw}</option>`);
                         });
 
-                        // Populate RT dropdown
                         const rtSelect = $('#filter-rt');
                         rtSelect.empty().append('<option value="">Semua RT</option>');
                         data.rt_list.forEach(rt => {
@@ -445,12 +544,13 @@
                 }
             });
 
+            // Reset Filter
             $('#btn-reset-filter').on('click', function() {
-                $('#filter-kepemilikan').val('');
-                $('#filter-kerentanan').val('');
-                $('#filter-rw').val('');
-                $('#filter-rt').val('');
-                $('#filter-anomali').val('');
+                $('#filter-kepemilikan').val('').trigger('change');
+                $('#filter-kerentanan').val('').trigger('change');
+                $('#filter-rw').val('').trigger('change');
+                $('#filter-rt').val('').trigger('change');
+                $('#filter-anomali').val('').trigger('change');
                 loadRwRtOptions();
                 table.ajax.reload();
             });
@@ -480,8 +580,6 @@
                     url: '{{ route('kepemilikan.rumah.distribusi.kk') }}',
                     method: 'GET',
                     success: function(data) {
-                        $('#loading-distribusi').hide();
-
                         const labels = data.map(item => item.kepemilikan_rumah || 'Tidak Diketahui');
                         const values = data.map(item => item.total_kk);
                         const bgColors = labels.map(label => {
@@ -492,50 +590,70 @@
                             return colors.lainnya;
                         });
 
-                        // Update summary card
                         const totalKK = values.reduce((a, b) => a + b, 0);
                         const milikSendiri = data.find(item => item.kepemilikan_rumah ===
-                            'Milik Sendiri')?.total_kk || 0;
-                        $('#total-kk').text(totalKK.toLocaleString());
-                        $('#milik-sendiri').text(milikSendiri.toLocaleString());
+                                'Milik Sendiri')
+                            ?.total_kk || 0;
+                        $('#total-kk').text(totalKK.toLocaleString('id-ID'));
+                        $('#milik-sendiri').text(milikSendiri.toLocaleString('id-ID'));
 
-                        new Chart($('#chartDistribusiKK'), {
-                            type: 'pie',
-                            data: {
-                                labels: labels,
-                                datasets: [{
-                                    data: values,
-                                    backgroundColor: bgColors,
-                                    borderWidth: 2,
-                                    borderColor: '#fff'
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        position: 'bottom'
-                                    },
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(context) {
-                                                const label = context.label || '';
-                                                const value = context.parsed;
-                                                const total = context.dataset.data.reduce((
-                                                    a, b) => a + b, 0);
-                                                const percentage = ((value / total) * 100)
-                                                    .toFixed(1);
-                                                return `${label}: ${value} KK (${percentage}%)`;
+                        $('#loading-distribusi').fadeOut(300, function() {
+                            $('#chartDistribusiKK').fadeIn(400);
+
+                            new Chart($('#chartDistribusiKK'), {
+                                type: 'pie',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        data: values,
+                                        backgroundColor: bgColors,
+                                        borderWidth: 3,
+                                        borderColor: '#fff',
+                                        hoverOffset: 10
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: true,
+                                    plugins: {
+                                        legend: {
+                                            position: 'bottom',
+                                            labels: {
+                                                font: {
+                                                    size: 12,
+                                                    weight: '600'
+                                                },
+                                                usePointStyle: true,
+                                                padding: 15
+                                            }
+                                        },
+                                        tooltip: {
+                                            backgroundColor: 'rgba(0,0,0,0.8)',
+                                            padding: 15,
+                                            cornerRadius: 8,
+                                            callbacks: {
+                                                label: function(context) {
+                                                    const label = context.label ||
+                                                        '';
+                                                    const value = context.parsed;
+                                                    const total = context.dataset
+                                                        .data.reduce((a,
+                                                            b) => a + b, 0);
+                                                    const percentage = ((value /
+                                                            total) * 100)
+                                                        .toFixed(1);
+                                                    return `${label}: ${value} KK (${percentage}%)`;
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
+                            });
                         });
                     },
                     error: function() {
-                        $('#loading-distribusi').html('<p class="text-danger">Gagal memuat data</p>');
+                        $('#loading-distribusi').html(
+                            '<p class="text-danger">Gagal memuat data</p>');
                     }
                 });
             }
@@ -546,8 +664,6 @@
                     url: '{{ route('kepemilikan.rumah.kerentanan') }}',
                     method: 'GET',
                     success: function(data) {
-                        $('#loading-kerentanan').hide();
-
                         const labels = data.map(item => item.kategori_kerentanan);
                         const values = data.map(item => item.total_kk);
                         const bgColors = labels.map(label => {
@@ -557,44 +673,62 @@
                             return colors.lainnya;
                         });
 
-                        // Update summary card
                         const rentan = data.find(item => item.kategori_kerentanan === 'Rentan')
                             ?.total_kk || 0;
-                        $('#rentan').text(rentan.toLocaleString());
+                        $('#rentan').text(rentan.toLocaleString('id-ID'));
 
-                        new Chart($('#chartKerentanan'), {
-                            type: 'doughnut',
-                            data: {
-                                labels: labels,
-                                datasets: [{
-                                    data: values,
-                                    backgroundColor: bgColors,
-                                    borderWidth: 2,
-                                    borderColor: '#fff'
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        position: 'bottom'
-                                    },
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(context) {
-                                                const label = context.label || '';
-                                                const value = context.parsed;
-                                                const total = context.dataset.data.reduce((
-                                                    a, b) => a + b, 0);
-                                                const percentage = ((value / total) * 100)
-                                                    .toFixed(1);
-                                                return `${label}: ${value} KK (${percentage}%)`;
+                        $('#loading-kerentanan').fadeOut(300, function() {
+                            $('#chartKerentanan').fadeIn(400);
+
+                            new Chart($('#chartKerentanan'), {
+                                type: 'doughnut',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        data: values,
+                                        backgroundColor: bgColors,
+                                        borderWidth: 3,
+                                        borderColor: '#fff',
+                                        hoverOffset: 10
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: true,
+                                    plugins: {
+                                        legend: {
+                                            position: 'bottom',
+                                            labels: {
+                                                font: {
+                                                    size: 12,
+                                                    weight: '600'
+                                                },
+                                                usePointStyle: true,
+                                                padding: 15
+                                            }
+                                        },
+                                        tooltip: {
+                                            backgroundColor: 'rgba(0,0,0,0.8)',
+                                            padding: 15,
+                                            cornerRadius: 8,
+                                            callbacks: {
+                                                label: function(context) {
+                                                    const label = context.label ||
+                                                        '';
+                                                    const value = context.parsed;
+                                                    const total = context.dataset
+                                                        .data.reduce((a,
+                                                            b) => a + b, 0);
+                                                    const percentage = ((value /
+                                                            total) * 100)
+                                                        .toFixed(1);
+                                                    return `${label}: ${value} KK (${percentage}%)`;
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
+                            });
                         });
                     },
                     error: function() {
@@ -609,9 +743,6 @@
                     url: '{{ route('kepemilikan.rumah.by.umur') }}',
                     method: 'GET',
                     success: function(data) {
-                        $('#loading-umur').hide();
-
-                        // Group data
                         const kelompokUmur = ['<30 Tahun', '30-45 Tahun', '46-60 Tahun', '>60 Tahun'];
                         const kepemilikanTypes = [...new Set(data.map(item => item.kepemilikan_rumah))];
 
@@ -625,46 +756,78 @@
                                 label: type,
                                 data: kelompokUmur.map(umur => {
                                     const item = data.find(d => d.kelompok_umur ===
-                                        umur && d.kepemilikan_rumah === type);
+                                        umur && d
+                                        .kepemilikan_rumah === type);
                                     return item ? item.total : 0;
                                 }),
                                 backgroundColor: color,
-                                borderColor: color,
-                                borderWidth: 1
+                                borderColor: color.replace('0.8', '1'),
+                                borderWidth: 2,
+                                borderRadius: 6
                             };
                         });
 
-                        new Chart($('#chartUmur'), {
-                            type: 'bar',
-                            data: {
-                                labels: kelompokUmur,
-                                datasets: datasets
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        position: 'top'
-                                    },
-                                    tooltip: {
-                                        mode: 'index',
-                                        intersect: false
-                                    }
+                        $('#loading-umur').fadeOut(300, function() {
+                            $('#chartUmur').fadeIn(400);
+
+                            new Chart($('#chartUmur'), {
+                                type: 'bar',
+                                data: {
+                                    labels: kelompokUmur,
+                                    datasets: datasets
                                 },
-                                scales: {
-                                    x: {
-                                        stacked: false
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: true,
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                            labels: {
+                                                font: {
+                                                    size: 13,
+                                                    weight: '600'
+                                                },
+                                                usePointStyle: true,
+                                                padding: 15
+                                            }
+                                        },
+                                        tooltip: {
+                                            backgroundColor: 'rgba(0,0,0,0.8)',
+                                            padding: 15,
+                                            cornerRadius: 8,
+                                            mode: 'index',
+                                            intersect: false
+                                        }
                                     },
-                                    y: {
-                                        stacked: false,
-                                        beginAtZero: true,
-                                        ticks: {
-                                            stepSize: 1
+                                    scales: {
+                                        x: {
+                                            stacked: false,
+                                            ticks: {
+                                                font: {
+                                                    size: 11,
+                                                    weight: 'bold'
+                                                }
+                                            },
+                                            grid: {
+                                                display: false
+                                            }
+                                        },
+                                        y: {
+                                            stacked: false,
+                                            beginAtZero: true,
+                                            ticks: {
+                                                stepSize: 1,
+                                                font: {
+                                                    size: 12
+                                                }
+                                            },
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.03)'
+                                            }
                                         }
                                     }
                                 }
-                            }
+                            });
                         });
                     },
                     error: function() {
@@ -679,9 +842,6 @@
                     url: '{{ route('kepemilikan.rumah.per.wilayah') }}',
                     method: 'GET',
                     success: function(data) {
-                        $('#loading-wilayah').hide();
-
-                        // Group data
                         const rtRwList = [...new Set(data.map(item => item.rt_rw))].sort();
                         const kepemilikanTypes = [...new Set(data.map(item => item.kepemilikan_rumah))];
 
@@ -699,42 +859,73 @@
                                     return item ? item.total_kk : 0;
                                 }),
                                 backgroundColor: color,
-                                borderColor: color,
-                                borderWidth: 1
+                                borderColor: color.replace('0.8', '1'),
+                                borderWidth: 2,
+                                borderRadius: 6
                             };
                         });
 
-                        new Chart($('#chartWilayah'), {
-                            type: 'bar',
-                            data: {
-                                labels: rtRwList,
-                                datasets: datasets
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        position: 'top'
-                                    },
-                                    tooltip: {
-                                        mode: 'index',
-                                        intersect: false
-                                    }
+                        $('#loading-wilayah').fadeOut(300, function() {
+                            $('#chartWilayah').fadeIn(400);
+
+                            new Chart($('#chartWilayah'), {
+                                type: 'bar',
+                                data: {
+                                    labels: rtRwList,
+                                    datasets: datasets
                                 },
-                                scales: {
-                                    x: {
-                                        stacked: true
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: true,
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                            labels: {
+                                                font: {
+                                                    size: 13,
+                                                    weight: '600'
+                                                },
+                                                usePointStyle: true,
+                                                padding: 15
+                                            }
+                                        },
+                                        tooltip: {
+                                            backgroundColor: 'rgba(0,0,0,0.8)',
+                                            padding: 15,
+                                            cornerRadius: 8,
+                                            mode: 'index',
+                                            intersect: false
+                                        }
                                     },
-                                    y: {
-                                        stacked: true,
-                                        beginAtZero: true,
-                                        ticks: {
-                                            stepSize: 1
+                                    scales: {
+                                        x: {
+                                            stacked: true,
+                                            ticks: {
+                                                font: {
+                                                    size: 11,
+                                                    weight: 'bold'
+                                                }
+                                            },
+                                            grid: {
+                                                display: false
+                                            }
+                                        },
+                                        y: {
+                                            stacked: true,
+                                            beginAtZero: true,
+                                            ticks: {
+                                                stepSize: 1,
+                                                font: {
+                                                    size: 12
+                                                }
+                                            },
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.03)'
+                                            }
                                         }
                                     }
                                 }
-                            }
+                            });
                         });
                     },
                     error: function() {
@@ -749,8 +940,6 @@
                     url: '{{ route('kepemilikan.rumah.anomali') }}',
                     method: 'GET',
                     success: function(data) {
-                        $('#loading-anomali').hide();
-
                         const labels = data.map(item => item.kategori);
                         const values = data.map(item => item.total);
                         const bgColors = labels.map(label => {
@@ -759,44 +948,62 @@
                             return colors.tanpaData;
                         });
 
-                        // Update summary card
                         const anomali = data.find(item => item.kategori.includes('Anomali'))?.total ||
                             0;
-                        $('#anomali').text(anomali.toLocaleString());
+                        $('#anomali').text(anomali.toLocaleString('id-ID'));
 
-                        new Chart($('#chartAnomali'), {
-                            type: 'pie',
-                            data: {
-                                labels: labels,
-                                datasets: [{
-                                    data: values,
-                                    backgroundColor: bgColors,
-                                    borderWidth: 2,
-                                    borderColor: '#fff'
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        position: 'bottom'
-                                    },
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(context) {
-                                                const label = context.label || '';
-                                                const value = context.parsed;
-                                                const total = context.dataset.data.reduce((
-                                                    a, b) => a + b, 0);
-                                                const percentage = ((value / total) * 100)
-                                                    .toFixed(1);
-                                                return `${label}: ${value} KK (${percentage}%)`;
+                        $('#loading-anomali').fadeOut(300, function() {
+                            $('#chartAnomali').fadeIn(400);
+
+                            new Chart($('#chartAnomali'), {
+                                type: 'pie',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        data: values,
+                                        backgroundColor: bgColors,
+                                        borderWidth: 3,
+                                        borderColor: '#fff',
+                                        hoverOffset: 10
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: true,
+                                    plugins: {
+                                        legend: {
+                                            position: 'bottom',
+                                            labels: {
+                                                font: {
+                                                    size: 12,
+                                                    weight: '600'
+                                                },
+                                                usePointStyle: true,
+                                                padding: 15
+                                            }
+                                        },
+                                        tooltip: {
+                                            backgroundColor: 'rgba(0,0,0,0.8)',
+                                            padding: 15,
+                                            cornerRadius: 8,
+                                            callbacks: {
+                                                label: function(context) {
+                                                    const label = context.label ||
+                                                        '';
+                                                    const value = context.parsed;
+                                                    const total = context.dataset
+                                                        .data.reduce((a,
+                                                            b) => a + b, 0);
+                                                    const percentage = ((value /
+                                                            total) * 100)
+                                                        .toFixed(1);
+                                                    return `${label}: ${value} KK (${percentage}%)`;
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
+                            });
                         });
                     },
                     error: function() {

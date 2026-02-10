@@ -3,343 +3,261 @@
 @section('content-header', 'Statistik Pendidikan')
 
 @section('content')
-    <div class="container-fluid">
-        <!-- Summary Cards -->
-        <div class="row mb-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="card bg-primary text-white shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0">Total Penduduk</h6>
-                                <h3 id="totalPenduduk">0</h3>
-                            </div>
-                            <div class="ms-3">
-                                <i class="fas fa-users fa-3x opacity-50"></i>
-                            </div>
-                        </div>
+
+    <!-- Premium Info Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
+            <div class="info-box-premium bg-gradient-info elevation-3">
+                <div class="info-box-premium-icon">
+                    <div class="icon-circle bg-white">
+                        <i class="fas fa-users text-info"></i>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card bg-success text-white shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0">Kategori Pendidikan</h6>
-                                <h3 class="mb-0 mt-2">{{ $statistik }}</h3>
-                            </div>
-                            <div class="ms-3">
-                                <i class="fas fa-graduation-cap fa-3x opacity-50"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card bg-info text-white shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0">Laki-laki</h6>
-                                <h3 id="totalLakiLaki">0</h3>
-                            </div>
-                            <div class="ms-3">
-                                <i class="fas fa-male fa-3x opacity-50"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card bg-warning text-white shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0">Perempuan</h6>
-                                <h3 id="totalPerempuan">0</h3>
-                            </div>
-                            <div class="ms-3">
-                                <i class="fas fa-female fa-3x opacity-50"></i>
-                            </div>
-                        </div>
+                <div class="info-box-premium-content">
+                    <span class="info-box-premium-text">Total Penduduk</span>
+                    <span class="info-box-premium-number" id="totalPenduduk">
+                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
+                    </span>
+                    <div class="progress-premium">
+                        <div class="progress-bar bg-white"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row mb-4">
-            <div class="col-lg-7">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Top 10 Distribusi Pendidikan</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="pendidikanBarChart" height="400"></canvas>
+        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
+            <div class="info-box-premium bg-gradient-success elevation-3">
+                <div class="info-box-premium-icon">
+                    <div class="icon-circle bg-white">
+                        <i class="fas fa-graduation-cap text-success"></i>
                     </div>
                 </div>
-            </div>
-
-            <div class="col-lg-5">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Proporsi Pendidikan</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="pendidikanPieChart" height="400"></canvas>
+                <div class="info-box-premium-content">
+                    <span class="info-box-premium-text">Kategori Pendidikan</span>
+                    <span class="info-box-premium-number">{{ $statistik }}</span>
+                    <div class="progress-premium">
+                        <div class="progress-bar bg-white"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Data Section: Tab + Table (Full Width) -->
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-3"><i class="fas fa-list me-2"></i>Kategori Pendidikan</h5>
-
-                        <!-- Tab Navigation -->
-                        <div id="pendidikanTabs" class="kategori-tabs">
-                            <!-- Tabs akan dimuat via AJAX -->
-                            <div class="p-3 text-center">
-                                <i class="fas fa-spinner fa-spin"></i> Memuat kategori...
-                            </div>
-                        </div>
+        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
+            <div class="info-box-premium bg-gradient-primary elevation-3">
+                <div class="info-box-premium-icon">
+                    <div class="icon-circle bg-white">
+                        <i class="fas fa-male text-primary"></i>
                     </div>
+                </div>
+                <div class="info-box-premium-content">
+                    <span class="info-box-premium-text">Laki-laki</span>
+                    <span class="info-box-premium-number" id="totalLakiLaki">
+                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
+                    </span>
+                    <div class="progress-premium">
+                        <div class="progress-bar bg-white"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="mb-0">
-                                <i class="fas fa-table me-2"></i>Detail Data: <span id="selectedCategory"
-                                    class="text-primary">-</span>
-                            </h6>
-                            <button class="btn btn-sm btn-success" id="exportExcel">
-                                <i class="fas fa-file-excel me-1"></i>Export Excel
-                            </button>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table-bordered table-hover table-striped table-sm nowrap table" id="detailTable">
-                                <thead class="table-dark">
-                                    <tr class="nowrap text-center">
-                                        <th>NO</th>
-                                        <th>NIK</th>
-                                        <th>NAMA</th>
-                                        <th>KK</th>
-                                        <th>JENIS KELAMIN</th>
-                                        <th>TANGGAL LAHIR</th>
-                                        <th>ALAMAT</th>
-                                        <th>RT/RW</th>
-                                        <th>Desa</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-
-                        <div id="noDataMessage" class="alert alert-info mt-3" style="display: none;">
-                            <i class="fas fa-info-circle me-2"></i>Tidak ada data untuk kategori ini
-                        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="info-box-premium bg-gradient-warning elevation-3">
+                <div class="info-box-premium-icon">
+                    <div class="icon-circle bg-white">
+                        <i class="fas fa-female text-warning"></i>
+                    </div>
+                </div>
+                <div class="info-box-premium-content">
+                    <span class="info-box-premium-text">Perempuan</span>
+                    <span class="info-box-premium-number" id="totalPerempuan">
+                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
+                    </span>
+                    <div class="progress-premium">
+                        <div class="progress-bar bg-white"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Hidden data for JavaScript -->
+    <!-- Charts Row - Premium Design -->
+    <div class="row">
+        <div class="col-lg-7 mb-4">
+            <div class="card card-widget-premium elevation-3">
+                <div class="card-header-premium bg-gradient-primary">
+                    <div class="card-header-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="card-header-text">
+                        <h3 class="card-title-premium">Top 10 Distribusi Pendidikan</h3>
+                        <p class="card-subtitle-premium">Tingkat pendidikan tertinggi berdasarkan gender</p>
+                    </div>
+                    <div class="card-tools-premium">
+                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body-premium">
+                    <div id="loadingBarChart" class="loading-premium">
+                        <div class="spinner-premium">
+                            <div class="double-bounce1"></div>
+                            <div class="double-bounce2"></div>
+                        </div>
+                        <p class="loading-text">Memproses data...</p>
+                    </div>
+                    <!-- ✅ TAMBAHKAN WRAPPER DENGAN HEIGHT TETAP -->
+                    <div style="position: relative; height: 400px; display: none;" id="barChartWrapper">
+                        <canvas id="pendidikanBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5 mb-4">
+            <div class="card card-widget-premium elevation-3">
+                <div class="card-header-premium bg-gradient-success">
+                    <div class="card-header-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <div class="card-header-text">
+                        <h3 class="card-title-premium">Proporsi Pendidikan</h3>
+                        <p class="card-subtitle-premium">Komposisi tingkat pendidikan populasi</p>
+                    </div>
+                    <div class="card-tools-premium">
+                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body-premium">
+                    <div id="loadingPieChart" class="loading-premium">
+                        <div class="spinner-premium">
+                            <div class="double-bounce1"></div>
+                            <div class="double-bounce2"></div>
+                        </div>
+                        <p class="loading-text">Memproses data...</p>
+                    </div>
+                    <!-- ✅ TAMBAHKAN WRAPPER DENGAN HEIGHT TETAP -->
+                    <div style="position: relative; height: 400px; display: none;" id="pieChartWrapper">
+                        <canvas id="pendidikanPieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Data Tables - Premium Design -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-widget-premium elevation-3">
+                <div class="card-header-premium bg-gradient-dark">
+                    <div class="card-header-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="card-header-text">
+                        <h3 class="card-title-premium">Data Detail Pendidikan</h3>
+                        <p class="card-subtitle-premium">Eksplorasi data berdasarkan kategori pendidikan</p>
+                    </div>
+                    <div class="card-tools-premium">
+                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body-premium p-0">
+                    <!-- Category Grid Pills -->
+                    <div class="pills-container-premium">
+                        <div id="pendidikanTabs" class="kategori-tabs-premium">
+                            <!-- Tabs akan dimuat via AJAX -->
+                            <div class="loading-tabs-premium">
+                                <div class="spinner-premium">
+                                    <div class="double-bounce1"></div>
+                                    <div class="double-bounce2"></div>
+                                </div>
+                                <p class="loading-text">Memuat kategori...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table Section -->
+                    <div class="tab-content-premium">
+                        <div class="table-header-premium">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="text-dark font-weight-bold mb-0">
+                                    <i class="fas fa-table text-primary mr-2"></i>Detail Data:
+                                    <span id="selectedCategory" class="text-primary">-</span>
+                                </h6>
+                                <button class="btn btn-success btn-sm elevation-2" id="exportExcel">
+                                    <i class="fas fa-file-excel mr-1"></i>Export Excel
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-container-premium">
+                            <div class="table-responsive">
+                                <table class="table-premium" id="detailTable">
+                                    <thead>
+                                        <tr>
+                                            <th width="1%">No</th>
+                                            <th>NIK</th>
+                                            <th>Nama Lengkap</th>
+                                            <th>No. KK</th>
+                                            <th>JK</th>
+                                            <th>Tanggal Lahir</th>
+                                            <th>Alamat</th>
+                                            <th>RT/RW</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+                        <div id="noDataMessage" class="alert-premium alert-info-premium" style="display: none;">
+                            <div class="alert-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="alert-content">
+                                <h5 class="alert-title">Tidak Ada Data</h5>
+                                <p class="alert-text">Tidak ada data untuk kategori ini</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('styles')
-    <style>
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        /* Sticky header hanya untuk horizontal scroll */
-        .table thead th {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background-color: #343a40;
-            /* Sesuaikan dengan warna table-dark */
-        }
-
-        .card {
-            border: none;
-            border-radius: 10px;
-            transition: transform 0.2s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .list-group-item {
-            border-left: 4px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .list-group-item:hover {
-            background-color: #f8f9fc;
-        }
-
-        .list-group-item.active {
-            background-color: #4e73df;
-            border-color: #4e73df;
-            color: white;
-        }
-
-        .list-group-item.active .text-muted {
-            color: rgba(255, 255, 255, 0.8) !important;
-        }
-
-        .opacity-50 {
-            opacity: 0.5;
-        }
-
-        .shadow-sm {
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-        }
-
-        .legend-box {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border-radius: 3px;
-            border: 2px solid #fff;
-            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-            flex-shrink: 0;
-        }
-
-        /* Tab Kategori Styling */
-        .kategori-tabs {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 8px;
-            max-height: none;
-            /* 3 baris x ~60px per baris */
-            overflow-y: auto;
-            padding: 10px;
-            background-color: #f8f9fc;
-            border-radius: 8px;
-        }
-
-        .kategori-tab-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 12px;
-            background: white;
-            border: 2px solid #e3e6f0;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: #5a5c69;
-            font-size: 13px;
-        }
-
-        .kategori-tab-item:hover {
-            border-color: #4e73df;
-            background-color: #f8f9fc;
-            transform: translateY(-2px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .kategori-tab-item.active {
-            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-            border-color: #4e73df;
-            color: white;
-            font-weight: 600;
-        }
-
-        .kategori-tab-item .legend-box {
-            width: 12px;
-            height: 12px;
-            border-radius: 2px;
-            flex-shrink: 0;
-            margin-right: 8px;
-        }
-
-        .kategori-tab-item .tab-content {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            min-width: 0;
-        }
-
-        .kategori-tab-item .tab-label {
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-weight: 500;
-        }
-
-        .kategori-tab-item .tab-badge {
-            background-color: #e3e6f0;
-            color: #5a5c69;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 8px;
-        }
-
-        .kategori-tab-item.active .tab-badge {
-            background-color: rgba(255, 255, 255, 0.3);
-            color: white;
-        }
-
-        /* Scrollbar untuk tabs */
-        .kategori-tabs::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        .kategori-tabs::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .kategori-tabs::-webkit-scrollbar-thumb {
-            background: #4e73df;
-            border-radius: 10px;
-        }
-
-        .kategori-tabs::-webkit-scrollbar-thumb:hover {
-            background: #224abe;
-        }
-
-        /* Table Responsive */
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        .table thead th {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background-color: #343a40;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .opacity-50 {
-            opacity: 0.5;
-        }
-
-        .shadow-sm {
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-        }
-    </style>
 @endpush
+
 @push('scripts')
     <script>
         $(function() {
             let barChart, pieChart, detailTable;
+
+            // Initialize Select2 with premium theme
+            $('.select2-primary').select2({
+                theme: 'bootstrap4',
+                width: '100%',
+                placeholder: 'Pilih RT/RW'
+            });
+
+            $('.select2-success').select2({
+                theme: 'bootstrap4',
+                width: '100%',
+                placeholder: 'Pilih Desa'
+            });
+
+            $('.select2-info').select2({
+                theme: 'bootstrap4',
+                width: '100%',
+                placeholder: 'Pilih Jenis Kelamin'
+            });
 
             // Inisialisasi Bar Chart (Top 10)
             barChart = new Chart($('#pendidikanBarChart'), {
@@ -351,13 +269,15 @@
                         data: [],
                         backgroundColor: '#4e73df',
                         borderColor: '#4e73df',
-                        borderWidth: 1
+                        borderWidth: 2,
+                        borderRadius: 8
                     }, {
                         label: 'Perempuan',
                         data: [],
                         backgroundColor: '#e74a3b',
                         borderColor: '#e74a3b',
-                        borderWidth: 1
+                        borderWidth: 2,
+                        borderRadius: 8
                     }]
                 },
                 options: {
@@ -366,14 +286,40 @@
                     plugins: {
                         legend: {
                             display: true,
-                            position: 'top'
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 13,
+                                    weight: '600'
+                                },
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            padding: 15,
+                            cornerRadius: 8,
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            }
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                precision: 0
+                                precision: 0,
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.03)'
                             }
                         },
                         x: {
@@ -382,15 +328,19 @@
                                 maxRotation: 45,
                                 minRotation: 45,
                                 font: {
-                                    size: 10
+                                    size: 11,
+                                    weight: 'bold'
                                 }
+                            },
+                            grid: {
+                                display: false
                             }
                         }
                     }
                 }
             });
 
-            // Inisialisasi Pie Chart (Legend di bawah)
+            // Inisialisasi Pie Chart
             pieChart = new Chart($('#pendidikanPieChart'), {
                 type: 'doughnut',
                 data: {
@@ -406,8 +356,10 @@
                             '#6610f2', '#d63384', '#fd7e14', '#20c997', '#6f42c1',
                             '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'
                         ],
-                        borderWidth: 2,
-                        borderColor: '#fff'
+                        borderWidth: 4,
+                        borderColor: '#fff',
+                        hoverBorderWidth: 6,
+                        hoverOffset: 10
                     }]
                 },
                 options: {
@@ -419,10 +371,12 @@
                             position: 'bottom',
                             labels: {
                                 boxWidth: 12,
-                                padding: 8,
+                                padding: 12,
                                 font: {
-                                    size: 10
+                                    size: 11,
+                                    weight: '600'
                                 },
+                                usePointStyle: true,
                                 generateLabels: function(chart) {
                                     const data = chart.data;
                                     if (data.labels.length && data.datasets.length) {
@@ -438,6 +392,9 @@
                             }
                         },
                         tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            padding: 15,
+                            cornerRadius: 8,
                             callbacks: {
                                 label: function(context) {
                                     let label = context.label || '';
@@ -452,15 +409,8 @@
                 }
             });
 
-            // Tampilkan loading state
-            $('#totalPenduduk').html('<i class="fas fa-spinner fa-spin"></i>');
-            $('#totalLakiLaki').html('<i class="fas fa-spinner fa-spin"></i>');
-            $('#totalPerempuan').html('<i class="fas fa-spinner fa-spin"></i>');
-            $('#pendidikanList').html(
-                '<div class="p-3 text-center"><i class="fas fa-spinner fa-spin"></i> Memuat...</div>');
-
             /* ===========================
-               LOAD DATA STATISTIK (Asynchronous)
+               LOAD DATA STATISTIK
             =========================== */
             $.getJSON("{{ route('pendidikan.json') }}", function(res) {
                 const data = res.statistik;
@@ -473,11 +423,11 @@
                     perempuan += Number(v.perempuan);
                 });
 
-                $('#totalPenduduk').text(res.total.toLocaleString());
-                $('#totalLakiLaki').text(laki.toLocaleString());
-                $('#totalPerempuan').text(perempuan.toLocaleString());
+                $('#totalPenduduk').text(res.total.toLocaleString('id-ID'));
+                $('#totalLakiLaki').text(laki.toLocaleString('id-ID'));
+                $('#totalPerempuan').text(perempuan.toLocaleString('id-ID'));
 
-                /* ===== UPDATE TAB PENDIDIKAN (dengan warna legend) ===== */
+                /* ===== UPDATE TAB PENDIDIKAN (PREMIUM GRID) ===== */
                 const colors = [
                     '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b',
                     '#858796', '#5a5c69', '#fd7e14', '#20c997', '#6f42c1',
@@ -493,27 +443,32 @@
                     const color = colors[i % colors.length];
 
                     tabsHtml += `
-                <a href="#" class="kategori-tab-item ${i===0?'active':''}"
-                data-id="${v.pendidikan_id}" data-nama="${v.pendidikan_nama}">
-                    <div class="tab-content">
-                        <span class="legend-box" style="background-color: ${color};"></span>
-                        <span class="tab-label" title="${v.pendidikan_nama}">${v.pendidikan_nama}</span>
-                    </div>
-                    <span class="tab-badge">${v.jumlah}</span>
-                </a>`;
+                        <a href="#" class="kategori-tab-item-premium ${i===0?'active':''}"
+                           data-id="${v.pendidikan_id}" data-nama="${v.pendidikan_nama}">
+                            <div class="tab-content-wrapper">
+                                <span class="legend-box-premium" style="background-color: ${color};"></span>
+                                <span class="tab-label-premium" title="${v.pendidikan_nama}">${v.pendidikan_nama}</span>
+                            </div>
+                            <span class="tab-badge-premium">${v.jumlah}</span>
+                        </a>`;
                 });
                 $('#pendidikanTabs').html(tabsHtml);
 
                 /* ===========================
                    CLICK TAB
                 =========================== */
-                $(document).on('click', '.kategori-tab-item', function(e) {
+                $(document).on('click', '.kategori-tab-item-premium', function(e) {
                     e.preventDefault();
-                    $('.kategori-tab-item').removeClass('active');
+                    $('.kategori-tab-item-premium').removeClass('active');
                     $(this).addClass('active');
 
                     $('#selectedCategory').text($(this).data('nama'));
                     loadTable($(this).data('id'));
+
+                    // Smooth scroll to table
+                    $('html, body').animate({
+                        scrollTop: $('.table-container-premium').offset().top - 100
+                    }, 300);
                 });
 
                 /* ===== UPDATE CHART DATA ===== */
@@ -522,42 +477,48 @@
                 const perempuanArr = data.map(v => Number(v.perempuan));
                 const totalArr = data.map(v => Number(v.jumlah));
 
-                // Untuk Bar Chart: Ambil hanya Top 10 kategori terbesar
+                // Top 10 untuk Bar Chart
                 const top10Labels = labels.slice(0, 10);
                 const top10Laki = lakiArr.slice(0, 10);
                 const top10Perempuan = perempuanArr.slice(0, 10);
 
-                // Update bar chart dengan top 10 saja
-                barChart.data.labels = top10Labels;
-                barChart.data.datasets[0].data = top10Laki;
-                barChart.data.datasets[1].data = top10Perempuan;
-                barChart.update();
+                // Update charts dengan animasi
+                $('#loadingBarChart').fadeOut(300, function() {
+                    // ✅ Show wrapper instead of canvas directly
+                    $('#barChartWrapper').fadeIn(400);
 
-                // Update pie chart dengan semua data
-                pieChart.data.labels = labels;
-                pieChart.data.datasets[0].data = totalArr;
-                pieChart.update();
+                    barChart.data.labels = top10Labels;
+                    barChart.data.datasets[0].data = top10Laki;
+                    barChart.data.datasets[1].data = top10Perempuan;
+                    barChart.update();
+                });
 
-                /* ===== AUTO LOAD TABLE (hanya jika ada data) ===== */
+                $('#loadingPieChart').fadeOut(300, function() {
+                    // ✅ Show wrapper instead of canvas directly
+                    $('#pieChartWrapper').fadeIn(400);
+
+                    pieChart.data.labels = labels;
+                    pieChart.data.datasets[0].data = totalArr;
+                    pieChart.update();
+                });
+
+                /* ===== AUTO LOAD TABLE ===== */
                 if (data.length) {
                     $('#selectedCategory').text(data[0].pendidikan_nama);
-                    // Delay sedikit agar chart render dulu
                     setTimeout(() => {
                         loadTable(data[0].pendidikan_id);
                     }, 100);
                 }
             }).fail(function() {
-                // Handle error
-                $('#pendidikanList').html(
-                    '<div class="p-3 text-center text-danger"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data</div>'
+                $('#pendidikanTabs').html(
+                    '<div class="alert-premium alert-info-premium"><div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="alert-content"><h5 class="alert-title">Error</h5><p class="alert-text">Gagal memuat data</p></div></div>'
                 );
             });
 
             /* ===========================
-                DATATABLE (Lazy Load)
+                DATATABLE
             =========================== */
             function loadTable(id) {
-
                 if (detailTable) {
                     detailTable.destroy();
                 }
@@ -573,8 +534,23 @@
                     info: true,
                     lengthMenu: [
                         [10, 25, 50, 100, -1],
-                        [10, 25, 50, 100, "All"]
+                        [10, 25, 50, 100, "Semua"]
                     ],
+                    language: {
+                        processing: '<div class="spinner-premium"><div class="double-bounce1"></div><div class="double-bounce2"></div></div><p class="loading-text">Memproses data...</p>',
+                        lengthMenu: 'Tampilkan _MENU_ data per halaman',
+                        zeroRecords: 'Data tidak ditemukan',
+                        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                        infoEmpty: 'Tidak ada data tersedia',
+                        infoFiltered: '(disaring dari _MAX_ total data)',
+                        search: 'Pencarian:',
+                        paginate: {
+                            first: '<i class="fas fa-angle-double-left"></i>',
+                            last: '<i class="fas fa-angle-double-right"></i>',
+                            next: '<i class="fas fa-angle-right"></i>',
+                            previous: '<i class="fas fa-angle-left"></i>'
+                        }
+                    },
                     ajax: {
                         url: "{{ route('pendidikan.datatable') }}",
                         data: {
@@ -586,72 +562,76 @@
                             name: 'DT_RowIndex',
                             orderable: false,
                             searchable: false,
-                            class: 'text-center nowrap'
+                            class: 'text-center'
                         },
                         {
                             data: 'no_nik',
                             name: 'no_nik',
-                            class: 'nowrap text-center',
+                            class: 'text-center',
                             defaultContent: '-'
                         },
                         {
                             data: 'nama',
                             name: 'nama',
-                            class: 'nowrap',
                             defaultContent: '-'
                         },
                         {
                             data: 'no_kk',
                             name: 'no_kk',
-                            class: 'nowrap text-center',
+                            class: 'text-center',
                             defaultContent: '-'
                         },
                         {
                             data: 'jenkel',
                             name: 'jenkel',
-                            class: 'text-center nowrap'
+                            class: 'text-center'
                         },
                         {
                             data: 'tgl_lahir',
                             name: 'tgl_lahir',
-                            class: 'text-center nowrap'
+                            class: 'text-center'
                         },
                         {
                             data: 'kp',
                             name: 'kp',
-                            class: 'text-left nowrap'
+                            class: 'text-left'
                         },
                         {
                             data: 'rt_rw',
                             name: 'rt_rw',
                             orderable: false,
                             searchable: false,
-                            class: 'text-center nowrap'
+                            class: 'text-center'
                         },
-                        {
-                            data: 'desa',
-                            name: 'desa',
-                            class: 'text-center nowrap'
-                        }
                     ],
                 });
             }
-
 
             /* ===========================
                EXPORT EXCEL
             =========================== */
             document.getElementById('exportExcel').addEventListener('click', function() {
                 if (!detailTable) {
-                    alert('Data belum dimuat');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Peringatan',
+                        text: 'Data belum dimuat',
+                        confirmButtonColor: '#667eea'
+                    });
                     return;
                 }
 
                 const data = detailTable.rows({
                     search: 'applied'
                 }).data();
+
                 if (data.length === 0) {
-                    alert('Tidak ada data untuk di-export');
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Informasi',
+                        text: 'Tidak ada data untuk di-export',
+                        confirmButtonColor: '#667eea'
+                    });
                     return;
                 }
 
@@ -674,6 +654,14 @@
                 a.click();
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'Data berhasil di-export',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             });
         });
     </script>

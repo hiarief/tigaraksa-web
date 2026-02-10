@@ -5,195 +5,345 @@
 @section('content')
     <div class="container-fluid">
 
-        <!-- Filter Desa -->
+        <!-- Filter Section - Premium Design -->
         <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <label for="filterDesa" class="form-label"><strong>Filter Desa:</strong></label>
-                        <select id="filterDesa" class="form-control">
-                            <option value="">Semua Desa</option>
-                            @foreach ($desaList as $desa)
-                                <option value="{{ $desa->code }}">{{ $desa->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> Pilih desa untuk melihat statistik detail. Data akan dimuat secara
-                    otomatis.
-                </div>
-            </div>
-        </div>
-
-        <!-- Statistik Kependudukan -->
-        <div class="row">
-            <div class="col-lg-3 col-6">
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3 id="totalPenduduk"><i class="fas fa-spinner fa-spin"></i></h3>
-                        <p>Total Penduduk</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h3 id="totalKK"><i class="fas fa-spinner fa-spin"></i></h3>
-                        <p>Total Kepala Keluarga</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-home"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h3 id="rataKK"><i class="fas fa-spinner fa-spin"></i></h3>
-                        <p>Rata-rata Anggota/KK</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-user-friends"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <div class="small-box bg-danger">
-                    <div class="inner">
-                        <h3 id="persenBPJS"><i class="fas fa-spinner fa-spin"></i></h3>
-                        <p>Kepesertaan BPJS</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-heartbeat"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Row 1: Gender & Umur -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-venus-mars"></i> Statistik Jenis Kelamin</h3>
-                    </div>
-                    <div class="card-body">
-                        <div id="loadingGender" class="text-center">
-                            <i class="fas fa-spinner fa-spin fa-3x"></i>
-                            <p>Memuat data...</p>
+            <div class="col-12">
+                <div class="card card-primary card-outline elevation-2">
+                    <div class="card-header bg-gradient-primary border-0">
+                        <h3 class="card-title text-white">
+                            <i class="fas fa-sliders-h mr-2"></i>Panel Filter & Kontrol
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool text-white" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
                         </div>
-                        <canvas id="chartGender" style="display:none;"></canvas>
+                    </div>
+                    <div class="card-body bg-light">
+                        <div class="row align-items-end">
+                            <div class="col-md-8">
+                                <div class="form-group mb-0">
+                                    <label class="font-weight-bold text-dark text-sm">
+                                        <i class="fas fa-map-marker-alt text-primary mr-1"></i>Filter Desa
+                                    </label>
+                                    <select id="filterDesa" class="form-control form-control-lg select2-primary">
+                                        <option value="">Semua Desa</option>
+                                        @foreach ($desaList as $desa)
+                                            <option value="{{ $desa->code }}">{{ $desa->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" id="btnAnalisis"
+                                    class="btn btn-primary btn-lg btn-block elevation-2">
+                                    <i class="fas fa-chart-line mr-2"></i>Analisis Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Premium Info Cards -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
+                <div class="info-box-premium bg-gradient-info elevation-3">
+                    <div class="info-box-premium-icon">
+                        <div class="icon-circle bg-white">
+                            <i class="fas fa-users text-info"></i>
+                        </div>
+                    </div>
+                    <div class="info-box-premium-content">
+                        <span class="info-box-premium-text">Total Penduduk</span>
+                        <span class="info-box-premium-number" id="totalPenduduk">
+                            <div class="spinner-border spinner-border-sm text-white" role="status"></div>
+                        </span>
+                        <div class="progress-premium">
+                            <div class="progress-bar bg-white"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
+                <div class="info-box-premium bg-gradient-success elevation-3">
+                    <div class="info-box-premium-icon">
+                        <div class="icon-circle bg-white">
+                            <i class="fas fa-home text-success"></i>
+                        </div>
+                    </div>
+                    <div class="info-box-premium-content">
+                        <span class="info-box-premium-text">Total Kepala Keluarga</span>
+                        <span class="info-box-premium-number" id="totalKK">
+                            <div class="spinner-border spinner-border-sm text-white" role="status"></div>
+                        </span>
+                        <div class="progress-premium">
+                            <div class="progress-bar bg-white"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
+                <div class="info-box-premium bg-gradient-warning elevation-3">
+                    <div class="info-box-premium-icon">
+                        <div class="icon-circle bg-white">
+                            <i class="fas fa-user-friends text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="info-box-premium-content">
+                        <span class="info-box-premium-text">Rata-rata Anggota/KK</span>
+                        <span class="info-box-premium-number" id="rataKK">
+                            <div class="spinner-border spinner-border-sm text-white" role="status"></div>
+                        </span>
+                        <div class="progress-premium">
+                            <div class="progress-bar bg-white"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="info-box-premium bg-gradient-danger elevation-3">
+                    <div class="info-box-premium-icon">
+                        <div class="icon-circle bg-white">
+                            <i class="fas fa-heartbeat text-danger"></i>
+                        </div>
+                    </div>
+                    <div class="info-box-premium-content">
+                        <span class="info-box-premium-text">Kepesertaan BPJS</span>
+                        <span class="info-box-premium-number" id="persenBPJS">
+                            <div class="spinner-border spinner-border-sm text-white" role="status"></div>
+                        </span>
+                        <div class="progress-premium">
+                            <div class="progress-bar bg-white"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 1: Gender & Umur -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card card-widget-premium elevation-3">
+                    <div class="card-header-premium bg-gradient-primary">
+                        <div class="card-header-icon">
+                            <i class="fas fa-venus-mars"></i>
+                        </div>
+                        <div class="card-header-text">
+                            <h3 class="card-title-premium">Statistik Jenis Kelamin</h3>
+                            <p class="card-subtitle-premium">Komposisi penduduk berdasarkan gender</p>
+                        </div>
+                        <div class="card-tools-premium">
+                            <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body-premium">
+                        <div id="loadingGender" class="loading-premium">
+                            <div class="spinner-premium">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                            </div>
+                            <p class="loading-text">Memproses data...</p>
+                        </div>
+                        <canvas id="chartGender" style="display:none; max-height: 320px;"></canvas>
                         <div id="statsGenderText" class="mt-3" style="display:none;"></div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-birthday-cake"></i> Statistik Kelompok Umur</h3>
-                    </div>
-                    <div class="card-body">
-                        <div id="loadingUmur" class="text-center">
-                            <i class="fas fa-spinner fa-spin fa-3x"></i>
-                            <p>Memuat data...</p>
+
+            <div class="col-lg-6 mb-4">
+                <div class="card card-widget-premium elevation-3">
+                    <div class="card-header-premium bg-gradient-info">
+                        <div class="card-header-icon">
+                            <i class="fas fa-birthday-cake"></i>
                         </div>
-                        <canvas id="chartUmur" style="display:none;"></canvas>
+                        <div class="card-header-text">
+                            <h3 class="card-title-premium">Statistik Kelompok Umur</h3>
+                            <p class="card-subtitle-premium">Distribusi penduduk per kelompok usia</p>
+                        </div>
+                        <div class="card-tools-premium">
+                            <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body-premium">
+                        <div id="loadingUmur" class="loading-premium">
+                            <div class="spinner-premium">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                            </div>
+                            <p class="loading-text">Memproses data...</p>
+                        </div>
+                        <canvas id="chartUmur" style="display:none; max-height: 320px;"></canvas>
                         <div id="statsUmurText" class="mt-3" style="display:none;"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Row 2: BPJS & Perkawinan -->
+        <!-- Charts Row 2: BPJS & Perkawinan -->
         <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-heartbeat"></i> Statistik Kepesertaan BPJS</h3>
-                    </div>
-                    <div class="card-body">
-                        <div id="loadingBPJS" class="text-center">
-                            <i class="fas fa-spinner fa-spin fa-3x"></i>
-                            <p>Memuat data...</p>
+            <div class="col-lg-6 mb-4">
+                <div class="card card-widget-premium elevation-3">
+                    <div class="card-header-premium bg-gradient-success">
+                        <div class="card-header-icon">
+                            <i class="fas fa-heartbeat"></i>
                         </div>
-                        <canvas id="chartBPJS" style="display:none;"></canvas>
+                        <div class="card-header-text">
+                            <h3 class="card-title-premium">Statistik Kepesertaan BPJS</h3>
+                            <p class="card-subtitle-premium">Status kepesertaan jaminan kesehatan</p>
+                        </div>
+                        <div class="card-tools-premium">
+                            <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body-premium">
+                        <div id="loadingBPJS" class="loading-premium">
+                            <div class="spinner-premium">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                            </div>
+                            <p class="loading-text">Memproses data...</p>
+                        </div>
+                        <canvas id="chartBPJS" style="display:none; max-height: 320px;"></canvas>
                         <div id="statsBPJSText" class="mt-3" style="display:none;"></div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-ring"></i> Statistik Status Perkawinan</h3>
-                    </div>
-                    <div class="card-body">
-                        <div id="loadingPerkawinan" class="text-center">
-                            <i class="fas fa-spinner fa-spin fa-3x"></i>
-                            <p>Memuat data...</p>
+
+            <div class="col-lg-6 mb-4">
+                <div class="card card-widget-premium elevation-3">
+                    <div class="card-header-premium bg-gradient-warning">
+                        <div class="card-header-icon">
+                            <i class="fas fa-ring"></i>
                         </div>
-                        <canvas id="chartPerkawinan" style="display:none;"></canvas>
+                        <div class="card-header-text">
+                            <h3 class="card-title-premium">Statistik Status Perkawinan</h3>
+                            <p class="card-subtitle-premium">Klasifikasi status pernikahan</p>
+                        </div>
+                        <div class="card-tools-premium">
+                            <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body-premium">
+                        <div id="loadingPerkawinan" class="loading-premium">
+                            <div class="spinner-premium">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                            </div>
+                            <p class="loading-text">Memproses data...</p>
+                        </div>
+                        <canvas id="chartPerkawinan" style="display:none; max-height: 320px;"></canvas>
                         <div id="statsPerkawinanText" class="mt-3" style="display:none;"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Row 3: Pendapatan & Kepemilikan Rumah -->
+        <!-- Charts Row 3: Pendapatan & Kepemilikan Rumah -->
         <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-money-bill-wave"></i> Statistik Pendapatan</h3>
-                    </div>
-                    <div class="card-body">
-                        <div id="loadingPendapatan" class="text-center">
-                            <i class="fas fa-spinner fa-spin fa-3x"></i>
-                            <p>Memuat data...</p>
+            <div class="col-lg-6 mb-4">
+                <div class="card card-widget-premium elevation-3">
+                    <div class="card-header-premium bg-gradient-teal">
+                        <div class="card-header-icon">
+                            <i class="fas fa-money-bill-wave"></i>
                         </div>
-                        <canvas id="chartPendapatan" style="display:none;"></canvas>
+                        <div class="card-header-text">
+                            <h3 class="card-title-premium">Statistik Pendapatan</h3>
+                            <p class="card-subtitle-premium">Distribusi tingkat pendapatan</p>
+                        </div>
+                        <div class="card-tools-premium">
+                            <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body-premium">
+                        <div id="loadingPendapatan" class="loading-premium">
+                            <div class="spinner-premium">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                            </div>
+                            <p class="loading-text">Memproses data...</p>
+                        </div>
+                        <canvas id="chartPendapatan" style="display:none; max-height: 320px;"></canvas>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-home"></i> Statistik Kepemilikan Rumah</h3>
-                    </div>
-                    <div class="card-body">
-                        <div id="loadingRumah" class="text-center">
-                            <i class="fas fa-spinner fa-spin fa-3x"></i>
-                            <p>Memuat data...</p>
+
+            <div class="col-lg-6 mb-4">
+                <div class="card card-widget-premium elevation-3">
+                    <div class="card-header-premium bg-gradient-indigo">
+                        <div class="card-header-icon">
+                            <i class="fas fa-home"></i>
                         </div>
-                        <canvas id="chartRumah" style="display:none;"></canvas>
+                        <div class="card-header-text">
+                            <h3 class="card-title-premium">Statistik Kepemilikan Rumah</h3>
+                            <p class="card-subtitle-premium">Status kepemilikan tempat tinggal</p>
+                        </div>
+                        <div class="card-tools-premium">
+                            <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body-premium">
+                        <div id="loadingRumah" class="loading-premium">
+                            <div class="spinner-premium">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                            </div>
+                            <p class="loading-text">Memproses data...</p>
+                        </div>
+                        <canvas id="chartRumah" style="display:none; max-height: 320px;"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Row 4: Distribusi RT/RW & Golongan Darah -->
+        <!-- Charts Row 4: Distribusi RT/RW & Golongan Darah -->
         <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-map-marker-alt"></i> Distribusi RT/RW</h3>
+            <div class="col-lg-6 mb-4">
+                <div class="card card-widget-premium elevation-3">
+                    <div class="card-header-premium bg-gradient-purple">
+                        <div class="card-header-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="card-header-text">
+                            <h3 class="card-title-premium">Distribusi RT/RW</h3>
+                            <p class="card-subtitle-premium">Sebaran penduduk per wilayah</p>
+                        </div>
+                        <div class="card-tools-premium">
+                            <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div id="loadingRTRW" class="text-center">
-                            <i class="fas fa-spinner fa-spin fa-3x"></i>
-                            <p>Memuat data...</p>
+                    <div class="card-body-premium">
+                        <div id="loadingRTRW" class="loading-premium">
+                            <div class="spinner-premium">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                            </div>
+                            <p class="loading-text">Memproses data...</p>
                         </div>
                         <div id="tableRTRW" style="display:none; max-height: 400px; overflow-y: auto;">
-                            <table class="table-striped table-sm table">
-                                <thead>
+                            <table class="table-premium-compact table">
+                                <thead class="thead-premium">
                                     <tr>
-                                        <th>RT/RW</th>
-                                        <th class="text-right">Jumlah Penduduk</th>
+                                        <th><i class="fas fa-map-pin mr-1"></i>RT/RW</th>
+                                        <th class="text-right"><i class="fas fa-users mr-1"></i>Jumlah Penduduk</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tbodyRTRW"></tbody>
@@ -202,49 +352,80 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-tint"></i> Statistik Golongan Darah</h3>
-                    </div>
-                    <div class="card-body">
-                        <div id="loadingGolDarah" class="text-center">
-                            <i class="fas fa-spinner fa-spin fa-3x"></i>
-                            <p>Memuat data...</p>
+
+            <div class="col-lg-6 mb-4">
+                <div class="card card-widget-premium elevation-3">
+                    <div class="card-header-premium bg-gradient-danger">
+                        <div class="card-header-icon">
+                            <i class="fas fa-tint"></i>
                         </div>
-                        <canvas id="chartGolDarah" style="display:none;"></canvas>
+                        <div class="card-header-text">
+                            <h3 class="card-title-premium">Statistik Golongan Darah</h3>
+                            <p class="card-subtitle-premium">Distribusi golongan darah penduduk</p>
+                        </div>
+                        <div class="card-tools-premium">
+                            <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body-premium">
+                        <div id="loadingGolDarah" class="loading-premium">
+                            <div class="spinner-premium">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                            </div>
+                            <p class="loading-text">Memproses data...</p>
+                        </div>
+                        <canvas id="chartGolDarah" style="display:none; max-height: 320px;"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tabel Summary Per Desa -->
+        <!-- Tabel Summary Per Desa - Premium Design -->
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-table"></i> Ringkasan Statistik Per Desa</h3>
-                    </div>
-                    <div class="card-body">
-                        <div id="loadingPerDesa" class="text-center">
-                            <i class="fas fa-spinner fa-spin fa-3x"></i>
-                            <p>Memuat data...</p>
+                <div class="card card-widget-premium elevation-3">
+                    <div class="card-header-premium bg-gradient-dark">
+                        <div class="card-header-icon">
+                            <i class="fas fa-table"></i>
                         </div>
-                        <div id="tablePerDesa" style="display:none; overflow-x: auto;">
-                            <table class="table-bordered table-hover table" id="tblPerDesa">
-                                <thead class="bg-primary">
-                                    <tr>
-                                        <th>Desa</th>
-                                        <th class="text-right">Penduduk</th>
-                                        <th class="text-right">KK</th>
-                                        <th class="text-right">Laki-laki</th>
-                                        <th class="text-right">Perempuan</th>
-                                        <th class="text-right">Punya BPJS</th>
-                                        <th class="text-right">% BPJS</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tbodyPerDesa"></tbody>
-                            </table>
+                        <div class="card-header-text">
+                            <h3 class="card-title-premium">Ringkasan Statistik Per Desa</h3>
+                            <p class="card-subtitle-premium">Rekapitulasi lengkap data demografis</p>
+                        </div>
+                        <div class="card-tools-premium">
+                            <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body-premium p-0">
+                        <div id="loadingPerDesa" class="loading-premium" style="padding: 60px 20px;">
+                            <div class="spinner-premium">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                            </div>
+                            <p class="loading-text">Memproses data...</p>
+                        </div>
+                        <div id="tablePerDesa" style="display:none;">
+                            <div class="table-responsive">
+                                <table class="table-premium table" id="tblPerDesa">
+                                    <thead>
+                                        <tr>
+                                            <th><i class="fas fa-map-marked-alt mr-1"></i>Desa</th>
+                                            <th class="text-right"><i class="fas fa-users mr-1"></i>Penduduk</th>
+                                            <th class="text-right"><i class="fas fa-home mr-1"></i>KK</th>
+                                            <th class="text-right"><i class="fas fa-male mr-1"></i>Laki-laki</th>
+                                            <th class="text-right"><i class="fas fa-female mr-1"></i>Perempuan</th>
+                                            <th class="text-right"><i class="fas fa-heartbeat mr-1"></i>Punya BPJS</th>
+                                            <th class="text-right"><i class="fas fa-percentage mr-1"></i>% BPJS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyPerDesa"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -254,15 +435,31 @@
     </div>
 @endsection
 
+@push('styles')
+@endpush
+
 @push('scripts')
     <script>
         $(document).ready(function() {
             let charts = {};
 
+            // Initialize Select2 with premium theme
+            $('.select2-primary').select2({
+                theme: 'bootstrap4',
+                placeholder: 'Pilih Desa',
+                allowClear: true,
+                width: '100%'
+            });
+
             // Load semua data saat pertama kali
             loadAllStats();
 
-            // Reload saat filter desa berubah
+            // Reload saat tombol Analisis diklik
+            $('#btnAnalisis').click(function() {
+                loadAllStats();
+            });
+
+            // Optional: Reload saat filter desa berubah (auto-reload)
             $('#filterDesa').change(function() {
                 loadAllStats();
             });
@@ -294,14 +491,15 @@
                         $('#rataKK').html(data.rata_anggota_kk);
 
                         // Distribusi RT/RW
-                        $('#loadingRTRW').hide();
-                        $('#tableRTRW').show();
+                        $('#loadingRTRW').fadeOut(300, function() {
+                            $('#tableRTRW').fadeIn(400);
+                        });
                         let html = '';
                         data.distribusi_rt_rw.forEach(function(item) {
                             html += `<tr>
-                        <td>RT/RW ${item.rt_rw}</td>
-                        <td class="text-right">${item.jumlah.toLocaleString('id-ID')}</td>
-                    </tr>`;
+                                <td><span class="badge badge-light">RT/RW ${item.rt_rw}</span></td>
+                                <td class="text-right"><strong>${item.jumlah.toLocaleString('id-ID')}</strong></td>
+                            </tr>`;
                         });
                         $('#tbodyRTRW').html(html);
                     }
@@ -316,9 +514,10 @@
                         desa: desa
                     },
                     success: function(data) {
-                        $('#loadingGender').hide();
-                        $('#chartGender').show();
-                        $('#statsGenderText').show();
+                        $('#loadingGender').fadeOut(300, function() {
+                            $('#chartGender').fadeIn(400);
+                            $('#statsGenderText').fadeIn(400);
+                        });
 
                         // Destroy existing chart
                         if (charts.gender) charts.gender.destroy();
@@ -326,37 +525,68 @@
                         // Create pie chart
                         const ctx = document.getElementById('chartGender').getContext('2d');
                         charts.gender = new Chart(ctx, {
-                            type: 'pie',
+                            type: 'doughnut',
                             data: {
                                 labels: data.chart_data.map(d => d.label),
                                 datasets: [{
                                     data: data.chart_data.map(d => d.value),
-                                    backgroundColor: ['#3b82f6', '#ec4899']
+                                    backgroundColor: ['#3b82f6', '#ec4899'],
+                                    borderWidth: 4,
+                                    borderColor: '#fff',
+                                    hoverBorderWidth: 6,
+                                    hoverOffset: 10
                                 }]
                             },
                             options: {
                                 responsive: true,
+                                maintainAspectRatio: true,
                                 plugins: {
                                     legend: {
-                                        position: 'bottom'
+                                        position: 'bottom',
+                                        labels: {
+                                            padding: 20,
+                                            font: {
+                                                size: 13,
+                                                weight: '600'
+                                            },
+                                            usePointStyle: true,
+                                            pointStyle: 'circle'
+                                        }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(0,0,0,0.8)',
+                                        padding: 15,
+                                        cornerRadius: 8,
+                                        titleFont: {
+                                            size: 14,
+                                            weight: 'bold'
+                                        },
+                                        bodyFont: {
+                                            size: 13
+                                        }
                                     }
                                 }
                             }
                         });
 
                         $('#statsGenderText').html(`
-                    <div class="row text-center">
-                        <div class="col-6">
-                            <h4 class="text-primary">${data.laki_laki.toLocaleString('id-ID')}</h4>
-                            <p>Laki-laki</p>
-                        </div>
-                        <div class="col-6">
-                            <h4 class="text-danger">${data.perempuan.toLocaleString('id-ID')}</h4>
-                            <p>Perempuan</p>
-                        </div>
-                    </div>
-                    <p class="text-center text-muted mt-2">Rasio: ${data.rasio} laki-laki per 100 perempuan</p>
-                `);
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="border-right">
+                                        <h4 class="text-primary mb-1">${data.laki_laki.toLocaleString('id-ID')}</h4>
+                                        <p class="text-muted mb-0"><small>Laki-laki</small></p>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <h4 class="text-danger mb-1">${data.perempuan.toLocaleString('id-ID')}</h4>
+                                    <p class="text-muted mb-0"><small>Perempuan</small></p>
+                                </div>
+                            </div>
+                            <div class="alert alert-light mt-3 mb-0">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                <small>Rasio: <strong>${data.rasio}</strong> laki-laki per 100 perempuan</small>
+                            </div>
+                        `);
                     }
                 });
             }
@@ -369,9 +599,10 @@
                         desa: desa
                     },
                     success: function(data) {
-                        $('#loadingUmur').hide();
-                        $('#chartUmur').show();
-                        $('#statsUmurText').show();
+                        $('#loadingUmur').fadeOut(300, function() {
+                            $('#chartUmur').fadeIn(400);
+                            $('#statsUmurText').fadeIn(400);
+                        });
 
                         if (charts.umur) charts.umur.destroy();
 
@@ -383,40 +614,71 @@
                                 datasets: [{
                                     label: 'Jumlah Penduduk',
                                     data: data.chart_data.map(d => d.value),
-                                    backgroundColor: '#3b82f6'
+                                    backgroundColor: '#3b82f6',
+                                    borderRadius: 8,
+                                    barThickness: 40
                                 }]
                             },
                             options: {
                                 responsive: true,
+                                maintainAspectRatio: true,
                                 plugins: {
                                     legend: {
                                         display: false
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(0,0,0,0.8)',
+                                        padding: 15,
+                                        cornerRadius: 8
                                     }
                                 },
                                 scales: {
                                     y: {
-                                        beginAtZero: true
+                                        beginAtZero: true,
+                                        grid: {
+                                            color: 'rgba(0,0,0,0.05)'
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 12
+                                            }
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 12,
+                                                weight: 'bold'
+                                            }
+                                        }
                                     }
                                 }
                             }
                         });
 
                         $('#statsUmurText').html(`
-                    <div class="row text-center">
-                        <div class="col-4">
-                            <h5 class="text-success">${data.produktif.toLocaleString('id-ID')}</h5>
-                            <small>Usia Produktif</small>
-                        </div>
-                        <div class="col-4">
-                            <h5 class="text-warning">${data.non_produktif.toLocaleString('id-ID')}</h5>
-                            <small>Non Produktif</small>
-                        </div>
-                        <div class="col-4">
-                            <h5 class="text-info">${data.lansia.toLocaleString('id-ID')}</h5>
-                            <small>Lansia (60+)</small>
-                        </div>
-                    </div>
-                `);
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="border-right">
+                                        <h5 class="text-success mb-1">${data.produktif.toLocaleString('id-ID')}</h5>
+                                        <small class="text-muted">Usia Produktif</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="border-right">
+                                        <h5 class="text-warning mb-1">${data.non_produktif.toLocaleString('id-ID')}</h5>
+                                        <small class="text-muted">Non Produktif</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <h5 class="text-info mb-1">${data.lansia.toLocaleString('id-ID')}</h5>
+                                    <small class="text-muted">Lansia (60+)</small>
+                                </div>
+                            </div>
+                        `);
                     }
                 });
             }
@@ -429,9 +691,10 @@
                         desa: desa
                     },
                     success: function(data) {
-                        $('#loadingBPJS').hide();
-                        $('#chartBPJS').show();
-                        $('#statsBPJSText').show();
+                        $('#loadingBPJS').fadeOut(300, function() {
+                            $('#chartBPJS').fadeIn(400);
+                            $('#statsBPJSText').fadeIn(400);
+                        });
                         $('#persenBPJS').html(data.persentase + '%');
 
                         if (charts.bpjs) charts.bpjs.destroy();
@@ -443,25 +706,45 @@
                                 labels: data.chart_data.map(d => d.label),
                                 datasets: [{
                                     data: data.chart_data.map(d => d.value),
-                                    backgroundColor: ['#10b981', '#ef4444']
+                                    backgroundColor: ['#10b981', '#ef4444'],
+                                    borderWidth: 4,
+                                    borderColor: '#fff',
+                                    hoverBorderWidth: 6,
+                                    hoverOffset: 10
                                 }]
                             },
                             options: {
                                 responsive: true,
+                                maintainAspectRatio: true,
                                 plugins: {
                                     legend: {
-                                        position: 'bottom'
+                                        position: 'bottom',
+                                        labels: {
+                                            padding: 20,
+                                            font: {
+                                                size: 13,
+                                                weight: '600'
+                                            },
+                                            usePointStyle: true,
+                                            pointStyle: 'circle'
+                                        }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(0,0,0,0.8)',
+                                        padding: 15,
+                                        cornerRadius: 8
                                     }
                                 }
                             }
                         });
 
-                        let jenisBPJSHtml = '<h6>Jenis BPJS:</h6><ul>';
+                        let jenisBPJSHtml =
+                            '<div class="alert alert-light"><h6 class="mb-2"><i class="fas fa-list mr-2"></i>Jenis BPJS:</h6><ul class="mb-0 pl-3">';
                         data.jenis_bpjs.forEach(function(item) {
                             jenisBPJSHtml +=
-                                `<li>${item.jenis_bpjs || 'Tidak Diketahui'}: <strong>${item.jumlah.toLocaleString('id-ID')}</strong></li>`;
+                                `<li class="mb-1">${item.jenis_bpjs || 'Tidak Diketahui'}: <strong>${item.jumlah.toLocaleString('id-ID')}</strong></li>`;
                         });
-                        jenisBPJSHtml += '</ul>';
+                        jenisBPJSHtml += '</ul></div>';
 
                         $('#statsBPJSText').html(jenisBPJSHtml);
                     }
@@ -476,9 +759,10 @@
                         desa: desa
                     },
                     success: function(data) {
-                        $('#loadingPerkawinan').hide();
-                        $('#chartPerkawinan').show();
-                        $('#statsPerkawinanText').show();
+                        $('#loadingPerkawinan').fadeOut(300, function() {
+                            $('#chartPerkawinan').fadeIn(400);
+                            $('#statsPerkawinanText').fadeIn(400);
+                        });
 
                         if (charts.perkawinan) charts.perkawinan.destroy();
 
@@ -489,24 +773,46 @@
                                 labels: data.chart_data.map(d => d.label),
                                 datasets: [{
                                     data: data.chart_data.map(d => d.value),
-                                    backgroundColor: ['#f59e0b', '#8b5cf6']
+                                    backgroundColor: ['#f59e0b', '#8b5cf6', '#ef4444',
+                                        '#6b7280'
+                                    ],
+                                    borderWidth: 4,
+                                    borderColor: '#fff',
+                                    hoverBorderWidth: 6,
+                                    hoverOffset: 10
                                 }]
                             },
                             options: {
                                 responsive: true,
+                                maintainAspectRatio: true,
                                 plugins: {
                                     legend: {
-                                        position: 'bottom'
+                                        position: 'bottom',
+                                        labels: {
+                                            padding: 20,
+                                            font: {
+                                                size: 13,
+                                                weight: '600'
+                                            },
+                                            usePointStyle: true,
+                                            pointStyle: 'circle'
+                                        }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(0,0,0,0.8)',
+                                        padding: 15,
+                                        cornerRadius: 8
                                     }
                                 }
                             }
                         });
 
                         $('#statsPerkawinanText').html(`
-                    <p class="text-center">
-                        <strong>Perkawinan Tercatat:</strong> ${data.kawin_tercatat.toLocaleString('id-ID')} orang
-                    </p>
-                `);
+                            <div class="alert alert-light text-center mb-0">
+                                <i class="fas fa-certificate mr-1"></i>
+                                <strong>Perkawinan Tercatat:</strong> ${data.kawin_tercatat.toLocaleString('id-ID')} orang
+                            </div>
+                        `);
                     }
                 });
             }
@@ -519,8 +825,9 @@
                         desa: desa
                     },
                     success: function(data) {
-                        $('#loadingPendapatan').hide();
-                        $('#chartPendapatan').show();
+                        $('#loadingPendapatan').fadeOut(300, function() {
+                            $('#chartPendapatan').fadeIn(400);
+                        });
 
                         if (charts.pendapatan) charts.pendapatan.destroy();
 
@@ -532,20 +839,40 @@
                                 datasets: [{
                                     label: 'Jumlah Penduduk',
                                     data: data.chart_data.map(d => d.value),
-                                    backgroundColor: '#10b981'
+                                    backgroundColor: '#10b981',
+                                    borderRadius: 8
                                 }]
                             },
                             options: {
                                 responsive: true,
+                                maintainAspectRatio: true,
                                 indexAxis: 'y',
                                 plugins: {
                                     legend: {
                                         display: false
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(0,0,0,0.8)',
+                                        padding: 15,
+                                        cornerRadius: 8
                                     }
                                 },
                                 scales: {
                                     x: {
-                                        beginAtZero: true
+                                        beginAtZero: true,
+                                        grid: {
+                                            color: 'rgba(0,0,0,0.05)'
+                                        }
+                                    },
+                                    y: {
+                                        grid: {
+                                            display: false
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 12
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -562,8 +889,9 @@
                         desa: desa
                     },
                     success: function(data) {
-                        $('#loadingRumah').hide();
-                        $('#chartRumah').show();
+                        $('#loadingRumah').fadeOut(300, function() {
+                            $('#chartRumah').fadeIn(400);
+                        });
 
                         if (charts.rumah) charts.rumah.destroy();
 
@@ -576,14 +904,33 @@
                                     data: data.chart_data.map(d => d.value),
                                     backgroundColor: ['#3b82f6', '#10b981', '#f59e0b',
                                         '#ef4444'
-                                    ]
+                                    ],
+                                    borderWidth: 4,
+                                    borderColor: '#fff',
+                                    hoverBorderWidth: 6,
+                                    hoverOffset: 10
                                 }]
                             },
                             options: {
                                 responsive: true,
+                                maintainAspectRatio: true,
                                 plugins: {
                                     legend: {
-                                        position: 'bottom'
+                                        position: 'bottom',
+                                        labels: {
+                                            padding: 20,
+                                            font: {
+                                                size: 13,
+                                                weight: '600'
+                                            },
+                                            usePointStyle: true,
+                                            pointStyle: 'circle'
+                                        }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(0,0,0,0.8)',
+                                        padding: 15,
+                                        cornerRadius: 8
                                     }
                                 }
                             }
@@ -600,8 +947,9 @@
                         desa: desa
                     },
                     success: function(data) {
-                        $('#loadingGolDarah').hide();
-                        $('#chartGolDarah').show();
+                        $('#loadingGolDarah').fadeOut(300, function() {
+                            $('#chartGolDarah').fadeIn(400);
+                        });
 
                         if (charts.goldarah) charts.goldarah.destroy();
 
@@ -613,19 +961,41 @@
                                 datasets: [{
                                     label: 'Jumlah',
                                     data: data.chart_data.map(d => d.value),
-                                    backgroundColor: '#ef4444'
+                                    backgroundColor: '#ef4444',
+                                    borderRadius: 8,
+                                    barThickness: 50
                                 }]
                             },
                             options: {
                                 responsive: true,
+                                maintainAspectRatio: true,
                                 plugins: {
                                     legend: {
                                         display: false
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(0,0,0,0.8)',
+                                        padding: 15,
+                                        cornerRadius: 8
                                     }
                                 },
                                 scales: {
                                     y: {
-                                        beginAtZero: true
+                                        beginAtZero: true,
+                                        grid: {
+                                            color: 'rgba(0,0,0,0.05)'
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 12,
+                                                weight: 'bold'
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -639,8 +1009,9 @@
                 $.ajax({
                     url: '{{ route('dashboard.per.desa') }}',
                     success: function(data) {
-                        $('#loadingPerDesa').hide();
-                        $('#tablePerDesa').show();
+                        $('#loadingPerDesa').fadeOut(300, function() {
+                            $('#tablePerDesa').fadeIn(400);
+                        });
 
                         let html = '';
                         data.forEach(function(item) {
@@ -649,14 +1020,14 @@
                                 0;
 
                             html += `<tr>
-                        <td><strong>${item.desa || 'Tidak Diketahui'}</strong></td>
-                        <td class="text-right">${item.total_penduduk.toLocaleString('id-ID')}</td>
-                        <td class="text-right">${item.total_kk.toLocaleString('id-ID')}</td>
-                        <td class="text-right">${item.laki_laki.toLocaleString('id-ID')}</td>
-                        <td class="text-right">${item.perempuan.toLocaleString('id-ID')}</td>
-                        <td class="text-right">${item.punya_bpjs.toLocaleString('id-ID')}</td>
-                        <td class="text-right">${persenBPJS}%</td>
-                    </tr>`;
+                                <td><strong>${item.desa || 'Tidak Diketahui'}</strong></td>
+                                <td class="text-right">${item.total_penduduk.toLocaleString('id-ID')}</td>
+                                <td class="text-right">${item.total_kk.toLocaleString('id-ID')}</td>
+                                <td class="text-right">${item.laki_laki.toLocaleString('id-ID')}</td>
+                                <td class="text-right">${item.perempuan.toLocaleString('id-ID')}</td>
+                                <td class="text-right">${item.punya_bpjs.toLocaleString('id-ID')}</td>
+                                <td class="text-right"><span class="badge badge-success">${persenBPJS}%</span></td>
+                            </tr>`;
                         });
                         $('#tbodyPerDesa').html(html);
                     }

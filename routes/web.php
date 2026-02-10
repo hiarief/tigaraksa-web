@@ -20,6 +20,8 @@ use App\Http\Controllers\Admin\Auth\PermissionController;
 use App\Http\Controllers\Admin\KepemilikanRumahController;
 use App\Http\Controllers\Admin\BantuanPemerintahController;
 use App\Http\Controllers\Admin\KartuKeluargaAnggotaController;
+use App\Http\Controllers\Admin\Kecamatan\UmurKecamatanController;
+use App\Http\Controllers\Admin\Kecamatan\KependudukanKecamatanContrroller;
 
 Route::get('/', [LandingPageController::class, 'page'])->name('landing.page');
 Route::prefix('api')->group(function () {
@@ -57,8 +59,6 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/{id}/edit', [RoleController::class, 'edit'])->name('edit');
             Route::put('/{id}', [RoleController::class, 'update'])->name('update');
             Route::delete('/{id}', [RoleController::class, 'destroy'])->name('destroy');
-
-            // Sub-routes dengan nama lebih spesifik
             Route::get('/get-users/{id}', [RoleController::class, 'getUsersByRole'])->name('get.users');
             Route::get('/get-permissions/{id}', [RoleController::class, 'getPermissionsByRole'])->name('get.permissions');
         });
@@ -225,5 +225,32 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
+
+    Route::group(['prefix' => '/kecamatan', 'as' => 'kecamatan.'], function () {
+        Route::group(['prefix' => '/kependudukan', 'as' => 'kependudukan.'], function () {
+            Route::get('/', [KependudukanKecamatanContrroller::class, 'index'])->name('index');
+            Route::get('/jumlah', [KependudukanKecamatanContrroller::class, 'getJumlah'])->name('jumlah');
+            Route::get('/rasio', [KependudukanKecamatanContrroller::class, 'getRasio'])->name('rasio');
+            Route::get('/distribusi/desa', [KependudukanKecamatanContrroller::class, 'getDistribusiDesa'])->name('distribusi.desa');
+            Route::get('/distribusi/hubungan', [KependudukanKecamatanContrroller::class, 'getDistribusiHubungan'])->name('distribusi.hubungan');
+            Route::get('/distribusi/umur', [KependudukanKecamatanContrroller::class, 'getDistribusiUmur'])->name('distribusi.umur');
+            Route::get('/distribusi/produktif', [KependudukanKecamatanContrroller::class, 'getProduktif'])->name('distribusi.produktif');
+            Route::get('/distribusi/anggota-kk', [KependudukanKecamatanContrroller::class, 'getDistribusiAnggotaKK'])->name('distribusi.anggota_kk');
+            Route::get('/pertumbuhan', [KependudukanKecamatanContrroller::class, 'getPertumbuhan'])->name('pertumbuhan');
+            Route::get('/distribusi/wilayah', [KependudukanKecamatanContrroller::class, 'getDistribusiWilayah'])->name('distribusi.wilayah');
+        });
+
+        Route::group(['prefix' => '/umur', 'as' => 'umur.'], function () {
+            Route::get('/', [UmurKecamatanController::class, 'index'])->name('index');
+            Route::get('/clear-cache', [UmurKecamatanController::class, 'clearCache'])->name('clear_cache');
+            Route::get('/distribusi-umur', [UmurKecamatanController::class, 'distribusiUmur'])->name('distribusi.umur');
+            Route::get('/distribusi-umur-desa', [UmurKecamatanController::class, 'distribusiUmurPerDesa'])->name('distribusi.umur.desa');
+            Route::get('/kategori-umur', [UmurKecamatanController::class, 'kategoriUmur'])->name('kategori.umur');
+            Route::get('/produktif-desa', [UmurKecamatanController::class, 'produktifPerDesa'])->name('produktif.desa');
+            Route::get('/layak-memilih-desa', [UmurKecamatanController::class, 'layakMemilihPerDesa'])->name('layak_memilih.desa');
+            Route::get('/statistik-lanjutan', [UmurKecamatanController::class, 'statistikLanjutan'])->name('statistik.lanjutan');
+            Route::get('/tren-pertumbuhan', [UmurKecamatanController::class, 'trenPertumbuhan'])->name('tren.pertumbuhan');
+        });
+    });
 
 });

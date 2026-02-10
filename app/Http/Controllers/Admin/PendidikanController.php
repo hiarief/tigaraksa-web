@@ -39,8 +39,8 @@ class PendidikanController extends Controller
                 't2.kp',
                 DB::raw("
                     CASE
-                        WHEN t1.jenkel = 1 THEN 'Laki-laki'
-                        WHEN t1.jenkel = 2 THEN 'Perempuan'
+                        WHEN t1.jenkel = 1 THEN 'L'
+                        WHEN t1.jenkel = 2 THEN 'P'
                         ELSE '-'
                     END as jenkel
                 "),

@@ -55,9 +55,24 @@
                 </li>
 
                 <li class="nav-item">
+                    <a href="{{ route('kecamatan.kependudukan.index') }}"
+                        class="nav-link {{ Route::is('kecamatan.kependudukan.index*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-users text-info"></i>
+                        <p>Data Penduduk KEC</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
                     <a href="{{ route('umur.umur') }}" class="nav-link {{ Route::is('umur.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user-clock text-info"></i>
                         <p>Distribusi Umur</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('kecamatan.umur.index') }}"
+                        class="nav-link {{ Route::is('kecamatan.umur.index*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-user-clock text-info"></i>
+                        <p>Distribusi Umur KEC</p>
                     </a>
                 </li>
 

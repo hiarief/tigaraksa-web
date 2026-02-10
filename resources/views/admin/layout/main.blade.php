@@ -23,6 +23,8 @@
     <link rel="stylesheet" href="{!! asset('assets/plugins/chart.js/Chart.min.css') !!}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/premium-styles-unified.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/stat-cards-premium-fixed.css') }}">
     <script>
         if (window.location.protocol === 'https:') {
             var meta = document.createElement('meta');

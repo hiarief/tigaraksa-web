@@ -1,58 +1,24 @@
 @extends('admin.layout.main')
-@section('title', 'Kependudukan')
-@section('content-header', 'Kependudukan')
+@section('title', 'Statistik Kependudukan')
+@section('content-header', 'Statistik Kependudukan')
 
 @section('content')
-    {{-- STATISTIK RINGKASAN --}}
+
+
     <div class="row mb-4">
-        <!-- Total Kartu Keluarga -->
-        <div class="col-md-4">
-            <div class="card bg-gradient-primary text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-white-50 mb-2">Total Keseluruhan</h6>
-                            <h2 class="font-weight-bold mb-0" id="totalKK">0</h2>
-                            <small>Kartu Keluarga</small>
+        <div class="col-12">
+            <div class="stat-card-premium elevation-2">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-primary text-white">
+                            <i class="fas fa-users"></i>
                         </div>
-                        <div class="icon">
-                            <i class="fas fa-users fa-3x opacity-50"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Total RW -->
-        <div class="col-md-4">
-            <div class="card bg-gradient-secondary text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-white-50 mb-2">Total RW</h6>
-                            <h2 class="font-weight-bold mb-0" id="totalRW">0</h2>
-                            <small>Rukun Warga</small>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-layer-group fa-3x opacity-50"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total RT -->
-        <div class="col-md-4">
-            <div class="card bg-gradient-dark text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-white-50 mb-2">Total RT</h6>
-                            <h2 class="font-weight-bold mb-0" id="totalRT">0</h2>
-                            <small>Rukun Tetangga</small>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-map-signs fa-3x opacity-50"></i>
+                        <div class="ml-3">
+                            <h5 class="font-weight-bold mb-1">Ringkasan Statistik Kependudukan</h5>
+                            <p class="stat-sublabel-premium mb-0">
+                                Data diperbarui secara otomatis berdasarkan database terkini
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -60,55 +26,137 @@
         </div>
     </div>
 
+    <!-- Premium Info Cards Row 1 -->
     <div class="row mb-4">
-        <!-- Total NIK -->
-        <div class="col-md-4">
-            <div class="card bg-gradient-warning text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-white-50 mb-2">Total Keseluruhan</h6>
-                            <h2 class="font-weight-bold mb-0" id="totalNIK">0</h2>
-                            <small>Nomor Induk Kependudukan</small>
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-primary text-white">
+                            <i class="fas fa-users"></i>
                         </div>
-                        <div class="icon">
-                            <i class="fas fa-id-card fa-3x opacity-50"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Laki-laki -->
-        <div class="col-md-4">
-            <div class="card bg-gradient-info text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-white-50 mb-2">Total Laki-laki</h6>
-                            <h2 class="font-weight-bold mb-0" id="totalLakilaki">0</h2>
-                            <small>Laki-laki</small>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-male fa-3x opacity-50"></i>
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="totalKK">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+                            <p class="stat-label-premium mb-0">
+                                Total Keseluruhan
+                                <i class="fas fa-users stat-mini-icon"></i>
+                            </p>
+                            <p class="stat-sublabel-premium mb-0">Kartu Keluarga</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Total Perempuan -->
-        <div class="col-md-4">
-            <div class="card bg-gradient-danger text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-white-50 mb-2">Total Perempuan</h6>
-                            <h2 class="font-weight-bold mb-0" id="totalPerempuan">0</h2>
-                            <small>Perempuan</small>
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-secondary text-white">
+                            <i class="fas fa-layer-group"></i>
                         </div>
-                        <div class="icon">
-                            <i class="fas fa-female fa-3x opacity-50"></i>
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="totalRW">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+                            <p class="stat-label-premium mb-0">
+                                Total RW
+                                <i class="fas fa-layer-group stat-mini-icon"></i>
+                            </p>
+                            <p class="stat-sublabel-premium mb-0">Rukun Warga</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-orange text-white">
+                            <i class="fas fa-map-signs"></i>
+                        </div>
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="totalRT">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+                            <p class="stat-label-premium mb-0">
+                                Total RT
+                                <i class="fas fa-map-signs stat-mini-icon"></i>
+                            </p>
+                            <p class="stat-sublabel-premium mb-0">Rukun Tetangga</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-warning text-white">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="totalNIK">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+                            <p class="stat-label-premium mb-0">
+                                Total Keseluruhan
+                                <i class="fas fa-id-card stat-mini-icon"></i>
+                            </p>
+                            <p class="stat-sublabel-premium mb-0">Nomor Induk Kependudukan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-info text-white">
+                            <i class="fas fa-male"></i>
+                        </div>
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="totalLakilaki">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+                            <p class="stat-label-premium mb-0">
+                                Total Laki-laki
+                                <i class="fas fa-male stat-mini-icon"></i>
+                            </p>
+                            <p class="stat-sublabel-premium mb-0">Penduduk Laki-laki</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-danger text-white">
+                            <i class="fas fa-female"></i>
+                        </div>
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="totalPerempuan">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+                            <p class="stat-label-premium mb-0">
+                                Total Perempuan
+                                <i class="fas fa-female stat-mini-icon"></i>
+                            </p>
+                            <p class="stat-sublabel-premium mb-0">Penduduk Perempuan</p>
                         </div>
                     </div>
                 </div>
@@ -116,45 +164,83 @@
         </div>
     </div>
 
-
-    {{-- CHART --}}
+    <!-- Chart Section - Premium Design -->
     <div class="row">
-        <div class="col-sm-12">
-            <div class="card card-primary">
-                <div class="card-header">
-                    <h3 class="card-title text-white">
-                        <i class="fas fa-chart-bar mr-2"></i>Distribusi KK per RT di Setiap RW
-                    </h3>
-                    <div class="card-tools">
-                        <div class="custom-control custom-switch custom-switch-on-primary">
+        <div class="col-12 mb-4">
+            <div class="card card-widget-premium elevation-3">
+                <div class="card-header-premium bg-gradient-primary">
+                    <div class="card-header-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="card-header-text">
+                        <h3 class="card-title-premium">Distribusi KK per RT di Setiap RW</h3>
+                        <p class="card-subtitle-premium">Visualisasi jumlah Kartu Keluarga berdasarkan wilayah</p>
+                    </div>
+                    <div class="card-tools-premium">
+                        <div class="custom-control custom-switch custom-switch-premium mr-3">
                             <input type="checkbox" class="custom-control-input" id="toggleLabel" checked>
-                            <label class="custom-control-label text-white" for="toggleLabel">Tampilkan Label</label>
+                            <label class="custom-control-label text-white" for="toggleLabel">
+                                <i class="fas fa-tags mr-1"></i>Tampilkan Label
+                            </label>
                         </div>
+                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="card-body">
-                    <canvas id="chartRwRt" height="120"></canvas>
+                <div class="card-body-premium">
+                    <div id="loadingChart" class="loading-premium">
+                        <div class="spinner-premium">
+                            <div class="double-bounce1"></div>
+                            <div class="double-bounce2"></div>
+                        </div>
+                        <p class="loading-text">Memproses data chart...</p>
+                    </div>
+                    <canvas id="chartRwRt" style="display:none; max-height: 500px;"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- DETAIL PER RW --}}
+    <!-- Detail Per RW Section - Premium Design -->
     <div class="row">
-        <div class="col-sm-12">
-            <div class="card">
-                <div class="card-header bg-secondary">
-                    <h3 class="card-title text-white">
-                        <i class="fas fa-list mr-2"></i>Detail Per RW
-                    </h3>
+        <div class="col-12">
+            <div class="card card-widget-premium elevation-3">
+                <div class="card-header-premium bg-gradient-secondary">
+                    <div class="card-header-icon">
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <div class="card-header-text">
+                        <h3 class="card-title-premium">Detail Per RW</h3>
+                        <p class="card-subtitle-premium">Rincian Kartu Keluarga dan RT per Rukun Warga</p>
+                    </div>
+                    <div class="card-tools-premium">
+                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div id="rwDetails" class="row"></div>
+                <div class="card-body-premium">
+                    <div id="rwDetails" class="row">
+                        <!-- Loading state -->
+                        <div class="col-12">
+                            <div class="loading-premium">
+                                <div class="spinner-premium">
+                                    <div class="double-bounce1"></div>
+                                    <div class="double-bounce2"></div>
+                                </div>
+                                <p class="loading-text">Memuat detail RW...</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
+@push('styles')
+@endpush
 
 @push('scripts')
     <script>
@@ -163,8 +249,6 @@
         fetch("{{ route('penduduk.chart.rwrt') }}")
             .then(res => res.json())
             .then(response => {
-                // console.log('Data dari backend:', response);
-
                 // HITUNG STATISTIK
                 let totalKKKeseluruhan = 0;
                 let totalRW = Object.keys(response.rwData).length;
@@ -177,8 +261,38 @@
                 const detailsContainer = document.getElementById('rwDetails');
                 detailsContainer.innerHTML = '';
 
-                // DEFINISI WARNA
-                const colorClass = ['primary', 'success', 'warning', 'danger', 'info', 'dark'];
+                // DEFINISI WARNA PREMIUM
+                const colorSchemes = [{
+                        gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        text: 'text-primary',
+                        badge: 'badge-primary'
+                    },
+                    {
+                        gradient: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+                        text: 'text-success',
+                        badge: 'badge-success'
+                    },
+                    {
+                        gradient: 'linear-gradient(135deg, #ffc107 0%, #ff9800 100%)',
+                        text: 'text-warning',
+                        badge: 'badge-warning'
+                    },
+                    {
+                        gradient: 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)',
+                        text: 'text-danger',
+                        badge: 'badge-danger'
+                    },
+                    {
+                        gradient: 'linear-gradient(135deg, #17a2b8 0%, #138496 100%)',
+                        text: 'text-info',
+                        badge: 'badge-info'
+                    },
+                    {
+                        gradient: 'linear-gradient(135deg, #343a40 0%, #23272b 100%)',
+                        text: 'text-dark',
+                        badge: 'badge-dark'
+                    }
+                ];
 
                 let colorIndex = 0;
 
@@ -191,48 +305,64 @@
                     const jumlahRT = rts.length;
                     totalRT += jumlahRT;
 
-                    const cardColor = colorClass[colorIndex % colorClass.length];
+                    const colorScheme = colorSchemes[colorIndex % colorSchemes.length];
+                    const rataRata = (totalKK / jumlahRT).toFixed(1);
 
                     // BUAT DETAIL RT DALAM RW INI
                     let rtDetails = '';
                     rts.forEach(rt => {
                         rtDetails += `
-                            <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
-                                <span class="small"><i class="fas fa-home mr-1"></i>RT ${rt.rt}</span>
-                                <span class="badge badge-${cardColor}">${rt.total_kk} KK</span>
+                            <div class="rw-rt-item">
+                                <span class="rw-rt-label">
+                                    <i class="fas fa-home"></i>RT ${rt.rt}
+                                </span>
+                                <span class="rw-rt-badge ${colorScheme.badge}">${rt.total_kk} KK</span>
                             </div>
                         `;
                     });
 
                     // BUAT CARD DETAIL PER RW
                     detailsContainer.innerHTML += `
-                        <div class="col-md-6 col-lg-4 mb-3">
-                            <div class="card card-outline card-${cardColor}">
-                                <div class="card-header">
-                                    <h5 class="card-title font-weight-bold">
-                                        <i class="fas fa-map-marked-alt mr-2"></i>RW ${rw}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card rw-card-premium">
+                                <div class="rw-card-header" style="background: ${colorScheme.gradient};">
+                                    <h5 class="rw-card-title text-white">
+                                        <span><i class="fas fa-map-marked-alt"></i></span>
+                                        Rukun Warga ${rw}
                                     </h5>
                                 </div>
-                                <div class="card-body">
-                                    <div class="row mb-3">
-                                        <div class="col-6 text-center border-right">
-                                            <div class="text-muted small">Total KK</div>
-                                            <h3 class="font-weight-bold text-${cardColor}">${totalKK}</h3>
+                                <div class="rw-card-body">
+                                    <div class="row rw-stats-container">
+                                        <div class="col-6 pr-2">
+                                            <div class="rw-stat-box">
+                                                <div class="rw-stat-label">Total KK</div>
+                                                <div class="rw-stat-value ${colorScheme.text}">${totalKK}</div>
+                                            </div>
                                         </div>
-                                        <div class="col-6 text-center">
-                                            <div class="text-muted small">Jumlah RT</div>
-                                            <h3 class="font-weight-bold text-${cardColor}">${jumlahRT}</h3>
+                                        <div class="col-6 pl-2">
+                                            <div class="rw-stat-box">
+                                                <div class="rw-stat-label">Jumlah RT</div>
+                                                <div class="rw-stat-value ${colorScheme.text}">${jumlahRT}</div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <hr class="my-2">
-                                    <div class="small mb-2">
-                                        <strong>Rata-rata per RT:</strong>
-                                        <span class="float-right">${(totalKK / jumlahRT).toFixed(1)} KK</span>
+
+                                    <hr class="rw-divider">
+
+                                    <div class="rw-info-item">
+                                        <span class="rw-info-label">
+                                            <i class="fas fa-calculator mr-2 ${colorScheme.text}"></i>Rata-rata per RT
+                                        </span>
+                                        <span class="rw-info-value ${colorScheme.text}">
+                                            <strong>${rataRata}</strong> KK
+                                        </span>
                                     </div>
-                                    <hr class="my-2">
-                                    <div class="small">
-                                        <strong class="d-block mb-2">Detail per RT:</strong>
-                                        <div style="max-height: 200px; overflow-y: auto;">
+
+                                    <div class="mt-3">
+                                        <strong class="d-block mb-3" style="font-size: 13px; color: #2c3e50;">
+                                            <i class="fas fa-list-ul mr-2"></i>Detail per RT:
+                                        </strong>
+                                        <div class="rw-rt-details">
                                             ${rtDetails}
                                         </div>
                                     </div>
@@ -263,7 +393,6 @@
                 document.getElementById('totalPerempuan').textContent =
                     Number(totalPerempuan).toLocaleString('id-ID');
 
-
                 // Tambahkan total KK ke label legend
                 response.datasets.forEach(ds => {
                     const totalKK = ds.data.reduce((a, b) => a + b, 0);
@@ -271,98 +400,121 @@
                 });
 
                 // RENDER CHART
-                chartRwRt = new Chart(
-                    document.getElementById('chartRwRt'), {
-                        type: 'bar',
-                        data: response,
-                        plugins: [ChartDataLabels],
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: true,
-                            plugins: {
-                                legend: {
-                                    position: 'bottom',
-                                    labels: {
+                $('#loadingChart').fadeOut(300, function() {
+                    $('#chartRwRt').fadeIn(400);
+
+                    chartRwRt = new Chart(
+                        document.getElementById('chartRwRt'), {
+                            type: 'bar',
+                            data: response,
+                            plugins: [ChartDataLabels],
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            font: {
+                                                size: 13,
+                                                weight: 'bold'
+                                            },
+                                            padding: 20,
+                                            boxWidth: 15,
+                                            boxHeight: 15,
+                                            usePointStyle: true
+                                        }
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Jumlah Kartu Keluarga per RT di Setiap RW',
                                         font: {
-                                            size: 12,
+                                            size: 16,
                                             weight: 'bold'
                                         },
-                                        padding: 12,
-                                        boxWidth: 15,
-                                        boxHeight: 15
-                                    }
-                                },
-                                title: {
-                                    display: true,
-                                    text: 'Jumlah Kartu Keluarga per RT di Setiap RW',
-                                    font: {
-                                        size: 16,
-                                        weight: 'bold'
-                                    },
-                                    padding: {
-                                        top: 10,
-                                        bottom: 20
-                                    }
-                                },
-                                datalabels: {
-                                    display: true,
-                                    color: '#000',
-                                    rotation: -90,
-                                    anchor: 'end',
-                                    align: 'end',
-                                    offset: -4,
-                                    font: {
-                                        weight: 'bold',
-                                        size: 10
-                                    },
-                                    formatter: (value) => value > 0 ? value : null
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(context) {
-                                            return context.dataset.label.split(' (')[0] + ': ' + context.parsed
-                                                .y + ' KK';
-                                        }
-                                    }
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: {
-                                        precision: 0,
-                                        font: {
-                                            size: 11
+                                        padding: {
+                                            top: 10,
+                                            bottom: 20
                                         }
                                     },
-                                    title: {
+                                    datalabels: {
                                         display: true,
-                                        text: 'Jumlah KK',
+                                        color: '#000',
+                                        rotation: -90,
+                                        anchor: 'end',
+                                        align: 'end',
+                                        offset: -4,
                                         font: {
-                                            size: 12,
+                                            weight: 'bold',
+                                            size: 10
+                                        },
+                                        formatter: (value) => value > 0 ? value : null
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(0,0,0,0.8)',
+                                        padding: 15,
+                                        cornerRadius: 8,
+                                        titleFont: {
+                                            size: 14,
                                             weight: 'bold'
+                                        },
+                                        bodyFont: {
+                                            size: 13
+                                        },
+                                        callbacks: {
+                                            label: function(context) {
+                                                return context.dataset.label.split(' (')[0] + ': ' +
+                                                    context
+                                                    .parsed.y + ' KK';
+                                            }
                                         }
                                     }
                                 },
-                                x: {
-                                    ticks: {
-                                        font: {
-                                            size: 11
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            precision: 0,
+                                            font: {
+                                                size: 12
+                                            }
+                                        },
+                                        title: {
+                                            display: true,
+                                            text: 'Jumlah KK',
+                                            font: {
+                                                size: 13,
+                                                weight: 'bold'
+                                            }
+                                        },
+                                        grid: {
+                                            color: 'rgba(0,0,0,0.03)'
                                         }
                                     },
-                                    title: {
-                                        display: true,
-                                        text: 'Rukun Warga (RW)',
-                                        font: {
-                                            size: 12,
-                                            weight: 'bold'
+                                    x: {
+                                        ticks: {
+                                            font: {
+                                                size: 12,
+                                                weight: 'bold'
+                                            }
+                                        },
+                                        title: {
+                                            display: true,
+                                            text: 'Rukun Warga (RW)',
+                                            font: {
+                                                size: 13,
+                                                weight: 'bold'
+                                            }
+                                        },
+                                        grid: {
+                                            display: false
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                );
+                    );
+                });
 
                 // TOGGLE LABEL
                 document.getElementById('toggleLabel').addEventListener('change', function() {
@@ -372,7 +524,34 @@
             })
             .catch(error => {
                 console.error('Error loading chart data:', error);
-                alert('Gagal memuat data chart. Silakan refresh halaman.');
+
+                // Show error in chart area
+                $('#loadingChart').html(`
+                    <div class="alert-premium alert-danger-premium">
+                        <div class="alert-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="alert-content">
+                            <h5 class="alert-title">Error</h5>
+                            <p class="alert-text">Gagal memuat data chart. Silakan refresh halaman.</p>
+                        </div>
+                    </div>
+                `);
+
+                // Show error in RW details
+                document.getElementById('rwDetails').innerHTML = `
+                    <div class="col-12">
+                        <div class="alert-premium alert-danger-premium">
+                            <div class="alert-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="alert-content">
+                                <h5 class="alert-title">Error</h5>
+                                <p class="alert-text">Gagal memuat detail RW. Silakan refresh halaman.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
     </script>
 @endpush

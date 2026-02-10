@@ -404,6 +404,7 @@ class DataHilangController extends Controller
             ->leftJoin('m_hubungan_keluarga as t4', 't4.id', '=', 't1.sts_hub_kel')
             ->leftJoin('bantuan_pemerintah as t5', 't5.Id', '=', 't1.bantuan_pemerintah')
             ->leftJoin('m_pernikahan as t6', 't6.id', '=', 't1.sts_kwn')
+            ->leftJoin('users as t7', 't7.id', '=', 't1.user_id')
             ->where('t2.desa', $desaId)
             ->select(
                 't1.id as anggota_id',
@@ -428,6 +429,7 @@ class DataHilangController extends Controller
                 't2.rt',
                 't2.rw',
                 't3.name as desa',
+                't7.name as user_input'
             )
             ->get();
 
