@@ -34,7 +34,6 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column nav-flat nav-compact nav-child-indent"
                 data-widget="treeview" role="menu" data-accordion="false">
-                {{-- ================= DASHBOARD ================= --}}
                 <li class="nav-item">
                     <a href="{{ route('dashboard.index') }}"
                         class="nav-link {{ Route::is('dashboard.*') ? 'active' : '' }}">
@@ -42,181 +41,192 @@
                         <p>Dashboard</p>
                     </a>
                 </li>
+                @can('kecamatan-chart')
+                    <li class="nav-header">DATA KEPENDUDUKAN</li>
+                    <li class="nav-item">
+                        <a href="{{ route('kecamatan.kependudukan.index') }}"
+                            class="nav-link {{ Route::is('kecamatan.kependudukan.index*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-users text-info"></i>
+                            <p>Data Penduduk</p>
+                        </a>
+                    </li>
 
-                {{-- ================= DATA KEPENDUDUKAN ================= --}}
-                <li class="nav-header">DATA KEPENDUDUKAN</li>
+                    <li class="nav-item">
+                        <a href="{{ route('kecamatan.umur.index') }}"
+                            class="nav-link {{ Route::is('kecamatan.umur.index*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-user-clock text-info"></i>
+                            <p>Distribusi Umur</p>
+                        </a>
+                    </li>
+                @endcan
 
-                <li class="nav-item">
-                    <a href="{{ route('penduduk.index') }}"
-                        class="nav-link {{ Route::is('penduduk.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-users text-info"></i>
-                        <p>Data Penduduk</p>
-                    </a>
-                </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('kecamatan.kependudukan.index') }}"
-                        class="nav-link {{ Route::is('kecamatan.kependudukan.index*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-users text-info"></i>
-                        <p>Data Penduduk KEC</p>
-                    </a>
-                </li>
+                @can('desa-chart')
+                    <li class="nav-header">DATA KEPENDUDUKAN</li>
 
-                <li class="nav-item">
-                    <a href="{{ route('umur.umur') }}" class="nav-link {{ Route::is('umur.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-clock text-info"></i>
-                        <p>Distribusi Umur</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('kecamatan.umur.index') }}"
-                        class="nav-link {{ Route::is('kecamatan.umur.index*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-clock text-info"></i>
-                        <p>Distribusi Umur KEC</p>
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a href="{{ route('penduduk.index') }}"
+                            class="nav-link {{ Route::is('penduduk.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-users text-info"></i>
+                            <p>Data Penduduk</p>
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('perkawinan.index') }}"
-                        class="nav-link {{ Route::is('perkawinan.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-people-arrows text-info"></i>
-                        <p>Status Perkawinan</p>
-                    </a>
-                </li>
 
-                {{-- ================= SOSIAL & KESEJAHTERAAN ================= --}}
-                <li class="nav-header">SOSIAL & KESEJAHTERAAN</li>
 
-                <li class="nav-item">
-                    <a href="{{ route('pendidikan.pendidikan') }}"
-                        class="nav-link {{ Route::is('pendidikan.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-graduation-cap text-success"></i>
-                        <p>Pendidikan</p>
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a href="{{ route('umur.umur') }}" class="nav-link {{ Route::is('umur.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-user-clock text-info"></i>
+                            <p>Distribusi Umur</p>
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('pekerjaan.index') }}"
-                        class="nav-link {{ Route::is('pekerjaan.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-briefcase text-success"></i>
-                        <p>Pekerjaan</p>
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a href="{{ route('perkawinan.index') }}"
+                            class="nav-link {{ Route::is('perkawinan.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-people-arrows text-info"></i>
+                            <p>Status Perkawinan</p>
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('bpjs.bpjs') }}" class="nav-link {{ Route::is('bpjs.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-heartbeat text-success"></i>
-                        <p>Kesehatan (BPJS)</p>
-                    </a>
-                </li>
+                    {{-- ================= SOSIAL & KESEJAHTERAAN ================= --}}
+                    <li class="nav-header">SOSIAL & KESEJAHTERAAN</li>
 
-                <li class="nav-item">
-                    <a href="{{ route('kepemilikan.rumah.index') }}"
-                        class="nav-link {{ Route::is('kepemilikan.rumah.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-house-user text-success"></i>
-                        <p>Kepemilikan Rumah</p>
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a href="{{ route('pendidikan.pendidikan') }}"
+                            class="nav-link {{ Route::is('pendidikan.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-graduation-cap text-success"></i>
+                            <p>Pendidikan</p>
+                        </a>
+                    </li>
 
-                {{-- ================= EKONOMI & BANTUAN ================= --}}
-                <li class="nav-header">EKONOMI & BANTUAN</li>
+                    <li class="nav-item">
+                        <a href="{{ route('pekerjaan.index') }}"
+                            class="nav-link {{ Route::is('pekerjaan.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-briefcase text-success"></i>
+                            <p>Pekerjaan</p>
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('pendapatan.pendapatan') }}"
-                        class="nav-link {{ Route::is('pendapatan.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-wallet text-purple"></i>
-                        <p>Pendapatan</p>
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a href="{{ route('bpjs.bpjs') }}" class="nav-link {{ Route::is('bpjs.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-heartbeat text-success"></i>
+                            <p>Kesehatan (BPJS)</p>
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('bantuan.pemerintah.index') }}"
-                        class="nav-link {{ Route::is('bantuan.pemerintah.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-hand-holding-heart text-purple"></i>
-                        <p>Bantuan Pemerintah</p>
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a href="{{ route('kepemilikan.rumah.index') }}"
+                            class="nav-link {{ Route::is('kepemilikan.rumah.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-house-user text-success"></i>
+                            <p>Kepemilikan Rumah</p>
+                        </a>
+                    </li>
 
-                {{-- ================= DATA KELUARGA ================= --}}
-                <li class="nav-header">DATA KELUARGA</li>
+                    {{-- ================= EKONOMI & BANTUAN ================= --}}
+                    <li class="nav-header">EKONOMI & BANTUAN</li>
 
-                <li class="nav-item">
-                    <a href="{{ route('kependudukan.kartu.keluarga.index') }}"
-                        class="nav-link {{ Route::is('kependudukan.kartu.keluarga.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-id-card text-teal"></i>
-                        <p>Kepala Keluarga</p>
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a href="{{ route('pendapatan.pendapatan') }}"
+                            class="nav-link {{ Route::is('pendapatan.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-wallet text-purple"></i>
+                            <p>Pendapatan</p>
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('kependudukan.anggota.keluarga.index') }}"
-                        class="nav-link {{ Route::is('kependudukan.anggota.keluarga.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-friends text-teal"></i>
-                        <p>Anggota Keluarga</p>
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a href="{{ route('bantuan.pemerintah.index') }}"
+                            class="nav-link {{ Route::is('bantuan.pemerintah.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-hand-holding-heart text-purple"></i>
+                            <p>Bantuan Pemerintah</p>
+                        </a>
+                    </li>
 
-                {{-- ================= ADMINISTRASI DESA ================= --}}
-                <li class="nav-header">ADMINISTRASI DESA</li>
+                    {{-- ================= DATA KELUARGA ================= --}}
+                    @can('data-keluarga')
+                        <li class="nav-header">DATA KELUARGA</li>
 
-                <li class="nav-item">
-                    <a href="{{ route('admin.desa.index') }}"
-                        class="nav-link {{ Route::is('admin.desa.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-shield text-danger"></i>
-                        <p>Pengguna Sistem</p>
-                    </a>
-                </li>
+                        <li class="nav-item">
+                            <a href="{{ route('kependudukan.kartu.keluarga.index') }}"
+                                class="nav-link {{ Route::is('kependudukan.kartu.keluarga.*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-id-card text-teal"></i>
+                                <p>Kepala Keluarga</p>
+                            </a>
+                        </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('data.hilang.index') }}"
-                        class="nav-link {{ Route::is('data.hilang.index*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-triangle-exclamation text-danger"></i>
-                        <p>Laporan Data Hilang</p>
-                    </a>
-                </li>
+                        <li class="nav-item">
+                            <a href="{{ route('kependudukan.anggota.keluarga.index') }}"
+                                class="nav-link {{ Route::is('kependudukan.anggota.keluarga.*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-user-friends text-teal"></i>
+                                <p>Anggota Keluarga</p>
+                            </a>
+                        </li>
+                    @endcan
 
-                <li class="nav-header">USER MANAGE</li>
+                    @can('administrasi-desa')
+                        <li class="nav-header">ADMINISTRASI DESA</li>
 
-                <li class="nav-item">
-                    <a href="{{ route('admin.permissions.index') }}"
-                        class="nav-link {{ Route::is('admin.permissions.index*') ? 'active' : '' }}">
-                        <i class="fas fa-user-tag nav-icon bounce-icon"></i>
-                        <p>Permission</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('admin.roles.index') }}"
-                        class="nav-link {{ Route::is('admin.roles.index*') ? 'active' : '' }}">
-                        <i class="fas fa-user-shield nav-icon bounce-icon"></i>
-                        <p>Role</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('admin.users.index') }}"
-                        class="nav-link {{ Route::is('admin.users.index*') ? 'active' : '' }}">
-                        <i class="fas fa-users nav-icon bounce-icon"></i>
-                        <p>User</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-user-alt nav-icon bounce-icon"></i>
-                        <p>Profil</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-user-lock nav-icon bounce-icon"></i>
-                        <p>Password</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="" class="nav-link">
-                        <i class="fas fa-user-secret nav-icon bounce-icon"></i>
-                        <p>Audit</p>
-                    </a>
-                </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.desa.index') }}"
+                                class="nav-link {{ Route::is('admin.desa.index') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-user-shield text-danger"></i>
+                                <p>Pengguna Sistem</p>
+                            </a>
+                        </li>
 
+                        <li class="nav-item">
+                            <a href="{{ route('data.hilang.index') }}"
+                                class="nav-link {{ Route::is('data.hilang.index*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-triangle-exclamation text-danger"></i>
+                                <p>Laporan Data Hilang</p>
+                            </a>
+                        </li>
+                    @endcan
+                @endcan
+
+                @can('user-manage')
+                    <li class="nav-header">USER MANAGE</li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('admin.permissions.index') }}"
+                            class="nav-link {{ Route::is('admin.permissions.index*') ? 'active' : '' }}">
+                            <i class="fas fa-user-tag nav-icon bounce-icon"></i>
+                            <p>Permission</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.roles.index') }}"
+                            class="nav-link {{ Route::is('admin.roles.index*') ? 'active' : '' }}">
+                            <i class="fas fa-user-shield nav-icon bounce-icon"></i>
+                            <p>Role</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.users.index') }}"
+                            class="nav-link {{ Route::is('admin.users.index*') ? 'active' : '' }}">
+                            <i class="fas fa-users nav-icon bounce-icon"></i>
+                            <p>User</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-user-alt nav-icon bounce-icon"></i>
+                            <p>Profil</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-user-lock nav-icon bounce-icon"></i>
+                            <p>Password</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" class="nav-link">
+                            <i class="fas fa-user-secret nav-icon bounce-icon"></i>
+                            <p>Audit</p>
+                        </a>
+                    </li>
+                @endcan
                 <li class="nav-header">KELUAR</li>
 
                 @auth
