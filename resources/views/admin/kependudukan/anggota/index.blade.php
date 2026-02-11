@@ -48,10 +48,10 @@
                             class="table-bordered table-hover table-striped rounded-0 table-sm table text-sm">
                             <thead>
                                 <tr class="text-center">
-                                    <th rowspan="2" style="width: 5%">NO</th>
-                                    <th rowspan="2" style="width: 10%">AKSI</th>
+                                    <th rowspan="2" style="width: 1%">NO</th>
+                                    <th rowspan="2" style="width: 1%">AKSI</th>
                                     <th colspan="2">NOMOR</th>
-                                    <th rowspan="2">NAMA</th>
+                                    <th rowspan="2" class="nowrap">NAMA</th>
                                     <th rowspan="2" style="width: 10%">TGL LAHIR</th>
                                     <th rowspan="2">TEMPAT LAHIR</th>
                                     <th rowspan="2">HUB KELUARGA</th>
@@ -119,53 +119,56 @@
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
-                        width: '5%',
-                        className: 'text-center',
+                        width: '1%',
+                        className: 'text-center nowrap',
                         orderable: false,
                         searchable: false,
                     },
                     {
                         data: 'aksi',
                         name: 'aksi',
-                        className: 'text-center',
+                        width: '1%',
+                        className: 'text-center nowrap',
                         orderable: false,
                         searchable: false,
                     },
                     {
                         data: 'no_kk',
                         name: 'no_kk',
-                        className: 'text-center',
+                        className: 'text-center nowrap',
                     },
                     {
                         data: 'no_nik',
                         name: 'no_nik',
-                        className: 'text-center',
+                        className: 'text-center nowrap',
                     },
                     {
                         data: 'nama',
                         name: 'nama',
+                        className: 'nowrap',
                     },
                     {
                         data: 'tgl_lahir',
                         name: 'tgl_lahir',
-                        className: 'text-center',
-                        width: '10%'
+                        className: 'text-center nowrap',
+                        width: '1%'
                     },
                     {
                         data: 'tmpt_lahir',
                         name: 'tmpt_lahir',
-                        className: 'text-center',
+                        className: 'text-center nowrap',
                     },
                     {
                         data: 'sts_hub_kel',
                         name: 'sts_hub_kel',
-                        className: 'text-center',
+                        className: 'text-center nowrap',
                     },
                     {
                         data: 'alamat',
                         name: 'alamat',
                         orderable: false,
                         searchable: false,
+                        className: 'nowrap',
                     },
                     {
                         data: 'created_at',
@@ -222,7 +225,7 @@
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
                     return fetch("{{ route('kependudukan.kartu.keluarga.delete', ':id') }}".replace(':id',
-                        id), {
+                            id), {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
