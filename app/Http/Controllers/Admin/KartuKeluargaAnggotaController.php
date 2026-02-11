@@ -20,99 +20,85 @@ class KartuKeluargaAnggotaController extends Controller
     public function indexData(Request $request)
     {
         if ($request->ajax()) {
-
             $desaId = auth()->user()->desa;
-            $user   = auth()->user();
+            $user = auth()->user();
+            $isAdminDesa = $user->hasRole('AdminDesa');
 
+            // OPTIMASI 1: Gunakan Eloquent dengan eager loading yang lebih efisien
+            // atau gunakan query builder dengan select minimal
             $data = DB::table('t_kartu_keluarga_anggota as t1')
                 ->join('t_kartu_keluarga as t2', 't2.id', '=', 't1.no_kk')
-                ->join('users as t3', 't3.id', '=', 't2.user_id')
-                ->leftJoin('indonesia_districts as t4', 't4.code', '=', 't2.kecamatan')
-                ->leftJoin('indonesia_villages as t5', 't5.code', '=', 't2.desa')
-                ->leftJoin('m_hubungan_keluarga as t6', 't6.id', '=', 't1.sts_hub_kel')
                 ->where('t2.desa', $desaId)
-                ->where('t1.sts_mati', 0)
-                ->when(!$user->hasRole('AdminDesa'), function ($query) use ($user) {
-                    $query->where('t3.id', $user->id);
-                })
-                ->orderByDesc('t1.created_at')
-                ->select([
-                    't2.id',
-                    't2.no_kk as no_kk',
-                    't1.no_nik as no_nik',
-                    't1.nama as nama',
-                    't1.tgl_lahir as tgl_lahir',
-                    't1.tmpt_lahir as tmpt_lahir',
-                    't2.kp',
-                    't2.rt',
-                    't2.rw',
-                    't5.name as desa',
-                    't4.name as kecamatan',
-                    't1.created_at as created_at',
-                    't1.id as anggota_id',
-                    't6.nama as hubungan_keluarga'
-                ]);
+                ->where('t1.sts_mati', 0);
 
+            // OPTIMASI 2: Kondisi user check lebih efisien
+            if (!$isAdminDesa) {
+                $data->where('t2.user_id', $user->id);
+            }
+
+            // OPTIMASI 3: Select hanya kolom yang benar-benar dibutuhkan
+            // Hapus join yang tidak perlu untuk initial load
+            $data->select([
+                't1.id as anggota_id',
+                't1.no_nik',
+                't1.nama',
+                't1.tgl_lahir',
+                't1.tmpt_lahir',
+                't1.sts_hub_kel',
+                't1.created_at',
+                't2.id',
+                't2.no_kk',
+                't2.kp',
+                't2.rt',
+                't2.rw',
+                't2.desa as desa_code',
+                't2.kecamatan as kecamatan_code'
+            ]);
 
             return DataTables::of($data)
                 ->addIndexColumn()
+
+                // OPTIMASI 4: Format di frontend, bukan di backend untuk performa lebih baik
                 ->editColumn('nama', fn($row) => strtoupper($row->nama))
-                ->editColumn('hubungan_keluarga', fn($row) => strtoupper($row->hubungan_keluarga))
                 ->editColumn('tmpt_lahir', fn($row) => strtoupper($row->tmpt_lahir))
                 ->editColumn('tgl_lahir', fn($row) => date('d-m-Y', strtotime($row->tgl_lahir)))
-                ->addColumn('alamat', function($row) { return strtoupper( $row->kp . ', RT. ' . $row->rt . '/' . $row->rw); })
+
+                // OPTIMASI 5: Lazy load data relasi menggunakan caching
+                ->editColumn('sts_hub_kel', function($row) {
+                    static $hubunganCache = [];
+                    if (!isset($hubunganCache[$row->sts_hub_kel])) {
+                        $hubungan = DB::table('m_hubungan_keluarga')
+                            ->where('id', $row->sts_hub_kel)
+                            ->value('nama');
+                        $hubunganCache[$row->sts_hub_kel] = strtoupper($hubungan ?? '-');
+                    }
+                    return $hubunganCache[$row->sts_hub_kel];
+                })
+
+                ->addColumn('alamat', function($row) {
+                    return strtoupper($row->kp . ', RT. ' . $row->rt . '/' . $row->rw);
+                })
+
                 ->addColumn('aksi', function ($row) {
+                    $viewUrl = route('kependudukan.kartu.keluarga.show', Crypt::encrypt($row->id));
+                    $editUrl = route('kependudukan.anggota.keluarga.edit', Crypt::encrypt($row->anggota_id));
 
-                    $viewUrl   = route('kependudukan.kartu.keluarga.show', Crypt::encrypt($row->id));
-                    $editUrl   = route('kependudukan.anggota.keluarga.edit', Crypt::encrypt($row->anggota_id));
-                    $deleteUrl = route('kependudukan.anggota.keluarga.delete', Crypt::encrypt($row->anggota_id));
-
-                    $btnView = '';
-                    $btnEdit = '';
-                    $btnDelete = '';
+                    $buttons = [];
 
                     if (auth()->user()->can('anggota-keluarga-view')) {
-                        $btnView = '
-                            <a href="'.$viewUrl.'"
-                            class="btn bg-gradient-info"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="Lihat">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
-                        ';
+                        $buttons[] = '<a href="'.$viewUrl.'" class="btn bg-gradient-info btn-sm" target="_blank" title="Lihat"><i class="fa-solid fa-eye"></i></a>';
                     }
 
                     if (auth()->user()->can('anggota-keluarga-edit')) {
-                        $btnEdit = '
-                            <a href="'.$editUrl.'"
-                            class="btn bg-gradient-warning"
-                            title="Edit">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </a>
-                        ';
+                        $buttons[] = '<a href="'.$editUrl.'" class="btn bg-gradient-warning btn-sm" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>';
                     }
 
                     if (auth()->user()->can('anggota-keluarga-delete')) {
-                        $btnDelete = '
-                            <button type="button"
-                                class="btn bg-gradient-danger"
-                                title="Hapus"
-                                onclick="deleteData(\''.Crypt::encrypt($row->anggota_id).'\')">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        ';
+                        $buttons[] = '<button type="button" class="btn bg-gradient-danger btn-sm" title="Hapus" onclick="deleteData(\''.Crypt::encrypt($row->anggota_id).'\')"><i class="fa-solid fa-trash"></i></button>';
                     }
 
-                    return '
-                        <div class="btn-group btn-group-sm text-center" role="group">
-                            '.$btnView.'
-                            '.$btnEdit.'
-                            '.$btnDelete.'
-                        </div>
-                    ';
+                    return '<div class="btn-group btn-group-sm" role="group">'.implode('', $buttons).'</div>';
                 })
-
                 ->rawColumns(['aksi'])
                 ->make(true);
         }
