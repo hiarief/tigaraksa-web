@@ -3,7 +3,29 @@
 @section('content-header', 'Statistik Perkawinan')
 
 @section('content')
-    <!-- Filter Section - Premium Design -->
+    <!-- Header Info Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="stat-card-premium elevation-2">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-primary text-white">
+                            <i class="fas fa-ring"></i>
+                        </div>
+
+                        <div class="ml-3">
+                            <h5 class="font-weight-bold mb-1">Ringkasan Statistik Perkawinan</h5>
+                            <p class="stat-sublabel-premium mb-0">
+                                Data diperbarui secara otomatis berdasarkan database terkini
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card card-primary card-outline elevation-2">
@@ -70,87 +92,128 @@
         </div>
     </div>
 
-    <!-- Premium Info Cards -->
+    <!-- Statistics Cards Section -->
     <div class="row mb-4">
-        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
-            <div class="info-box-premium bg-gradient-info elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-users text-info"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Total Penduduk</span>
-                    <span class="info-box-premium-number" id="total_penduduk">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
+        <div class="col-12 mb-3">
+            <h4 class="section-title">
+                <i class="fas fa-calculator mr-2"></i> Statistik Jumlah
+            </h4>
+        </div>
+
+        <!-- Total Penduduk -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-primary text-white">
+                            <i class="fas fa-users"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="total_penduduk">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Total Penduduk
+                                <i class="fas fa-users stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Penduduk Desa</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
-            <div class="info-box-premium bg-gradient-success elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-heart text-success"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Total Status Kawin</span>
-                    <span class="info-box-premium-number" id="total_kawin">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
+        <!-- Total Status Kawin -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-success text-white">
+                            <i class="fas fa-heart"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="total_kawin">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Total Status Kawin
+                                <i class="fas fa-heart stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Status Kawin</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
-            <div class="info-box-premium bg-gradient-warning elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-user-circle text-warning"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Total Belum Kawin</span>
-                    <span class="info-box-premium-number" id="total_belum_kawin">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
+        <!-- Total Belum Kawin -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-warning text-white">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="total_belum_kawin">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Total Belum Kawin
+                                <i class="fas fa-user-circle stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Belum Menikah</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6">
-            <div class="info-box-premium bg-gradient-danger elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-exclamation-triangle text-danger"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Kawin Usia Anak</span>
-                    <span class="info-box-premium-number" id="total_usia_anak">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
+        <!-- Kawin Usia Anak -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-danger text-white">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="total_usia_anak">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Kawin Usia Anak
+                                <i class="fas fa-exclamation-triangle stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Di bawah 19 tahun</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Charts Row 1 - Premium Design -->
-    <div class="row">
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <div class="col-12 mb-3">
+            <h4 class="section-title">
+                <i class="fas fa-chart-bar mr-2"></i> Statistik Distribusi
+            </h4>
+        </div>
+
+        <!-- Chart Status Perkawinan -->
         <div class="col-lg-6 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-primary">
@@ -180,6 +243,7 @@
             </div>
         </div>
 
+        <!-- Chart Legalitas -->
         <div class="col-lg-6 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-success">
@@ -208,10 +272,8 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Charts Row 2 -->
-    <div class="row">
+        <!-- Chart Gender -->
         <div class="col-lg-6 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-info">
@@ -241,6 +303,7 @@
             </div>
         </div>
 
+        <!-- Chart Usia Siap -->
         <div class="col-lg-6 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-warning">
@@ -269,10 +332,8 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Chart Row 3 - Full Width -->
-    <div class="row">
+        <!-- Chart Distribusi Usia - Full Width -->
         <div class="col-12 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-danger">
@@ -303,7 +364,7 @@
         </div>
     </div>
 
-    <!-- Detail Data Tables - Premium Design -->
+    <!-- Detail Data Tables -->
     <div class="row">
         <div class="col-12">
             <div class="card card-widget-premium elevation-3">
@@ -691,11 +752,10 @@
             });
 
             // Main category pills navigation
-            // Event listener untuk main category pills
             $('#categoryTab a[data-toggle="pill"]').on('shown.bs.tab', function(e) {
                 const targetPane = $(e.target).attr('href');
 
-                // TAMBAHKAN: Scroll to top of card
+                // Scroll to top of card
                 $('html, body').animate({
                     scrollTop: $('.card-widget-premium:last').offset().top - 100
                 }, 300);
@@ -716,7 +776,7 @@
                 }
             });
 
-            // TAMBAHKAN: Reset scroll untuk sub-tabs
+            // Sub-tabs navigation with scroll
             $(document).on('click', '[data-kategori]', function(e) {
                 e.preventDefault();
                 const kategori = $(this).data('kategori');
@@ -1092,31 +1152,30 @@
                 jenkel_filter: $('#filter_jenkel').val()
             };
 
-            // PERBAIKAN: Destroy dengan proper cleanup
+            // Destroy dengan proper cleanup
             if ($.fn.DataTable.isDataTable('#' + tableId)) {
                 $('#' + tableId).DataTable().clear().destroy();
-                // Bersihkan wrapper DataTables
                 $('#' + tableId).empty();
             }
 
             // Rebuild table structure
             const tableStructure = `
-        <thead>
-            <tr>
-                <th width="50">No</th>
-                <th>NIK</th>
-                <th>Nama Lengkap</th>
-                <th>JK</th>
-                <th>Umur</th>
-                <th>Tanggal Lahir</th>
-                <th>RT/RW</th>
-                <th>Kampung</th>
-                <th>Status</th>
-                <th>Tercatat</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    `;
+                <thead>
+                    <tr>
+                        <th width="50">No</th>
+                        <th>NIK</th>
+                        <th>Nama Lengkap</th>
+                        <th>JK</th>
+                        <th>Umur</th>
+                        <th>Tanggal Lahir</th>
+                        <th>RT/RW</th>
+                        <th>Kampung</th>
+                        <th>Status</th>
+                        <th>Tercatat</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            `;
 
             $('#' + tableId).html(tableStructure);
 
@@ -1129,7 +1188,7 @@
                 paging: true,
                 searching: true,
                 info: true,
-                destroy: true, // TAMBAHKAN INI
+                destroy: true,
                 lengthMenu: [
                     [10, 25, 50, 100, -1],
                     [10, 25, 50, 100, "Semua"]

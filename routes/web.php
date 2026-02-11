@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\Kecamatan\PerkawinanKecamatanController;
 use App\Http\Controllers\Admin\Kecamatan\KependudukanKecamatanContrroller;
 
 Route::get('/', [LandingPageController::class, 'page'])->name('landing.page');
+
 Route::prefix('api')->group(function () {
     Route::get('/basic-stats', [LandingPageController::class, 'getBasicStats'])->name('api.basic.stats');
     Route::get('/key-metrics', [LandingPageController::class, 'getKeyMetrics'])->name('api.key.metrics');
@@ -42,7 +43,7 @@ Route::prefix('api')->group(function () {
 Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-        // Users routes
+
         Route::prefix('users')->name('users.')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('index');
             Route::get('/create', [UserController::class, 'create'])->name('create');
@@ -52,7 +53,6 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
         });
 
-        // Roles routes
         Route::prefix('roles')->name('roles.')->group(function () {
             Route::get('/', [RoleController::class, 'index'])->name('index');
             Route::get('/create', [RoleController::class, 'create'])->name('create');
@@ -64,7 +64,6 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/get-permissions/{id}', [RoleController::class, 'getPermissionsByRole'])->name('get.permissions');
         });
 
-        // Permissions routes
         Route::prefix('permissions')->name('permissions.')->group(function () {
             Route::get('/', [PermissionController::class, 'index'])->name('index');
             Route::get('/create', [PermissionController::class, 'create'])->name('create');
@@ -146,13 +145,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/distribusi-usia', [PekerjaanController::class, 'getDistribusiUsia'])->name('api.distribusi.usia');
         Route::get('/status-pekerjaan', [PekerjaanController::class, 'getStatusPekerjaan'])->name('api.status.pekerjaan');
         Route::get('/analisis-pendapatan', [PekerjaanController::class, 'getAnalisisPendapatanProduktif'])->name('api.analisis.pendapatan');
-
-        // DataTables API
-        Route::get('/dt/detail-pekerjaan', [PekerjaanController::class, 'getDetailByPekerjaan'])->name('dt.detail.pekerjaan');
-        Route::get('/dt/detail-pendapatan', [PekerjaanController::class, 'getDetailByPendapatan'])->name('dt.detail.pendapatan');
-        Route::get('/dt/detail-status', [PekerjaanController::class, 'getDetailByStatus'])->name('dt.detail.status');
-        Route::get('/dt/detail-gender', [PekerjaanController::class, 'getDetailByGender'])->name('dt.detail.gender');
-        Route::get('/dt/detail-usia', [PekerjaanController::class, 'getDetailByUsia'])->name('dt.detail.usia');
+        Route::get('/detail-pekerjaan', [PekerjaanController::class, 'getDetailByPekerjaan'])->name('dt.detail.pekerjaan');
+        Route::get('/detail-pendapatan', [PekerjaanController::class, 'getDetailByPendapatan'])->name('dt.detail.pendapatan');
+        Route::get('/detail-status', [PekerjaanController::class, 'getDetailByStatus'])->name('dt.detail.status');
+        Route::get('/detail-gender', [PekerjaanController::class, 'getDetailByGender'])->name('dt.detail.gender');
+        Route::get('/detail-usia', [PekerjaanController::class, 'getDetailByUsia'])->name('dt.detail.usia');
     });
 
     Route::group(['prefix' => '/kepemilikan-rumah', 'as' => 'kepemilikan.rumah.'], function () {
@@ -225,7 +222,6 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/delete-all-permanent', [KartuKeluargaAnggotaController::class, 'deleteAllPermanent'])->name('delete.all.permanent');
         });
     });
-
 
     Route::group(['prefix' => '/kecamatan', 'as' => 'kecamatan.'], function () {
         Route::group(['prefix' => '/kependudukan', 'as' => 'kependudukan.'], function () {

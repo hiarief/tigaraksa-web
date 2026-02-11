@@ -3,93 +3,156 @@
 @section('content-header', 'Statistik BPJS')
 
 @section('content')
-
-    <!-- Premium Info Cards -->
+    <!-- Header Info Card -->
     <div class="row mb-4">
-        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
-            <div class="info-box-premium bg-gradient-primary elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-users text-primary"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Total Penduduk</span>
-                    <span class="info-box-premium-number" id="total_penduduk">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
+        <div class="col-12">
+            <div class="stat-card-premium elevation-2">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-primary text-white">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
 
-                    <span class="info-box-premium-percentage" id="">Penduduk</span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
-            <div class="info-box-premium bg-gradient-success elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-check-circle text-success"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Punya BPJS</span>
-                    <span class="info-box-premium-number" id="punya_bpjs">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <span class="info-box-premium-percentage" id="persentase_punya"></span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
-            <div class="info-box-premium bg-gradient-danger elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-times-circle text-danger"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Tidak Punya BPJS</span>
-                    <span class="info-box-premium-number" id="tidak_punya_bpjs">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <span class="info-box-premium-percentage" id="persentase_tidak_punya"></span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-            <div class="info-box-premium bg-gradient-warning elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-exclamation-triangle text-warning"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Data Anomali</span>
-                    <span class="info-box-premium-number" id="total_anomali">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <span class="info-box-premium-percentage">Data tidak valid</span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
+                        <div class="ml-3">
+                            <h5 class="font-weight-bold mb-1">Ringkasan Statistik BPJS</h5>
+                            <p class="stat-sublabel-premium mb-0">
+                                Data diperbarui secara otomatis berdasarkan database terkini
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Charts Row 1 - Premium Design -->
-    <div class="row">
+    <!-- Statistics Cards Section -->
+    <div class="row mb-4">
+        <div class="col-12 mb-3">
+            <h4 class="section-title">
+                <i class="fas fa-calculator mr-2"></i> Statistik Jumlah
+            </h4>
+        </div>
+
+        <!-- Total Penduduk -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-primary text-white">
+                            <i class="fas fa-users"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="total_penduduk">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Total Penduduk
+                                <i class="fas fa-users stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Penduduk Desa</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Punya BPJS -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-success text-white">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="punya_bpjs">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Punya BPJS
+                                <i class="fas fa-check-circle stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0" id="persentase_punya">
+                                <span class="skeleton-premium"
+                                    style="width: 50px; height: 12px; display: inline-block;"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tidak Punya BPJS -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-danger text-white">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="tidak_punya_bpjs">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Tidak Punya BPJS
+                                <i class="fas fa-times-circle stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0" id="persentase_tidak_punya">
+                                <span class="skeleton-premium"
+                                    style="width: 50px; height: 12px; display: inline-block;"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Anomali -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-warning text-white">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="total_anomali">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Data Anomali
+                                <i class="fas fa-exclamation-triangle stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Data tidak valid</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <div class="col-12 mb-3">
+            <h4 class="section-title">
+                <i class="fas fa-chart-bar mr-2"></i> Statistik Distribusi
+            </h4>
+        </div>
+
+        <!-- Chart Kepemilikan -->
         <div class="col-lg-6 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-success">
@@ -119,6 +182,7 @@
             </div>
         </div>
 
+        <!-- Chart Jenis BPJS -->
         <div class="col-lg-6 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-primary">
@@ -147,10 +211,8 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Charts Row 2 - Premium Design -->
-    <div class="row">
+        <!-- Chart Pembayaran -->
         <div class="col-lg-6 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-info">
@@ -180,6 +242,7 @@
             </div>
         </div>
 
+        <!-- Chart KK -->
         <div class="col-lg-6 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-secondary">
@@ -208,10 +271,8 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Chart Kombinasi - Premium Design -->
-    <div class="row">
+        <!-- Chart Kombinasi - Full Width -->
         <div class="col-12 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-dark">
@@ -242,9 +303,9 @@
         </div>
     </div>
 
-    <!-- Tabel Anomali - Premium Design -->
-    <div class="row">
-        <div class="col-12 mb-4">
+    <!-- Anomali Section -->
+    <div class="row mb-4">
+        <div class="col-12">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-warning">
                     <div class="card-header-icon">
@@ -288,7 +349,7 @@
         </div>
     </div>
 
-    <!-- Detail Data Tables - Premium Design -->
+    <!-- Detail Data Tables -->
     <div class="row">
         <div class="col-12">
             <div class="card card-widget-premium elevation-3">
@@ -344,24 +405,26 @@
 
                     <!-- Table Section -->
                     <div class="table-container-premium">
-                        <table class="table-premium" id="tableDetail">
-                            <thead>
-                                <tr>
-                                    <th width="5%">No</th>
-                                    <th>NIK</th>
-                                    <th>Nama Lengkap</th>
-                                    <th>No. KK</th>
-                                    <th>JK</th>
-                                    <th>Umur</th>
-                                    <th>Alamat</th>
-                                    <th>RT/RW</th>
-                                    <th>Status BPJS</th>
-                                    <th>Jenis BPJS</th>
-                                    <th>Pembayaran</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                        <div class="table-responsive">
+                            <table class="table-premium" id="tableDetail">
+                                <thead>
+                                    <tr>
+                                        <th width="5%">No</th>
+                                        <th>NIK</th>
+                                        <th>Nama Lengkap</th>
+                                        <th>No. KK</th>
+                                        <th>JK</th>
+                                        <th>Umur</th>
+                                        <th>Alamat</th>
+                                        <th>RT/RW</th>
+                                        <th>Status BPJS</th>
+                                        <th>Jenis BPJS</th>
+                                        <th>Pembayaran</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -507,8 +570,9 @@
                                 'rgba(220, 53, 69, 0.8)'
                             ],
                             borderColor: ['#28a745', '#dc3545'],
-                            borderWidth: 3,
-                            hoverOffset: 15
+                            borderWidth: 4,
+                            hoverBorderWidth: 6,
+                            hoverOffset: 10
                         }]
                     },
                     options: {
@@ -636,8 +700,9 @@
                         datasets: [{
                             data: values,
                             backgroundColor: colors,
-                            borderWidth: 3,
+                            borderWidth: 4,
                             borderColor: '#fff',
+                            hoverBorderWidth: 6,
                             hoverOffset: 10
                         }]
                     },

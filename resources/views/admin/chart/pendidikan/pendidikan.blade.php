@@ -3,86 +3,148 @@
 @section('content-header', 'Statistik Pendidikan')
 
 @section('content')
-
-    <!-- Premium Info Cards -->
+    <!-- Header Info Card -->
     <div class="row mb-4">
-        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
-            <div class="info-box-premium bg-gradient-info elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-users text-info"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Total Penduduk</span>
-                    <span class="info-box-premium-number" id="totalPenduduk">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="col-12">
+            <div class="stat-card-premium elevation-2">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-primary text-white">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
 
-        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
-            <div class="info-box-premium bg-gradient-success elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-graduation-cap text-success"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Kategori Pendidikan</span>
-                    <span class="info-box-premium-number">{{ $statistik }}</span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
-            <div class="info-box-premium bg-gradient-primary elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-male text-primary"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Laki-laki</span>
-                    <span class="info-box-premium-number" id="totalLakiLaki">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-            <div class="info-box-premium bg-gradient-warning elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-female text-warning"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Perempuan</span>
-                    <span class="info-box-premium-number" id="totalPerempuan">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
+                        <div class="ml-3">
+                            <h5 class="font-weight-bold mb-1">Ringkasan Statistik Pendidikan</h5>
+                            <p class="stat-sublabel-premium mb-0">
+                                Data diperbarui secara otomatis berdasarkan database terkini
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Charts Row - Premium Design -->
-    <div class="row">
+    <!-- Statistics Cards Section -->
+    <div class="row mb-4">
+        <div class="col-12 mb-3">
+            <h4 class="section-title">
+                <i class="fas fa-calculator mr-2"></i> Statistik Jumlah
+            </h4>
+        </div>
+
+        <!-- Total Penduduk -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-primary text-white">
+                            <i class="fas fa-users"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="totalPenduduk">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Total Penduduk
+                                <i class="fas fa-users stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Penduduk Desa</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kategori Pendidikan -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-success text-white">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium">{{ $statistik }}</p>
+
+                            <p class="stat-label-premium mb-0">
+                                Kategori Pendidikan
+                                <i class="fas fa-graduation-cap stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Tingkat Pendidikan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Laki-laki -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-info text-white">
+                            <i class="fas fa-male"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="totalLakiLaki">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Laki-laki
+                                <i class="fas fa-male stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Total Laki-laki</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Perempuan -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-warning text-white">
+                            <i class="fas fa-female"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="totalPerempuan">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Perempuan
+                                <i class="fas fa-female stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Total Perempuan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <div class="col-12 mb-3">
+            <h4 class="section-title">
+                <i class="fas fa-chart-bar mr-2"></i> Statistik Distribusi
+            </h4>
+        </div>
+
+        <!-- Bar Chart -->
         <div class="col-lg-7 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-primary">
@@ -107,7 +169,6 @@
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <!-- ✅ TAMBAHKAN WRAPPER DENGAN HEIGHT TETAP -->
                     <div style="position: relative; height: 400px; display: none;" id="barChartWrapper">
                         <canvas id="pendidikanBarChart"></canvas>
                     </div>
@@ -115,6 +176,7 @@
             </div>
         </div>
 
+        <!-- Pie Chart -->
         <div class="col-lg-5 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-success">
@@ -139,7 +201,6 @@
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <!-- ✅ TAMBAHKAN WRAPPER DENGAN HEIGHT TETAP -->
                     <div style="position: relative; height: 400px; display: none;" id="pieChartWrapper">
                         <canvas id="pendidikanPieChart"></canvas>
                     </div>
@@ -148,7 +209,7 @@
         </div>
     </div>
 
-    <!-- Detail Data Tables - Premium Design -->
+    <!-- Detail Data Tables -->
     <div class="row">
         <div class="col-12">
             <div class="card card-widget-premium elevation-3">
@@ -484,7 +545,6 @@
 
                 // Update charts dengan animasi
                 $('#loadingBarChart').fadeOut(300, function() {
-                    // ✅ Show wrapper instead of canvas directly
                     $('#barChartWrapper').fadeIn(400);
 
                     barChart.data.labels = top10Labels;
@@ -494,7 +554,6 @@
                 });
 
                 $('#loadingPieChart').fadeOut(300, function() {
-                    // ✅ Show wrapper instead of canvas directly
                     $('#pieChartWrapper').fadeIn(400);
 
                     pieChart.data.labels = labels;
