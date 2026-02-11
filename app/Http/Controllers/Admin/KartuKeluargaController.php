@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Crypt;
 
 class KartuKeluargaController extends Controller
 {
-     public function index()
+    public function index()
     {
         return view('admin.kependudukan.kartukeluarga.index');
     }
@@ -22,19 +22,27 @@ class KartuKeluargaController extends Controller
         if ($request->ajax()) {
             $desaId = auth()->user()->desa;
             $user = auth()->user();
+            $isAdministrator = $user->hasRole('Administrator');
             $isAdminDesa = $user->hasRole('AdminDesa');
 
             // OPTIMASI 1: Query hanya dengan 1 JOIN yang diperlukan
             // Filter sts_hub_kel = 1 berarti hanya kepala keluarga
             $data = DB::table('t_kartu_keluarga_anggota as t1')
                 ->join('t_kartu_keluarga as t2', 't2.id', '=', 't1.no_kk')
+                ->join('indonesia_villages as t3', 't3.code', '=', 't2.desa')
                 ->where('t1.sts_hub_kel', 1) // Kepala keluarga
-                ->where('t2.desa', $desaId)
                 ->where('t1.sts_mati', 0);
 
-            // OPTIMASI 2: Filter user lebih efisien
-            if (!$isAdminDesa) {
-                $data->where('t2.user_id', $user->id);
+           // OPTIMASI 2: Kondisi role check lebih efisien
+            // Administrator: Tidak ada filter (akses semua data)
+            // AdminDesa: Filter by desa saja
+            // User biasa: Filter by desa dan user_id
+            if (!$isAdministrator) {
+                $data->where('t2.desa', $desaId);
+
+                if (!$isAdminDesa) {
+                    $data->where('t2.user_id', $user->id);
+                }
             }
 
             // OPTIMASI 3: Select minimal kolom yang dibutuhkan
@@ -50,7 +58,8 @@ class KartuKeluargaController extends Controller
                 't2.no_kk',
                 't2.kp',
                 't2.rt',
-                't2.rw'
+                't2.rw',
+                't3.name'
             ])
             ->orderByDesc('t1.created_at');
 
@@ -59,6 +68,7 @@ class KartuKeluargaController extends Controller
 
                 // OPTIMASI 4: Uppercase di frontend lebih ringan
                 ->editColumn('nama', fn($row) => strtoupper($row->nama))
+                ->editColumn('name', fn($row) => strtoupper($row->name))
                 ->editColumn('tmpt_lahir', fn($row) => strtoupper($row->tmpt_lahir))
                 ->editColumn('tgl_lahir', fn($row) => date('d-m-Y', strtotime($row->tgl_lahir)))
 

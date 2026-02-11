@@ -55,6 +55,7 @@
                                     <th rowspan="2" style="width: 10%">TGL LAHIR</th>
                                     <th rowspan="2">TEMPAT LAHIR</th>
                                     <th rowspan="2">HUB KELUARGA</th>
+                                    <th rowspan="2">DESA</th>
                                     <th rowspan="2">ALAMAT</th>
                                 </tr>
                                 <tr class="text-center">
@@ -113,7 +114,7 @@
                 },
 
                 order: [
-                    [8, 'desc']
+                    [9, 'desc']
                 ], // Order by created_at
 
                 columns: [{
@@ -134,34 +135,41 @@
                     },
                     {
                         data: 'no_kk',
-                        name: 'no_kk',
+                        name: 't2.no_kk',
                         className: 'text-center nowrap',
                     },
                     {
                         data: 'no_nik',
-                        name: 'no_nik',
+                        name: 't1.no_nik',
                         className: 'text-center nowrap',
                     },
                     {
                         data: 'nama',
-                        name: 'nama',
+                        name: 't1.nama',
                         className: 'nowrap',
                     },
                     {
                         data: 'tgl_lahir',
-                        name: 'tgl_lahir',
+                        name: 't1.tgl_lahir',
                         className: 'text-center nowrap',
                         width: '1%'
                     },
                     {
                         data: 'tmpt_lahir',
-                        name: 'tmpt_lahir',
+                        name: 't1.tmpt_lahir',
                         className: 'text-center nowrap',
                     },
                     {
                         data: 'sts_hub_kel',
                         name: 'sts_hub_kel',
                         className: 'text-center nowrap',
+                    },
+                    {
+                        data: 'name',
+                        name: 't3.name',
+                        orderable: false,
+                        searchable: false,
+                        className: 'nowrap',
                     },
                     {
                         data: 'alamat',

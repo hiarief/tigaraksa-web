@@ -53,6 +53,7 @@
                                     <th rowspan="2">NAMA KEPALA KELUARGA</th>
                                     <th rowspan="2" style="width: 1%">TGL LAHIR</th>
                                     <th rowspan="2">TEMPAT LAHIR</th>
+                                    <th rowspan="2">DESA</th>
                                     <th rowspan="2">ALAMAT</th>
                                 </tr>
                                 <tr class="text-center">
@@ -110,7 +111,7 @@
                 },
 
                 order: [
-                    [8, 'desc']
+                    [9, 'desc']
                 ], // Order by created_at
 
                 columns: [{
@@ -156,11 +157,16 @@
                         className: 'text-center nowrap',
                     },
                     {
+                        data: 'name',
+                        name: 't3.name',
+                        className: 'text-center nowrap',
+                    },
+                    {
                         data: 'alamat',
                         name: 'alamat',
                         orderable: false,
                         searchable: false,
-                        className: 'text-center nowrap',
+                        className: 'nowrap',
                     },
                     {
                         data: 'created_at',

@@ -22,18 +22,26 @@ class KartuKeluargaAnggotaController extends Controller
         if ($request->ajax()) {
             $desaId = auth()->user()->desa;
             $user = auth()->user();
+            $isAdministrator = $user->hasRole('Administrator');
             $isAdminDesa = $user->hasRole('AdminDesa');
 
             // OPTIMASI 1: Gunakan Eloquent dengan eager loading yang lebih efisien
             // atau gunakan query builder dengan select minimal
             $data = DB::table('t_kartu_keluarga_anggota as t1')
                 ->join('t_kartu_keluarga as t2', 't2.id', '=', 't1.no_kk')
-                ->where('t2.desa', $desaId)
+                ->join('indonesia_villages as t3', 't3.code', '=', 't2.desa')
                 ->where('t1.sts_mati', 0);
 
-            // OPTIMASI 2: Kondisi user check lebih efisien
-            if (!$isAdminDesa) {
-                $data->where('t2.user_id', $user->id);
+            // OPTIMASI 2: Kondisi role check lebih efisien
+            // Administrator: Tidak ada filter (akses semua data)
+            // AdminDesa: Filter by desa saja
+            // User biasa: Filter by desa dan user_id
+            if (!$isAdministrator) {
+                $data->where('t2.desa', $desaId);
+
+                if (!$isAdminDesa) {
+                    $data->where('t2.user_id', $user->id);
+                }
             }
 
             // OPTIMASI 3: Select hanya kolom yang benar-benar dibutuhkan
@@ -51,8 +59,7 @@ class KartuKeluargaAnggotaController extends Controller
                 't2.kp',
                 't2.rt',
                 't2.rw',
-                't2.desa as desa_code',
-                't2.kecamatan as kecamatan_code'
+                't3.name',
             ]);
 
             return DataTables::of($data)
@@ -60,6 +67,7 @@ class KartuKeluargaAnggotaController extends Controller
 
                 // OPTIMASI 4: Format di frontend, bukan di backend untuk performa lebih baik
                 ->editColumn('nama', fn($row) => strtoupper($row->nama))
+                ->editColumn('name', fn($row) => strtoupper($row->name))
                 ->editColumn('tmpt_lahir', fn($row) => strtoupper($row->tmpt_lahir))
                 ->editColumn('tgl_lahir', fn($row) => date('d-m-Y', strtotime($row->tgl_lahir)))
 
