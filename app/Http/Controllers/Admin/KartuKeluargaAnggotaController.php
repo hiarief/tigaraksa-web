@@ -19,122 +19,104 @@ class KartuKeluargaAnggotaController extends Controller
 
     public function indexData(Request $request)
     {
-        if (!$request->ajax()) {
-            abort(404);
-        }
+        if ($request->ajax()) {
 
-        // -------------------------------------------------
-        // Resolve Auth User + Cache Roles (Spatie Optimize)
-        // -------------------------------------------------
-        $user = auth()->user()->loadMissing('roles', 'permissions');
+            $desaId = auth()->user()->desa;
+            $user   = auth()->user();
 
-        $desaId      = $user->desa;
-        $isAdminDesa = $user->hasRole('AdminDesa');
+            $data = DB::table('t_kartu_keluarga_anggota as t1')
+                ->join('t_kartu_keluarga as t2', 't2.id', '=', 't1.no_kk')
+                ->join('users as t3', 't3.id', '=', 't2.user_id')
+                ->leftJoin('indonesia_districts as t4', 't4.code', '=', 't2.kecamatan')
+                ->leftJoin('indonesia_villages as t5', 't5.code', '=', 't2.desa')
+                ->leftJoin('m_hubungan_keluarga as t6', 't6.id', '=', 't1.sts_hub_kel')
+                ->where('t2.desa', $desaId)
+                ->where('t1.sts_mati', 0)
+                ->when(!$user->hasRole('AdminDesa'), function ($query) use ($user) {
+                    $query->where('t3.id', $user->id);
+                })
+                ->orderByDesc('t1.created_at')
+                ->select([
+                    't2.id',
+                    't2.no_kk as no_kk',
+                    't1.no_nik as no_nik',
+                    't1.nama as nama',
+                    't1.tgl_lahir as tgl_lahir',
+                    't1.tmpt_lahir as tmpt_lahir',
+                    't2.kp',
+                    't2.rt',
+                    't2.rw',
+                    't5.name as desa',
+                    't4.name as kecamatan',
+                    't1.created_at as created_at',
+                    't1.id as anggota_id',
+                    't6.nama as hubungan_keluarga'
+                ]);
 
-        // -------------------------------------------------
-        // Base Query (Early Filtering)
-        // -------------------------------------------------
-        $query = DB::table('t_kartu_keluarga as kk')
-            ->where('kk.desa', $desaId)
-            ->when(!$isAdminDesa, fn ($q) => $q->where('kk.user_id', $user->id))
 
-            // ---------------------------
-            // Join anggota (filtered)
-            // ---------------------------
-            ->join('t_kartu_keluarga_anggota as ag', function ($join) {
-                $join->on('kk.id', '=', 'ag.no_kk')
-                    ->where('ag.sts_mati', 0);
-            })
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->editColumn('nama', fn($row) => strtoupper($row->nama))
+                ->editColumn('hubungan_keluarga', fn($row) => strtoupper($row->hubungan_keluarga))
+                ->editColumn('tmpt_lahir', fn($row) => strtoupper($row->tmpt_lahir))
+                ->editColumn('tgl_lahir', fn($row) => date('d-m-Y', strtotime($row->tgl_lahir)))
+                ->addColumn('alamat', function($row) { return strtoupper( $row->kp . ', RT. ' . $row->rt . '/' . $row->rw); })
+                ->addColumn('aksi', function ($row) {
 
-            ->leftJoin('users as usr', 'usr.id', '=', 'kk.user_id')
-            ->leftJoin('indonesia_districts as dis', 'dis.code', '=', 'kk.kecamatan')
-            ->leftJoin('indonesia_villages as vil', 'vil.code', '=', 'kk.desa')
-            ->leftJoin('m_hubungan_keluarga as hub', 'hub.id', '=', 'ag.sts_hub_kel')
+                    $viewUrl   = route('kependudukan.kartu.keluarga.show', Crypt::encrypt($row->id));
+                    $editUrl   = route('kependudukan.anggota.keluarga.edit', Crypt::encrypt($row->anggota_id));
+                    $deleteUrl = route('kependudukan.anggota.keluarga.delete', Crypt::encrypt($row->anggota_id));
 
-            ->select([
-                'kk.id',
-                'kk.no_kk',
-                'ag.no_nik',
-                'ag.nama',
-                'ag.tgl_lahir',
-                'ag.tmpt_lahir',
-                'kk.kp',
-                'kk.rt',
-                'kk.rw',
-                'vil.name as desa',
-                'dis.name as kecamatan',
-                'ag.created_at',
-                'ag.id as anggota_id',
-                'hub.nama as hubungan_keluarga',
-            ])
+                    $btnView = '';
+                    $btnEdit = '';
+                    $btnDelete = '';
 
-            ->orderByDesc('ag.created_at');
+                    if (auth()->user()->can('anggota-keluarga-view')) {
+                        $btnView = '
+                            <a href="'.$viewUrl.'"
+                            class="btn bg-gradient-info"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Lihat">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        ';
+                    }
 
-        // -------------------------------------------------
-        // Permission Pre-Resolve (Micro Optimization)
-        // -------------------------------------------------
-        $canView   = $user->can('anggota-keluarga-view');
-        $canEdit   = $user->can('anggota-keluarga-edit');
-        $canDelete = $user->can('anggota-keluarga-delete');
+                    if (auth()->user()->can('anggota-keluarga-edit')) {
+                        $btnEdit = '
+                            <a href="'.$editUrl.'"
+                            class="btn bg-gradient-warning"
+                            title="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                        ';
+                    }
 
-        return DataTables::of($query)
-
-            ->addIndexColumn()
-
-            ->addColumn('alamat', fn ($row) =>
-                "{$row->kp}|{$row->rt}|{$row->rw}"
-            )
-
-            ->addColumn('aksi', function ($row) use ($canView, $canEdit, $canDelete) {
-
-                $viewUrl   = route('kependudukan.kartu.keluarga.show', Crypt::encrypt($row->id));
-                $editUrl   = route('kependudukan.anggota.keluarga.edit', Crypt::encrypt($row->anggota_id));
-                $deleteKey = Crypt::encrypt($row->anggota_id);
-
-                $buttons = [];
-
-                if ($canView) {
-                    $buttons[] = <<<HTML
-                        <a href="{$viewUrl}"
-                        class="btn bg-gradient-info"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Lihat">
-                            <i class="fa-solid fa-eye"></i>
-                        </a>
-                    HTML;
-                }
-
-                if ($canEdit) {
-                    $buttons[] = <<<HTML
-                        <a href="{$editUrl}"
-                        class="btn bg-gradient-warning"
-                        title="Edit">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </a>
-                    HTML;
-                }
-
-                if ($canDelete) {
-                    $buttons[] = <<<HTML
-                        <button type="button"
+                    if (auth()->user()->can('anggota-keluarga-delete')) {
+                        $btnDelete = '
+                            <button type="button"
                                 class="btn bg-gradient-danger"
                                 title="Hapus"
-                                onclick="deleteData('{$deleteKey}')">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    HTML;
-                }
+                                onclick="deleteData(\''.Crypt::encrypt($row->anggota_id).'\')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        ';
+                    }
 
-                return '<div class="btn-group btn-group-sm text-center" role="group">'
-                    . implode('', $buttons)
-                    . '</div>';
-            })
+                    return '
+                        <div class="btn-group btn-group-sm text-center" role="group">
+                            '.$btnView.'
+                            '.$btnEdit.'
+                            '.$btnDelete.'
+                        </div>
+                    ';
+                })
 
-            ->rawColumns(['aksi'])
-            ->make(true);
+                ->rawColumns(['aksi'])
+                ->make(true);
+        }
     }
-
 
     public function create()
     {

@@ -19,8 +19,8 @@
                                     class="btn btn-sm bg-gradient-danger">
                                     <i class="fas fa-trash"></i> Data Terhapus
                                 </a>
-                            @endcan
-                        </div>
+                            </div>
+                        @endcan
                     </div>
                 </div>
                 <div class="card-body">
@@ -93,7 +93,7 @@
                 info: true,
                 ajax: "{{ route('kependudukan.anggota.keluarga.index.data') }}",
                 order: [
-                    [9, 'desc'] // Order by created_at (index 9 karena ada hidden column)
+                    [8, 'desc'] // Order by created_at
                 ],
                 columns: [{
                         data: 'DT_RowIndex',
@@ -124,53 +124,27 @@
                         data: 'nama',
                         name: 'nama',
                         class: 'nowrap',
-                        // FORMAT DI CLIENT SIDE - LEBIH CEPAT
-                        render: function(data) {
-                            return data ? data.toUpperCase() : '';
-                        }
                     },
                     {
                         data: 'tgl_lahir',
                         name: 'tgl_lahir',
                         class: 'text-center nowrap',
-                        // FORMAT TANGGAL DI CLIENT SIDE
-                        render: function(data) {
-                            if (!data) return '';
-                            let date = new Date(data);
-                            let day = String(date.getDate()).padStart(2, '0');
-                            let month = String(date.getMonth() + 1).padStart(2, '0');
-                            let year = date.getFullYear();
-                            return day + '-' + month + '-' + year;
-                        }
                     },
                     {
                         data: 'tmpt_lahir',
                         name: 'tmpt_lahir',
                         class: 'text-center nowrap',
-                        // FORMAT DI CLIENT SIDE
-                        render: function(data) {
-                            return data ? data.toUpperCase() : '';
-                        }
                     },
                     {
                         data: 'hubungan_keluarga',
                         name: 'hubungan_keluarga',
                         class: 'text-center nowrap',
-                        // FORMAT DI CLIENT SIDE
-                        render: function(data) {
-                            return data ? data.toUpperCase() : '';
-                        }
                     },
                     {
                         data: 'alamat',
                         name: 'alamat',
                         orderable: false,
                         searchable: false,
-                        // FORMAT ALAMAT DI CLIENT SIDE
-                        render: function(data, type, row) {
-                            let alamat = row.kp + ', RT. ' + row.rt + '/' + row.rw;
-                            return alamat.toUpperCase();
-                        }
                     },
                     {
                         data: 'created_at',
@@ -179,12 +153,6 @@
                         searchable: false
                     }
                 ],
-                // TAMBAHAN: Optimasi performa
-                deferRender: true, // Render hanya data yang terlihat
-                scroller: true, // Virtual scrolling (opsional)
-                language: {
-                    processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>'
-                }
             });
         });
 
@@ -195,7 +163,7 @@
         function deleteData(id) {
             Swal.fire({
                 title: 'Konfirmasi Hapus',
-                text: "Data akan dipindahkan ke tabel backup. Apakah Anda yakin?",
+                text: "Data Kartu Keluarga dan semua anggotanya akan dipindahkan ke tabel backup. Apakah Anda yakin?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -206,7 +174,7 @@
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
                     return $.ajax({
-                        url: "{{ route('kependudukan.anggota.keluarga.delete', ':id') }}".replace(':id',
+                        url: "{{ route('kependudukan.kartu.keluarga.delete', ':id') }}".replace(':id',
                             id),
                         type: "POST",
                         data: {
@@ -218,7 +186,9 @@
                 allowOutsideClick: () => !Swal.isLoading()
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Cek response dari server
                     if (result.value && result.value.success) {
+                        // Berhasil dihapus
                         Swal.fire({
                             title: 'Berhasil!',
                             text: result.value.message || 'Data berhasil dihapus',
@@ -226,9 +196,11 @@
                             timer: 2000,
                             showConfirmButton: false
                         });
+
                         // Reload DataTable tanpa reset pagination
                         $('#kartu-keluarga-table').DataTable().ajax.reload(null, false);
                     } else {
+                        // Gagal dihapus
                         Swal.fire({
                             title: 'Gagal!',
                             text: (result.value && result.value.message) || 'Gagal menghapus data',
@@ -238,13 +210,18 @@
                     }
                 }
             }).catch((error) => {
+                // Error dari AJAX
                 console.error('Error:', error);
+
                 let errorMessage = 'Terjadi kesalahan saat menghapus data';
+
+                // Cek apakah ada response error dari server
                 if (error.responseJSON && error.responseJSON.message) {
                     errorMessage = error.responseJSON.message;
                 } else if (error.statusText) {
                     errorMessage = 'Error: ' + error.statusText;
                 }
+
                 Swal.fire({
                     title: 'Error!',
                     text: errorMessage,
