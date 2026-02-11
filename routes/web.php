@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\KepemilikanRumahController;
 use App\Http\Controllers\Admin\BantuanPemerintahController;
 use App\Http\Controllers\Admin\KartuKeluargaAnggotaController;
 use App\Http\Controllers\Admin\Kecamatan\UmurKecamatanController;
+use App\Http\Controllers\Admin\Kecamatan\PerkawinanKecamatanController;
 use App\Http\Controllers\Admin\Kecamatan\KependudukanKecamatanContrroller;
 
 Route::get('/', [LandingPageController::class, 'page'])->name('landing.page');
@@ -136,15 +137,15 @@ Route::middleware(['auth'])->group(function () {
 
     Route::group(['prefix' => '/pekerjaan', 'as' => 'pekerjaan.'], function () {
         Route::get('/', [PekerjaanController::class, 'index'])->name('index');
-        Route::get('/api/kpi', [PekerjaanController::class, 'getKpiData'])->name('api.kpi');
-        Route::get('/api/distribusi-pekerjaan', [PekerjaanController::class, 'getDistribusiPekerjaan'])->name('api.distribusi.pekerjaan');
-        Route::get('/api/distribusi-pendapatan', [PekerjaanController::class, 'getDistribusiPendapatan'])->name('api.distribusi.pendapatan');
-        Route::get('/api/pekerjaan-vs-pendapatan', [PekerjaanController::class, 'getPekerjaanVsPendapatan'])->name('api.pekerjaan.pendapatan');
-        Route::get('/api/pekerjaan-by-gender', [PekerjaanController::class, 'getPekerjaanByGender'])->name('api.pekerjaan.gender');
-        Route::get('/api/pekerjaan-by-usia', [PekerjaanController::class, 'getPekerjaanByUsia'])->name('api.pekerjaan.usia');
-        Route::get('/api/distribusi-usia', [PekerjaanController::class, 'getDistribusiUsia'])->name('api.distribusi.usia');
-        Route::get('/api/status-pekerjaan', [PekerjaanController::class, 'getStatusPekerjaan'])->name('api.status.pekerjaan');
-        Route::get('/api/analisis-pendapatan', [PekerjaanController::class, 'getAnalisisPendapatanProduktif'])->name('api.analisis.pendapatan');
+        Route::get('/kpi', [PekerjaanController::class, 'getKpiData'])->name('api.kpi');
+        Route::get('/distribusi-pekerjaan', [PekerjaanController::class, 'getDistribusiPekerjaan'])->name('api.distribusi.pekerjaan');
+        Route::get('/distribusi-pendapatan', [PekerjaanController::class, 'getDistribusiPendapatan'])->name('api.distribusi.pendapatan');
+        Route::get('/pekerjaan-vs-pendapatan', [PekerjaanController::class, 'getPekerjaanVsPendapatan'])->name('api.pekerjaan.pendapatan');
+        Route::get('/pekerjaan-by-gender', [PekerjaanController::class, 'getPekerjaanByGender'])->name('api.pekerjaan.gender');
+        Route::get('/pekerjaan-by-usia', [PekerjaanController::class, 'getPekerjaanByUsia'])->name('api.pekerjaan.usia');
+        Route::get('/distribusi-usia', [PekerjaanController::class, 'getDistribusiUsia'])->name('api.distribusi.usia');
+        Route::get('/status-pekerjaan', [PekerjaanController::class, 'getStatusPekerjaan'])->name('api.status.pekerjaan');
+        Route::get('/analisis-pendapatan', [PekerjaanController::class, 'getAnalisisPendapatanProduktif'])->name('api.analisis.pendapatan');
 
         // DataTables API
         Route::get('/dt/detail-pekerjaan', [PekerjaanController::class, 'getDetailByPekerjaan'])->name('dt.detail.pekerjaan');
@@ -251,6 +252,23 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/statistik-lanjutan', [UmurKecamatanController::class, 'statistikLanjutan'])->name('statistik.lanjutan');
             Route::get('/tren-pertumbuhan', [UmurKecamatanController::class, 'trenPertumbuhan'])->name('tren.pertumbuhan');
         });
+
+        Route::group(['prefix' => '/perkawinan', 'as' => 'perkawinan.'], function () {
+        Route::get('/', [PerkawinanKecamatanController::class, 'index'])->name('index');
+        Route::get('/jumlah', [PerkawinanKecamatanController::class, 'jumlah'])->name('jumlah');
+        Route::get('/rasio', [PerkawinanKecamatanController::class, 'rasio'])->name('rasio');
+        Route::get('/distribusi/status', [PerkawinanKecamatanController::class, 'distribusiStatus'])->name('distribusi.status');
+        Route::get('/distribusi/tercatat', [PerkawinanKecamatanController::class, 'distribusiTercatat'])->name('distribusi.tercatat');
+        Route::get('/distribusi/desa', [PerkawinanKecamatanController::class, 'distribusiDesa'])->name('distribusi.desa');
+        Route::get('/distribusi/jenkel', [PerkawinanKecamatanController::class, 'distribusiJenkel'])->name('distribusi.jenkel');
+        Route::get('/distribusi/umur', [PerkawinanKecamatanController::class, 'distribusiUmur'])->name('distribusi.umur');
+        Route::get('/analisa/usia', [PerkawinanKecamatanController::class, 'analisaUsiaMenikah'])->name('analisa.usia');
+        Route::get('/distribusi/usia-kategori', [PerkawinanKecamatanController::class, 'distribusiMenikahDibawahUmur'])->name('distribusi.usia.kategori');
+        Route::get('/dibawah-umur/desa', [PerkawinanKecamatanController::class, 'menikahDibawahUmurPerDesa'])->name('dibawah.umur.desa');
+        Route::get('/detail/dibawah-umur', [PerkawinanKecamatanController::class, 'detailMenikahDibawahUmur'])->name('detail.dibawah.umur');
+        Route::get('/data/abnormal', [PerkawinanKecamatanController::class, 'dataAbnormal'])->name('data.abnormal');
+        Route::get('/detail/desa', [PerkawinanKecamatanController::class, 'detailPerDesa'])->name('detail.desa');
+    });
     });
 
 });
