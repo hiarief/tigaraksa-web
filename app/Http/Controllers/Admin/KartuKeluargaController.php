@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Crypt;
 
 class KartuKeluargaController extends Controller
 {
-    public function index()
+     public function index()
     {
         return view('admin.kependudukan.kartukeluarga.index');
     }
@@ -20,93 +20,71 @@ class KartuKeluargaController extends Controller
     public function indexData(Request $request)
     {
         if ($request->ajax()) {
-
             $desaId = auth()->user()->desa;
-            $user   = auth()->user();
+            $user = auth()->user();
+            $isAdminDesa = $user->hasRole('AdminDesa');
 
+            // OPTIMASI 1: Query hanya dengan 1 JOIN yang diperlukan
+            // Filter sts_hub_kel = 1 berarti hanya kepala keluarga
             $data = DB::table('t_kartu_keluarga_anggota as t1')
                 ->join('t_kartu_keluarga as t2', 't2.id', '=', 't1.no_kk')
-                ->join('users as t3', 't3.id', '=', 't2.user_id')
-                ->leftJoin('indonesia_districts as t4', 't4.code', '=', 't2.kecamatan')
-                ->leftJoin('indonesia_villages as t5', 't5.code', '=', 't2.desa')
-                ->where('t1.sts_hub_kel', 1)
+                ->where('t1.sts_hub_kel', 1) // Kepala keluarga
                 ->where('t2.desa', $desaId)
-                ->where('t1.sts_mati', 0)
-                ->when(!$user->hasRole('AdminDesa'), function ($query) use ($user) {
-                    $query->where('t3.id', $user->id);
-                })
-                ->orderByDesc('t1.created_at')
-                ->select([
-                    't2.id',
-                    't2.no_kk as no_kk',
-                    't1.no_nik as no_nik',
-                    't1.nama as nama',
-                    't1.tgl_lahir as tgl_lahir',
-                    't1.tmpt_lahir as tmpt_lahir',
-                    't2.kp',
-                    't2.rt',
-                    't2.rw',
-                    't5.name as desa',
-                    't4.name as kecamatan',
-                    't1.created_at as created_at',
-                    't1.id as anggota_id'
-                ]);
+                ->where('t1.sts_mati', 0);
+
+            // OPTIMASI 2: Filter user lebih efisien
+            if (!$isAdminDesa) {
+                $data->where('t2.user_id', $user->id);
+            }
+
+            // OPTIMASI 3: Select minimal kolom yang dibutuhkan
+            // Hapus join ke tabel desa/kecamatan yang tidak diperlukan untuk list
+            $data->select([
+                't1.id as anggota_id',
+                't1.no_nik',
+                't1.nama',
+                't1.tgl_lahir',
+                't1.tmpt_lahir',
+                't1.created_at',
+                't2.id',
+                't2.no_kk',
+                't2.kp',
+                't2.rt',
+                't2.rw'
+            ])
+            ->orderByDesc('t1.created_at');
 
             return DataTables::of($data)
                 ->addIndexColumn()
+
+                // OPTIMASI 4: Uppercase di frontend lebih ringan
                 ->editColumn('nama', fn($row) => strtoupper($row->nama))
                 ->editColumn('tmpt_lahir', fn($row) => strtoupper($row->tmpt_lahir))
                 ->editColumn('tgl_lahir', fn($row) => date('d-m-Y', strtotime($row->tgl_lahir)))
+
                 ->addColumn('alamat', function($row) {
-                    return strtoupper(
-                        $row->kp . ', RT. ' . $row->rt . '/' . $row->rw
-                    );
+                    return strtoupper($row->kp . ', RT. ' . $row->rt . '/' . $row->rw);
                 })
+
                 ->addColumn('aksi', function ($row) {
+                    $buttons = [];
 
-                $buttons = '<div class="btn-group btn-group-sm text-center" role="group">';
+                    if (auth()->user()->can('kepala-keluarga-show')) {
+                        $viewUrl = route('kependudukan.kartu.keluarga.show', Crypt::encrypt($row->id));
+                        $buttons[] = '<a href="'.$viewUrl.'" class="btn bg-gradient-info btn-sm" target="_blank" rel="noopener noreferrer" title="Lihat"><i class="fa-solid fa-eye"></i></a>';
+                    }
 
-                if (auth()->user()->can('kepala-keluarga-show')) {
-                    $viewUrl = route('kependudukan.kartu.keluarga.show', Crypt::encrypt($row->id));
+                    if (auth()->user()->can('kepala-keluarga-edit')) {
+                        $editUrl = route('kependudukan.kartu.keluarga.edit', Crypt::encrypt($row->id));
+                        $buttons[] = '<a href="'.$editUrl.'" class="btn bg-gradient-warning btn-sm" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>';
+                    }
 
-                    $buttons .= '
-                        <a href="'.$viewUrl.'"
-                        class="btn bg-gradient-info"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Lihat">
-                        <i class="fa-solid fa-eye"></i>
-                        </a>
-                    ';
-                }
+                    if (auth()->user()->can('kepala-keluarga-delete')) {
+                        $buttons[] = '<button type="button" class="btn bg-gradient-danger btn-sm" title="Hapus" onclick="deleteData('.$row->id.')"><i class="fa-solid fa-trash"></i></button>';
+                    }
 
-                if (auth()->user()->can('kepala-keluarga-edit')) {
-                    $editUrl = route('kependudukan.kartu.keluarga.edit', Crypt::encrypt($row->id));
-
-                    $buttons .= '
-                        <a href="'.$editUrl.'"
-                        class="btn bg-gradient-warning"
-                        title="Edit">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                        </a>
-                    ';
-                }
-
-                if (auth()->user()->can('kepala-keluarga-delete')) {
-                    $buttons .= '
-                        <button type="button"
-                            class="btn bg-gradient-danger"
-                            title="Hapus"
-                            onclick="deleteData('.$row->id.')">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    ';
-                }
-
-                $buttons .= '</div>';
-
-                return $buttons;
-            })
+                    return '<div class="btn-group btn-group-sm" role="group">'.implode('', $buttons).'</div>';
+                })
 
                 ->rawColumns(['aksi'])
                 ->make(true);

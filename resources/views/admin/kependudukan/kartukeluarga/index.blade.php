@@ -44,14 +44,14 @@
 
                     <div class="table-responsive">
                         <table id="kartu-keluarga-table"
-                            class="table-bordered table-hover table-striped rounded-0 table-sm table py-0 text-sm">
+                            class="table-bordered table-hover table-striped rounded-0 table-sm table text-sm">
                             <thead>
                                 <tr class="text-center">
                                     <th rowspan="2" style="width: 1%">NO</th>
-                                    <th rowspan="2" style="width: 1%">AKSI</th>
+                                    <th rowspan="2" style="width: 11%">AKSI</th>
                                     <th colspan="2">NOMOR</th>
-                                    <th rowspan="2">NAMA</th>
-                                    <th rowspan="2">TGL LAHIR</th>
+                                    <th rowspan="2">NAMA KEPALA KELUARGA</th>
+                                    <th rowspan="2" style="width: 1%">TGL LAHIR</th>
                                     <th rowspan="2">TEMPAT LAHIR</th>
                                     <th rowspan="2">ALAMAT</th>
                                 </tr>
@@ -71,73 +71,96 @@
 
 @endsection
 
-@push('styles')
-@endpush
-
 @push('scripts')
     <script>
         $(document).ready(function() {
             // ============================================================
-            // DATATABLE INITIALIZATION
+            // DATATABLE INITIALIZATION - OPTIMIZED
             // ============================================================
-            $('#kartu-keluarga-table').DataTable({
+            const table = $('#kartu-keluarga-table').DataTable({
                 responsive: false,
                 autoWidth: false,
                 processing: true,
                 serverSide: true,
-                ordering: true,
-                paging: true,
-                searching: true,
-                info: true,
-                ajax: "{{ route('kependudukan.kartu.keluarga.index.data') }}",
-                order: [
-                    [8, 'desc'] // Order by created_at
+
+                // OPTIMASI 1: Defer rendering untuk performa lebih baik
+                deferRender: true,
+
+                // OPTIMASI 2: Paging yang lebih efisien
+                pageLength: 25,
+                lengthMenu: [
+                    [10, 25, 50, 100],
+                    [10, 25, 50, 100]
                 ],
+
+                // OPTIMASI 3: Disable state save jika tidak perlu
+                stateSave: false,
+
+                ajax: {
+                    url: "{{ route('kependudukan.kartu.keluarga.index.data') }}",
+                    type: "GET",
+                    error: function(xhr, error, code) {
+                        console.error('DataTables Ajax Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Gagal memuat data. Silakan refresh halaman.',
+                        });
+                    }
+                },
+
+                order: [
+                    [8, 'desc']
+                ], // Order by created_at
+
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         width: '1%',
-                        class: 'text-center nowrap',
+                        className: 'text-center nowrap',
                         orderable: false,
                         searchable: false,
                     },
                     {
                         data: 'aksi',
                         name: 'aksi',
-                        class: 'text-center nowrap',
+                        width: '1%',
+                        className: 'text-center nowrap',
                         orderable: false,
                         searchable: false,
                     },
                     {
                         data: 'no_kk',
                         name: 't2.no_kk',
-                        class: 'text-center nowrap',
+                        className: 'text-center nowrap',
                     },
                     {
                         data: 'no_nik',
                         name: 't1.no_nik',
-                        class: 'text-center nowrap',
+                        className: 'text-center nowrap',
                     },
                     {
                         data: 'nama',
                         name: 't1.nama',
-                        class: 'nowrap',
+                        className: 'nowrap',
                     },
                     {
                         data: 'tgl_lahir',
                         name: 't1.tgl_lahir',
-                        class: 'text-center nowrap',
+                        className: 'text-center nowrap',
+                        width: '1%'
                     },
                     {
                         data: 'tmpt_lahir',
                         name: 't1.tmpt_lahir',
-                        class: 'text-center nowrap',
+                        className: 'text-center nowrap',
                     },
                     {
                         data: 'alamat',
                         name: 'alamat',
                         orderable: false,
                         searchable: false,
+                        className: 'text-center nowrap',
                     },
                     {
                         data: 'created_at',
@@ -146,17 +169,44 @@
                         searchable: false
                     }
                 ],
+
+                // OPTIMASI 4: Language Indonesia
+                language: {
+                    processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>',
+                    search: "Cari:",
+                    lengthMenu: "Tampilkan _MENU_ data",
+                    info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                    infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+                    infoFiltered: "(difilter dari _MAX_ total data)",
+                    zeroRecords: "Tidak ada data yang ditemukan",
+                    emptyTable: "Tidak ada data tersedia",
+                    paginate: {
+                        first: "Pertama",
+                        last: "Terakhir",
+                        next: "Selanjutnya",
+                        previous: "Sebelumnya"
+                    }
+                }
+            });
+
+            // OPTIMASI 5: Debounce search untuk mengurangi request
+            let searchTimeout;
+            $('#kartu-keluarga-table_filter input').off().on('keyup', function() {
+                clearTimeout(searchTimeout);
+                const searchTerm = this.value;
+                searchTimeout = setTimeout(function() {
+                    table.search(searchTerm).draw();
+                }, 500); // Delay 500ms sebelum search
             });
         });
 
         // ============================================================
-        // FUNCTION DELETE DATA
-        // Menggunakan SweetAlert2 untuk konfirmasi yang lebih baik
+        // FUNCTION DELETE DATA - OPTIMIZED
         // ============================================================
         function deleteData(id) {
             Swal.fire({
                 title: 'Konfirmasi Hapus',
-                text: "Data Kartu Keluarga dan semua anggotanya akan dipindahkan ke tabel backup. Apakah Anda yakin?",
+                text: "Data Kartu Keluarga dan semua anggotanya akan dipindahkan ke tabel backup. Yakin?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -166,61 +216,36 @@
                 reverseButtons: true,
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
-                    return $.ajax({
-                        url: "{{ route('kependudukan.kartu.keluarga.delete', ':id') }}".replace(':id',
-                            id),
-                        type: "POST",
-                        data: {
-                            _token: "{{ csrf_token() }}"
-                        },
-                        dataType: 'json'
-                    });
+                    return fetch("{{ route('kependudukan.kartu.keluarga.delete', ':id') }}".replace(':id',
+                            id), {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(response.statusText);
+                            }
+                            return response.json();
+                        })
+                        .catch(error => {
+                            Swal.showValidationMessage(`Request failed: ${error}`);
+                        });
                 },
                 allowOutsideClick: () => !Swal.isLoading()
             }).then((result) => {
-                if (result.isConfirmed) {
-                    // Cek response dari server
-                    if (result.value && result.value.success) {
-                        // Berhasil dihapus
-                        Swal.fire({
-                            title: 'Berhasil!',
-                            text: result.value.message || 'Data berhasil dihapus',
-                            icon: 'success',
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-
-                        // Reload DataTable tanpa reset pagination
-                        $('#kartu-keluarga-table').DataTable().ajax.reload(null, false);
-                    } else {
-                        // Gagal dihapus
-                        Swal.fire({
-                            title: 'Gagal!',
-                            text: (result.value && result.value.message) || 'Gagal menghapus data',
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                    }
+                if (result.isConfirmed && result.value?.success) {
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: result.value.message || 'Data berhasil dihapus',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    $('#kartu-keluarga-table').DataTable().ajax.reload(null, false);
                 }
-            }).catch((error) => {
-                // Error dari AJAX
-                console.error('Error:', error);
-
-                let errorMessage = 'Terjadi kesalahan saat menghapus data';
-
-                // Cek apakah ada response error dari server
-                if (error.responseJSON && error.responseJSON.message) {
-                    errorMessage = error.responseJSON.message;
-                } else if (error.statusText) {
-                    errorMessage = 'Error: ' + error.statusText;
-                }
-
-                Swal.fire({
-                    title: 'Error!',
-                    text: errorMessage,
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
             });
         }
     </script>
