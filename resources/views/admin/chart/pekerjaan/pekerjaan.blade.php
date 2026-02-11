@@ -3,87 +3,150 @@
 @section('content-header', 'Statistik Pekerjaan')
 
 @section('content')
-    <!-- Premium Info Cards -->
+    <!-- Header Info Card -->
     <div class="row mb-4">
-        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
-            <div class="info-box-premium bg-gradient-info elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-users text-info"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Total Penduduk</span>
-                    <span class="info-box-premium-number" id="total_penduduk">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="col-12">
+            <div class="stat-card-premium elevation-2">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-primary text-white">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
 
-        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
-            <div class="info-box-premium bg-gradient-primary elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-user-check text-primary"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Usia Kerja</span>
-                    <span class="info-box-premium-number" id="usia_kerja">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
-            <div class="info-box-premium bg-gradient-success elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-briefcase text-success"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Pekerja Aktif</span>
-                    <span class="info-box-premium-number" id="pekerja_aktif">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-            <div class="info-box-premium bg-gradient-danger elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-user-times text-danger"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Pengangguran</span>
-                    <span class="info-box-premium-number" id="pengangguran">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
+                        <div class="ml-3">
+                            <h5 class="font-weight-bold mb-1">Ringkasan Statistik Pekerjaan</h5>
+                            <p class="stat-sublabel-premium mb-0">
+                                Data diperbarui secara otomatis berdasarkan database terkini
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Charts Row 1 - Premium Design -->
-    <div class="row">
+    <!-- Statistics Cards Section -->
+    <div class="row mb-4">
+        <div class="col-12 mb-3">
+            <h4 class="section-title">
+                <i class="fas fa-calculator mr-2"></i> Statistik Jumlah
+            </h4>
+        </div>
+
+        <!-- Total Penduduk -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-info text-white">
+                            <i class="fas fa-users"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="total_penduduk">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Total Penduduk
+                                <i class="fas fa-users stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Penduduk Desa</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usia Kerja -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-primary text-white">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="usia_kerja">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Usia Kerja
+                                <i class="fas fa-user-check stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">15-64 Tahun</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pekerja Aktif -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-success text-white">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="pekerja_aktif">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Pekerja Aktif
+                                <i class="fas fa-briefcase stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Total Bekerja</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pengangguran -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-danger text-white">
+                            <i class="fas fa-user-times"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="pengangguran">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Pengangguran
+                                <i class="fas fa-user-times stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Persentase</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <div class="col-12 mb-3">
+            <h4 class="section-title">
+                <i class="fas fa-chart-bar mr-2"></i> Statistik Distribusi
+            </h4>
+        </div>
+
+        <!-- Distribusi Pekerjaan -->
         <div class="col-lg-8 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-primary">
@@ -108,13 +171,14 @@
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <div class="chart-container-custom" style="display:none;" id="container-pekerjaan">
+                    <div style="position: relative; height: 400px; display: none;" id="container-pekerjaan">
                         <canvas id="chartDistribusiPekerjaan"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Distribusi Pendapatan -->
         <div class="col-lg-4 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-success">
@@ -139,15 +203,17 @@
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <canvas id="chartDistribusiPendapatan" style="display:none; max-height: 320px;"></canvas>
+                    <div style="position: relative; height: 400px; display: none;" id="pendapatanChartWrapper">
+                        <canvas id="chartDistribusiPendapatan"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Chart Row 2: Pekerjaan vs Pendapatan -->
-    <div class="row">
-        <div class="col-12 mb-4">
+    <div class="row mb-4">
+        <div class="col-12">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-info">
                     <div class="card-header-icon">
@@ -171,14 +237,16 @@
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <canvas id="chartPekerjaanVsPendapatan" style="display:none; height: 400px;"></canvas>
+                    <div style="position: relative; height: 400px; display: none;" id="crossChartWrapper">
+                        <canvas id="chartPekerjaanVsPendapatan"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Chart Row 3: Status & Analisis -->
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-lg-5 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium" style="background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);">
@@ -203,7 +271,9 @@
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <canvas id="chartStatusPekerjaan" style="display:none; max-height: 320px;"></canvas>
+                    <div style="position: relative; height: 400px; display: none;" id="statusChartWrapper">
+                        <canvas id="chartStatusPekerjaan"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -232,14 +302,16 @@
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <canvas id="chartAnalisisPendapatan" style="display:none; max-height: 320px;"></canvas>
+                    <div style="position: relative; height: 400px; display: none;" id="analisisChartWrapper">
+                        <canvas id="chartAnalisisPendapatan"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Charts Row 4: Gender & Usia -->
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-lg-12 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-warning">
@@ -264,13 +336,15 @@
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <canvas id="chartPekerjaanGender" style="display:none; max-height: 320px;"></canvas>
+                    <div style="position: relative; height: 400px; display: none;" id="genderChartWrapper">
+                        <canvas id="chartPekerjaanGender"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-lg-12 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-secondary">
@@ -295,14 +369,17 @@
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <canvas id="chartPekerjaanUsia" style="display:none; max-height: 320px;"></canvas>
+                    <div style="position: relative; height: 400px; display: none;" id="usiaChartWrapper">
+                        <canvas id="chartPekerjaanUsia"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- Chart Row 5: Piramida Penduduk -->
-    <div class="row">
-        <div class="col-12 mb-4">
+    <div class="row mb-4">
+        <div class="col-12">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-dark">
                     <div class="card-header-icon">
@@ -326,13 +403,15 @@
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <canvas id="chartPiramidaPenduduk" style="display:none; height: 320px;"></canvas>
+                    <div style="position: relative; height: 400px; display: none;" id="piramidaChartWrapper">
+                        <canvas id="chartPiramidaPenduduk"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Detail Data Tables - Premium Design -->
+    <!-- Detail Data Tables -->
     <div class="row">
         <div class="col-12">
             <div class="card card-widget-premium elevation-3">
@@ -341,8 +420,8 @@
                         <i class="fas fa-database"></i>
                     </div>
                     <div class="card-header-text">
-                        <h3 class="card-title-premium">Data Detail & Analisis Mendalam</h3>
-                        <p class="card-subtitle-premium">Eksplorasi data berdasarkan kategori spesifik</p>
+                        <h3 class="card-title-premium">Data Detail Pekerjaan</h3>
+                        <p class="card-subtitle-premium">Eksplorasi data berdasarkan kategori pekerjaan</p>
                     </div>
                     <div class="card-tools-premium">
                         <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
@@ -690,28 +769,28 @@
                     url: '{{ route('pekerjaan.api.kpi') }}',
                     method: 'GET',
                     success: function(data) {
-                        $('#total_penduduk').html(data.total_penduduk.toLocaleString());
+                        $('#total_penduduk').html(data.total_penduduk.toLocaleString('id-ID'));
                         $('#usia_kerja').html(
-                            data.usia_kerja.toLocaleString() +
+                            data.usia_kerja.toLocaleString('id-ID') +
                             ' <small style="font-size: 0.75rem; opacity: 0.9;">(' +
                             ((data.usia_kerja / data.total_penduduk) * 100).toFixed(1) +
                             '%)</small>'
                         );
                         $('#pekerja_aktif').html(
-                            data.pekerja_aktif.toLocaleString() +
+                            data.pekerja_aktif.toLocaleString('id-ID') +
                             ' <small style="font-size: 0.75rem; opacity: 0.9;">(TPAK: ' +
                             data.tpak + '%)</small>'
                         );
                         $('#pengangguran').html(
                             data.persentase_pengangguran + '% ' +
                             '<small style="font-size: 0.75rem; opacity: 0.9;">(' +
-                            data.pengangguran.toLocaleString() + ' orang)</small>'
+                            data.pengangguran.toLocaleString('id-ID') + ' orang)</small>'
                         );
                     }
                 });
             }
 
-            // Ganti fungsi loadDistribusiPekerjaan()
+            // Load Distribusi Pekerjaan
             function loadDistribusiPekerjaan() {
                 $.ajax({
                     url: '{{ route('pekerjaan.api.distribusi.pekerjaan') }}',
@@ -726,93 +805,96 @@
                             );
                         });
 
-                        $('#loading-pekerjaan').hide();
-                        $('#container-pekerjaan').show(); // Show container instead of canvas
+                        $('#loading-pekerjaan').fadeOut(300, function() {
+                            $('#container-pekerjaan').fadeIn(400);
 
-                        const ctx = document.getElementById('chartDistribusiPekerjaan').getContext(
-                            '2d');
-                        if (charts.pekerjaan) charts.pekerjaan.destroy();
+                            const ctx = document.getElementById('chartDistribusiPekerjaan')
+                                .getContext('2d');
+                            if (charts.pekerjaan) charts.pekerjaan.destroy();
 
-                        charts.pekerjaan = new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: data.map(item => item.pekerjaan),
-                                datasets: [{
-                                    label: 'Jumlah Penduduk',
-                                    data: data.map(item => item.jumlah),
-                                    backgroundColor: colors.primary[0],
-                                    borderColor: colors.primary[1],
-                                    borderWidth: 1,
-                                    borderRadius: 10,
-                                    barThickness: 25
-                                }]
-                            },
-                            options: {
-                                indexAxis: 'y',
-                                responsive: true,
-                                maintainAspectRatio: false, // Ini penting!
-                                plugins: {
-                                    legend: {
-                                        display: false
-                                    },
-                                    tooltip: {
-                                        backgroundColor: 'rgba(0,0,0,0.8)',
-                                        padding: 15,
-                                        cornerRadius: 8,
-                                        titleFont: {
-                                            size: 14,
-                                            weight: 'bold'
-                                        },
-                                        bodyFont: {
-                                            size: 13
-                                        },
-                                        callbacks: {
-                                            label: function(context) {
-                                                return 'Jumlah: ' + context.parsed.x
-                                                    .toLocaleString() + ' orang';
-                                            }
-                                        }
-                                    }
+                            charts.pekerjaan = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: data.map(item => item.pekerjaan),
+                                    datasets: [{
+                                        label: 'Jumlah Penduduk',
+                                        data: data.map(item => item.jumlah),
+                                        backgroundColor: colors.primary[0],
+                                        borderColor: colors.primary[1],
+                                        borderWidth: 1,
+                                        borderRadius: 10,
+                                        barThickness: 25
+                                    }]
                                 },
-                                scales: {
-                                    x: {
-                                        beginAtZero: true,
-                                        grid: {
-                                            color: 'rgba(0,0,0,0.03)'
-                                        },
-                                        ticks: {
-                                            font: {
-                                                size: 12
-                                            },
-                                            callback: function(value) {
-                                                return value.toLocaleString();
-                                            }
-                                        }
-                                    },
-                                    y: {
-                                        grid: {
+                                options: {
+                                    indexAxis: 'y',
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
                                             display: false
                                         },
-                                        ticks: {
-                                            font: {
-                                                size: 11, // Perkecil font untuk label yang panjang
+                                        tooltip: {
+                                            backgroundColor: 'rgba(0,0,0,0.8)',
+                                            padding: 15,
+                                            cornerRadius: 8,
+                                            titleFont: {
+                                                size: 14,
                                                 weight: 'bold'
                                             },
-                                            autoSkip: false, // Tampilkan semua label
-                                            maxRotation: 0,
-                                            minRotation: 0
+                                            bodyFont: {
+                                                size: 13
+                                            },
+                                            callbacks: {
+                                                label: function(context) {
+                                                    return 'Jumlah: ' + context
+                                                        .parsed.x
+                                                        .toLocaleString() +
+                                                        ' orang';
+                                                }
+                                            }
+                                        }
+                                    },
+                                    scales: {
+                                        x: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.03)'
+                                            },
+                                            ticks: {
+                                                font: {
+                                                    size: 12
+                                                },
+                                                callback: function(value) {
+                                                    return value.toLocaleString();
+                                                }
+                                            }
+                                        },
+                                        y: {
+                                            grid: {
+                                                display: false
+                                            },
+                                            ticks: {
+                                                font: {
+                                                    size: 11,
+                                                    weight: 'bold'
+                                                },
+                                                autoSkip: false,
+                                                maxRotation: 0,
+                                                minRotation: 0
+                                            }
+                                        }
+                                    },
+                                    layout: {
+                                        padding: {
+                                            left: 10,
+                                            right: 20,
+                                            top: 10,
+                                            bottom: 10
                                         }
                                     }
-                                },
-                                layout: {
-                                    padding: {
-                                        left: 10,
-                                        right: 20,
-                                        top: 10,
-                                        bottom: 10
-                                    }
                                 }
-                            }
+                            });
                         });
                     }
                 });
@@ -824,67 +906,72 @@
                     url: '{{ route('pekerjaan.api.distribusi.pendapatan') }}',
                     method: 'GET',
                     success: function(data) {
-                        $('#loading-pendapatan').hide();
-                        $('#chartDistribusiPendapatan').show();
+                        $('#loading-pendapatan').fadeOut(300, function() {
+                            $('#pendapatanChartWrapper').fadeIn(400);
 
-                        const ctx = document.getElementById('chartDistribusiPendapatan').getContext(
-                            '2d');
-                        if (charts.pendapatan) charts.pendapatan.destroy();
+                            const ctx = document.getElementById('chartDistribusiPendapatan')
+                                .getContext('2d');
+                            if (charts.pendapatan) charts.pendapatan.destroy();
 
-                        charts.pendapatan = new Chart(ctx, {
-                            type: 'doughnut',
-                            data: {
-                                labels: data.map(item => item.kategori),
-                                datasets: [{
-                                    data: data.map(item => item.jumlah),
-                                    backgroundColor: colors.success,
-                                    borderWidth: 4,
-                                    borderColor: '#fff',
-                                    hoverBorderWidth: 6,
-                                    hoverOffset: 10
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: true,
-                                plugins: {
-                                    legend: {
-                                        position: 'bottom',
-                                        labels: {
-                                            padding: 20,
-                                            font: {
-                                                size: 13,
-                                                weight: '600'
+                            charts.pendapatan = new Chart(ctx, {
+                                type: 'doughnut',
+                                data: {
+                                    labels: data.map(item => item.kategori),
+                                    datasets: [{
+                                        data: data.map(item => item.jumlah),
+                                        backgroundColor: colors.success,
+                                        borderWidth: 4,
+                                        borderColor: '#fff',
+                                        hoverBorderWidth: 6,
+                                        hoverOffset: 10
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            position: 'bottom',
+                                            labels: {
+                                                padding: 20,
+                                                font: {
+                                                    size: 13,
+                                                    weight: '600'
+                                                },
+                                                usePointStyle: true,
+                                                pointStyle: 'circle'
+                                            }
+                                        },
+                                        tooltip: {
+                                            backgroundColor: 'rgba(0,0,0,0.8)',
+                                            padding: 15,
+                                            cornerRadius: 8,
+                                            titleFont: {
+                                                size: 14,
+                                                weight: 'bold'
                                             },
-                                            usePointStyle: true,
-                                            pointStyle: 'circle'
-                                        }
-                                    },
-                                    tooltip: {
-                                        backgroundColor: 'rgba(0,0,0,0.8)',
-                                        padding: 15,
-                                        cornerRadius: 8,
-                                        titleFont: {
-                                            size: 14,
-                                            weight: 'bold'
-                                        },
-                                        bodyFont: {
-                                            size: 13
-                                        },
-                                        callbacks: {
-                                            label: function(context) {
-                                                const total = context.dataset.data.reduce((
-                                                    a, b) => a + b, 0);
-                                                const percentage = ((context.parsed /
-                                                    total) * 100).toFixed(1);
-                                                return context.label + ': ' + context.parsed
-                                                    .toLocaleString() + ' (' + percentage +
-                                                    '%)';
+                                            bodyFont: {
+                                                size: 13
+                                            },
+                                            callbacks: {
+                                                label: function(context) {
+                                                    const total = context.dataset
+                                                        .data.reduce((
+                                                            a, b) => a + b, 0);
+                                                    const percentage = ((context
+                                                        .parsed /
+                                                        total) * 100).toFixed(1);
+                                                    return context.label + ': ' +
+                                                        context.parsed
+                                                        .toLocaleString() + ' (' +
+                                                        percentage +
+                                                        '%)';
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
+                            });
                         });
                     }
                 });
@@ -896,98 +983,103 @@
                     url: '{{ route('pekerjaan.api.pekerjaan.pendapatan') }}',
                     method: 'GET',
                     success: function(data) {
-                        $('#loading-cross').hide();
-                        $('#chartPekerjaanVsPendapatan').show();
+                        $('#loading-cross').fadeOut(300, function() {
+                            $('#crossChartWrapper').fadeIn(400);
 
-                        const ctx = document.getElementById('chartPekerjaanVsPendapatan').getContext(
-                            '2d');
-                        if (charts.cross) charts.cross.destroy();
+                            const ctx = document.getElementById('chartPekerjaanVsPendapatan')
+                                .getContext('2d');
+                            if (charts.cross) charts.cross.destroy();
 
-                        const datasets = data.datasets.map((dataset, index) => ({
-                            label: dataset.label,
-                            data: dataset.data,
-                            backgroundColor: colors.info[index % colors.info.length],
-                            borderWidth: 0,
-                            borderRadius: 8
-                        }));
+                            const datasets = data.datasets.map((dataset, index) => ({
+                                label: dataset.label,
+                                data: dataset.data,
+                                backgroundColor: colors.info[index % colors.info
+                                    .length],
+                                borderWidth: 0,
+                                borderRadius: 8
+                            }));
 
-                        charts.cross = new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: data.labels,
-                                datasets: datasets
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        position: 'top',
-                                        labels: {
-                                            padding: 15,
-                                            font: {
-                                                size: 13,
-                                                weight: '600'
-                                            },
-                                            usePointStyle: true,
-                                            pointStyle: 'circle'
-                                        }
-                                    },
-                                    tooltip: {
-                                        mode: 'index',
-                                        intersect: false,
-                                        backgroundColor: 'rgba(0,0,0,0.8)',
-                                        padding: 15,
-                                        cornerRadius: 8,
-                                        titleFont: {
-                                            size: 14,
-                                            weight: 'bold'
-                                        },
-                                        bodyFont: {
-                                            size: 13
-                                        },
-                                        callbacks: {
-                                            footer: function(tooltipItems) {
-                                                let sum = 0;
-                                                tooltipItems.forEach(function(tooltipItem) {
-                                                    sum += tooltipItem.parsed.y;
-                                                });
-                                                return 'Total: ' + sum.toLocaleString() +
-                                                    ' orang';
-                                            }
-                                        }
-                                    }
+                            charts.cross = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: data.labels,
+                                    datasets: datasets
                                 },
-                                scales: {
-                                    x: {
-                                        stacked: true,
-                                        grid: {
-                                            display: false
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                            labels: {
+                                                padding: 15,
+                                                font: {
+                                                    size: 13,
+                                                    weight: '600'
+                                                },
+                                                usePointStyle: true,
+                                                pointStyle: 'circle'
+                                            }
                                         },
-                                        ticks: {
-                                            font: {
-                                                size: 11,
+                                        tooltip: {
+                                            mode: 'index',
+                                            intersect: false,
+                                            backgroundColor: 'rgba(0,0,0,0.8)',
+                                            padding: 15,
+                                            cornerRadius: 8,
+                                            titleFont: {
+                                                size: 14,
                                                 weight: 'bold'
+                                            },
+                                            bodyFont: {
+                                                size: 13
+                                            },
+                                            callbacks: {
+                                                footer: function(tooltipItems) {
+                                                    let sum = 0;
+                                                    tooltipItems.forEach(function(
+                                                        tooltipItem) {
+                                                        sum += tooltipItem
+                                                            .parsed.y;
+                                                    });
+                                                    return 'Total: ' + sum
+                                                        .toLocaleString() +
+                                                        ' orang';
+                                                }
                                             }
                                         }
                                     },
-                                    y: {
-                                        stacked: true,
-                                        beginAtZero: true,
-                                        grid: {
-                                            color: 'rgba(0,0,0,0.03)'
-                                        },
-                                        ticks: {
-                                            font: {
-                                                size: 12
+                                    scales: {
+                                        x: {
+                                            stacked: true,
+                                            grid: {
+                                                display: false
                                             },
-                                            callback: function(value) {
-                                                return value.toLocaleString();
+                                            ticks: {
+                                                font: {
+                                                    size: 11,
+                                                    weight: 'bold'
+                                                }
+                                            }
+                                        },
+                                        y: {
+                                            stacked: true,
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.03)'
+                                            },
+                                            ticks: {
+                                                font: {
+                                                    size: 12
+                                                },
+                                                callback: function(value) {
+                                                    return value.toLocaleString();
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
+                            });
                         });
                     }
                 });
@@ -999,66 +1091,72 @@
                     url: '{{ route('pekerjaan.api.status.pekerjaan') }}',
                     method: 'GET',
                     success: function(data) {
-                        $('#loading-status').hide();
-                        $('#chartStatusPekerjaan').show();
+                        $('#loading-status').fadeOut(300, function() {
+                            $('#statusChartWrapper').fadeIn(400);
 
-                        const ctx = document.getElementById('chartStatusPekerjaan').getContext('2d');
-                        if (charts.status) charts.status.destroy();
+                            const ctx = document.getElementById('chartStatusPekerjaan')
+                                .getContext('2d');
+                            if (charts.status) charts.status.destroy();
 
-                        charts.status = new Chart(ctx, {
-                            type: 'pie',
-                            data: {
-                                labels: data.map(item => item.status),
-                                datasets: [{
-                                    data: data.map(item => item.jumlah),
-                                    backgroundColor: colors.status,
-                                    borderWidth: 4,
-                                    borderColor: '#fff',
-                                    hoverBorderWidth: 6,
-                                    hoverOffset: 10
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: true,
-                                plugins: {
-                                    legend: {
-                                        position: 'bottom',
-                                        labels: {
-                                            padding: 20,
-                                            font: {
-                                                size: 13,
-                                                weight: '600'
+                            charts.status = new Chart(ctx, {
+                                type: 'pie',
+                                data: {
+                                    labels: data.map(item => item.status),
+                                    datasets: [{
+                                        data: data.map(item => item.jumlah),
+                                        backgroundColor: colors.status,
+                                        borderWidth: 4,
+                                        borderColor: '#fff',
+                                        hoverBorderWidth: 6,
+                                        hoverOffset: 10
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            position: 'bottom',
+                                            labels: {
+                                                padding: 20,
+                                                font: {
+                                                    size: 13,
+                                                    weight: '600'
+                                                },
+                                                usePointStyle: true,
+                                                pointStyle: 'circle'
+                                            }
+                                        },
+                                        tooltip: {
+                                            backgroundColor: 'rgba(0,0,0,0.8)',
+                                            padding: 15,
+                                            cornerRadius: 8,
+                                            titleFont: {
+                                                size: 14,
+                                                weight: 'bold'
                                             },
-                                            usePointStyle: true,
-                                            pointStyle: 'circle'
-                                        }
-                                    },
-                                    tooltip: {
-                                        backgroundColor: 'rgba(0,0,0,0.8)',
-                                        padding: 15,
-                                        cornerRadius: 8,
-                                        titleFont: {
-                                            size: 14,
-                                            weight: 'bold'
-                                        },
-                                        bodyFont: {
-                                            size: 13
-                                        },
-                                        callbacks: {
-                                            label: function(context) {
-                                                const total = context.dataset.data.reduce((
-                                                    a, b) => a + b, 0);
-                                                const percentage = ((context.parsed /
-                                                    total) * 100).toFixed(1);
-                                                return context.label + ': ' + context.parsed
-                                                    .toLocaleString() + ' (' + percentage +
-                                                    '%)';
+                                            bodyFont: {
+                                                size: 13
+                                            },
+                                            callbacks: {
+                                                label: function(context) {
+                                                    const total = context.dataset
+                                                        .data.reduce((
+                                                            a, b) => a + b, 0);
+                                                    const percentage = ((context
+                                                        .parsed /
+                                                        total) * 100).toFixed(1);
+                                                    return context.label + ': ' +
+                                                        context.parsed
+                                                        .toLocaleString() + ' (' +
+                                                        percentage +
+                                                        '%)';
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
+                            });
                         });
                     }
                 });
@@ -1070,93 +1168,101 @@
                     url: '{{ route('pekerjaan.api.analisis.pendapatan') }}',
                     method: 'GET',
                     success: function(data) {
-                        $('#loading-analisis').hide();
-                        $('#chartAnalisisPendapatan').show();
+                        $('#loading-analisis').fadeOut(300, function() {
+                            $('#analisisChartWrapper').fadeIn(400);
 
-                        const ctx = document.getElementById('chartAnalisisPendapatan').getContext('2d');
-                        if (charts.analisis) charts.analisis.destroy();
+                            const ctx = document.getElementById('chartAnalisisPendapatan')
+                                .getContext('2d');
+                            if (charts.analisis) charts.analisis.destroy();
 
-                        charts.analisis = new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: data.map(item => item.kategori_usia),
-                                datasets: [{
-                                    label: 'Rata-rata Pendapatan',
-                                    data: data.map(item => item.rata_pendapatan),
-                                    backgroundColor: '#20c997',
-                                    borderColor: '#17a085',
-                                    borderWidth: 1,
-                                    borderRadius: 10,
-                                    barThickness: 40
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: true,
-                                plugins: {
-                                    legend: {
-                                        display: false
-                                    },
-                                    tooltip: {
-                                        backgroundColor: 'rgba(0,0,0,0.8)',
-                                        padding: 15,
-                                        cornerRadius: 8,
-                                        titleFont: {
-                                            size: 14,
-                                            weight: 'bold'
-                                        },
-                                        bodyFont: {
-                                            size: 13
-                                        },
-                                        callbacks: {
-                                            label: function(context) {
-                                                return 'Rata-rata: Rp ' + context.parsed.y
-                                                    .toLocaleString('id-ID');
-                                            },
-                                            afterLabel: function(context) {
-                                                const index = context.dataIndex;
-                                                return [
-                                                    'Min: Rp ' + data[index]
-                                                    .min_pendapatan.toLocaleString(
-                                                        'id-ID'),
-                                                    'Max: Rp ' + data[index]
-                                                    .max_pendapatan.toLocaleString(
-                                                        'id-ID'),
-                                                    'Jumlah: ' + data[index].jumlah
-                                                    .toLocaleString() + ' orang'
-                                                ];
-                                            }
-                                        }
-                                    }
+                            charts.analisis = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: data.map(item => item.kategori_usia),
+                                    datasets: [{
+                                        label: 'Rata-rata Pendapatan',
+                                        data: data.map(item => item
+                                            .rata_pendapatan),
+                                        backgroundColor: '#20c997',
+                                        borderColor: '#17a085',
+                                        borderWidth: 1,
+                                        borderRadius: 10,
+                                        barThickness: 40
+                                    }]
                                 },
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        grid: {
-                                            color: 'rgba(0,0,0,0.03)'
-                                        },
-                                        ticks: {
-                                            font: {
-                                                size: 12
-                                            },
-                                            callback: function(value) {
-                                                return value.toLocaleString();
-                                            }
-                                        }
-                                    },
-                                    x: {
-                                        grid: {
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
                                             display: false
                                         },
-                                        ticks: {
-                                            font: {
-                                                size: 12,
+                                        tooltip: {
+                                            backgroundColor: 'rgba(0,0,0,0.8)',
+                                            padding: 15,
+                                            cornerRadius: 8,
+                                            titleFont: {
+                                                size: 14,
                                                 weight: 'bold'
+                                            },
+                                            bodyFont: {
+                                                size: 13
+                                            },
+                                            callbacks: {
+                                                label: function(context) {
+                                                    return 'Rata-rata: Rp ' +
+                                                        context.parsed.y
+                                                        .toLocaleString('id-ID');
+                                                },
+                                                afterLabel: function(context) {
+                                                    const index = context.dataIndex;
+                                                    return [
+                                                        'Min: Rp ' + data[index]
+                                                        .min_pendapatan
+                                                        .toLocaleString(
+                                                            'id-ID'),
+                                                        'Max: Rp ' + data[index]
+                                                        .max_pendapatan
+                                                        .toLocaleString(
+                                                            'id-ID'),
+                                                        'Jumlah: ' + data[index]
+                                                        .jumlah
+                                                        .toLocaleString() +
+                                                        ' orang'
+                                                    ];
+                                                }
+                                            }
+                                        }
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.03)'
+                                            },
+                                            ticks: {
+                                                font: {
+                                                    size: 12
+                                                },
+                                                callback: function(value) {
+                                                    return value.toLocaleString();
+                                                }
+                                            }
+                                        },
+                                        x: {
+                                            grid: {
+                                                display: false
+                                            },
+                                            ticks: {
+                                                font: {
+                                                    size: 12,
+                                                    weight: 'bold'
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
+                            });
                         });
                     }
                 });
@@ -1168,101 +1274,106 @@
                     url: '{{ route('pekerjaan.api.pekerjaan.gender') }}',
                     method: 'GET',
                     success: function(data) {
-                        $('#loading-gender').hide();
-                        $('#chartPekerjaanGender').show();
+                        $('#loading-gender').fadeOut(300, function() {
+                            $('#genderChartWrapper').fadeIn(400);
 
-                        const ctx = document.getElementById('chartPekerjaanGender').getContext('2d');
-                        if (charts.gender) charts.gender.destroy();
+                            const ctx = document.getElementById('chartPekerjaanGender')
+                                .getContext('2d');
+                            if (charts.gender) charts.gender.destroy();
 
-                        charts.gender = new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: data.labels,
-                                datasets: [{
-                                        label: 'Laki-Laki',
-                                        data: data.datasets[0].data,
-                                        backgroundColor: '#007bff',
-                                        borderWidth: 0,
-                                        borderRadius: 10,
-                                        barThickness: 30
-                                    },
-                                    {
-                                        label: 'Perempuan',
-                                        data: data.datasets[1].data,
-                                        backgroundColor: '#e83e8c',
-                                        borderWidth: 0,
-                                        borderRadius: 10,
-                                        barThickness: 30
-                                    }
-                                ]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: true,
-                                plugins: {
-                                    legend: {
-                                        position: 'top',
-                                        labels: {
-                                            padding: 15,
-                                            font: {
-                                                size: 13,
-                                                weight: '600'
-                                            },
-                                            usePointStyle: true,
-                                            pointStyle: 'circle'
-                                        }
-                                    },
-                                    tooltip: {
-                                        backgroundColor: 'rgba(0,0,0,0.8)',
-                                        padding: 15,
-                                        cornerRadius: 8,
-                                        titleFont: {
-                                            size: 14,
-                                            weight: 'bold'
+                            charts.gender = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: data.labels,
+                                    datasets: [{
+                                            label: 'Laki-Laki',
+                                            data: data.datasets[0].data,
+                                            backgroundColor: '#007bff',
+                                            borderWidth: 0,
+                                            borderRadius: 10,
+                                            barThickness: 30
                                         },
-                                        bodyFont: {
-                                            size: 13
-                                        },
-                                        callbacks: {
-                                            footer: function(tooltipItems) {
-                                                let sum = 0;
-                                                tooltipItems.forEach(function(tooltipItem) {
-                                                    sum += tooltipItem.parsed.y;
-                                                });
-                                                return 'Total: ' + sum.toLocaleString() +
-                                                    ' orang';
-                                            }
+                                        {
+                                            label: 'Perempuan',
+                                            data: data.datasets[1].data,
+                                            backgroundColor: '#e83e8c',
+                                            borderWidth: 0,
+                                            borderRadius: 10,
+                                            barThickness: 30
                                         }
-                                    }
+                                    ]
                                 },
-                                scales: {
-                                    x: {
-                                        grid: {
-                                            display: false
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                            labels: {
+                                                padding: 15,
+                                                font: {
+                                                    size: 13,
+                                                    weight: '600'
+                                                },
+                                                usePointStyle: true,
+                                                pointStyle: 'circle'
+                                            }
                                         },
-                                        ticks: {
-                                            font: {
-                                                size: 11,
+                                        tooltip: {
+                                            backgroundColor: 'rgba(0,0,0,0.8)',
+                                            padding: 15,
+                                            cornerRadius: 8,
+                                            titleFont: {
+                                                size: 14,
                                                 weight: 'bold'
+                                            },
+                                            bodyFont: {
+                                                size: 13
+                                            },
+                                            callbacks: {
+                                                footer: function(tooltipItems) {
+                                                    let sum = 0;
+                                                    tooltipItems.forEach(function(
+                                                        tooltipItem) {
+                                                        sum += tooltipItem
+                                                            .parsed.y;
+                                                    });
+                                                    return 'Total: ' + sum
+                                                        .toLocaleString() +
+                                                        ' orang';
+                                                }
                                             }
                                         }
                                     },
-                                    y: {
-                                        beginAtZero: true,
-                                        grid: {
-                                            color: 'rgba(0,0,0,0.03)'
-                                        },
-                                        ticks: {
-                                            font: {
-                                                size: 12
+                                    scales: {
+                                        x: {
+                                            grid: {
+                                                display: false
                                             },
-                                            callback: function(value) {
-                                                return value.toLocaleString();
+                                            ticks: {
+                                                font: {
+                                                    size: 11,
+                                                    weight: 'bold'
+                                                }
+                                            }
+                                        },
+                                        y: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.03)'
+                                            },
+                                            ticks: {
+                                                font: {
+                                                    size: 12
+                                                },
+                                                callback: function(value) {
+                                                    return value.toLocaleString();
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
+                            });
                         });
                     }
                 });
@@ -1274,98 +1385,104 @@
                     url: '{{ route('pekerjaan.api.pekerjaan.usia') }}',
                     method: 'GET',
                     success: function(data) {
-                        $('#loading-usia').hide();
-                        $('#chartPekerjaanUsia').show();
+                        $('#loading-usia').fadeOut(300, function() {
+                            $('#usiaChartWrapper').fadeIn(400);
 
-                        const ctx = document.getElementById('chartPekerjaanUsia').getContext('2d');
-                        if (charts.usia) charts.usia.destroy();
+                            const ctx = document.getElementById('chartPekerjaanUsia')
+                                .getContext('2d');
+                            if (charts.usia) charts.usia.destroy();
 
-                        const usiaColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7',
-                            '#dfe6e9'
-                        ];
-                        const datasets = data.datasets.map((dataset, index) => ({
-                            label: dataset.label,
-                            data: dataset.data,
-                            backgroundColor: usiaColors[index],
-                            borderWidth: 0,
-                            borderRadius: 8
-                        }));
+                            const usiaColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
+                                '#ffeaa7',
+                                '#dfe6e9'
+                            ];
+                            const datasets = data.datasets.map((dataset, index) => ({
+                                label: dataset.label,
+                                data: dataset.data,
+                                backgroundColor: usiaColors[index],
+                                borderWidth: 0,
+                                borderRadius: 8
+                            }));
 
-                        charts.usia = new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: data.labels,
-                                datasets: datasets
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: true,
-                                plugins: {
-                                    legend: {
-                                        position: 'top',
-                                        labels: {
-                                            font: {
-                                                size: 11,
-                                                weight: '600'
-                                            },
-                                            padding: 12,
-                                            usePointStyle: true,
-                                            pointStyle: 'circle'
-                                        }
-                                    },
-                                    tooltip: {
-                                        backgroundColor: 'rgba(0,0,0,0.8)',
-                                        padding: 15,
-                                        cornerRadius: 8,
-                                        titleFont: {
-                                            size: 14,
-                                            weight: 'bold'
-                                        },
-                                        bodyFont: {
-                                            size: 13
-                                        },
-                                        callbacks: {
-                                            footer: function(tooltipItems) {
-                                                let sum = 0;
-                                                tooltipItems.forEach(function(tooltipItem) {
-                                                    sum += tooltipItem.parsed.y;
-                                                });
-                                                return 'Total: ' + sum.toLocaleString() +
-                                                    ' orang';
-                                            }
-                                        }
-                                    }
+                            charts.usia = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: data.labels,
+                                    datasets: datasets
                                 },
-                                scales: {
-                                    x: {
-                                        stacked: true,
-                                        grid: {
-                                            display: false
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                            labels: {
+                                                font: {
+                                                    size: 11,
+                                                    weight: '600'
+                                                },
+                                                padding: 12,
+                                                usePointStyle: true,
+                                                pointStyle: 'circle'
+                                            }
                                         },
-                                        ticks: {
-                                            font: {
-                                                size: 10,
+                                        tooltip: {
+                                            backgroundColor: 'rgba(0,0,0,0.8)',
+                                            padding: 15,
+                                            cornerRadius: 8,
+                                            titleFont: {
+                                                size: 14,
                                                 weight: 'bold'
+                                            },
+                                            bodyFont: {
+                                                size: 13
+                                            },
+                                            callbacks: {
+                                                footer: function(tooltipItems) {
+                                                    let sum = 0;
+                                                    tooltipItems.forEach(function(
+                                                        tooltipItem) {
+                                                        sum += tooltipItem
+                                                            .parsed.y;
+                                                    });
+                                                    return 'Total: ' + sum
+                                                        .toLocaleString() +
+                                                        ' orang';
+                                                }
                                             }
                                         }
                                     },
-                                    y: {
-                                        stacked: true,
-                                        beginAtZero: true,
-                                        grid: {
-                                            color: 'rgba(0,0,0,0.03)'
-                                        },
-                                        ticks: {
-                                            font: {
-                                                size: 12
+                                    scales: {
+                                        x: {
+                                            stacked: true,
+                                            grid: {
+                                                display: false
                                             },
-                                            callback: function(value) {
-                                                return value.toLocaleString();
+                                            ticks: {
+                                                font: {
+                                                    size: 10,
+                                                    weight: 'bold'
+                                                }
+                                            }
+                                        },
+                                        y: {
+                                            stacked: true,
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.03)'
+                                            },
+                                            ticks: {
+                                                font: {
+                                                    size: 12
+                                                },
+                                                callback: function(value) {
+                                                    return value.toLocaleString();
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
+                            });
                         });
                     }
                 });
@@ -1377,98 +1494,104 @@
                     url: '{{ route('pekerjaan.api.distribusi.usia') }}',
                     method: 'GET',
                     success: function(data) {
-                        $('#loading-piramida').hide();
-                        $('#chartPiramidaPenduduk').show();
+                        $('#loading-piramida').fadeOut(300, function() {
+                            $('#piramidaChartWrapper').fadeIn(400);
 
-                        const ctx = document.getElementById('chartPiramidaPenduduk').getContext('2d');
-                        if (charts.piramida) charts.piramida.destroy();
+                            const ctx = document.getElementById('chartPiramidaPenduduk')
+                                .getContext('2d');
+                            if (charts.piramida) charts.piramida.destroy();
 
-                        charts.piramida = new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: data.labels,
-                                datasets: [{
-                                        label: 'Laki-Laki',
-                                        data: data.datasets[0].data,
-                                        backgroundColor: '#007bff',
-                                        borderWidth: 0,
-                                        borderRadius: 8,
-                                        barThickness: 20
-                                    },
-                                    {
-                                        label: 'Perempuan',
-                                        data: data.datasets[1].data,
-                                        backgroundColor: '#e83e8c',
-                                        borderWidth: 0,
-                                        borderRadius: 8,
-                                        barThickness: 20
-                                    }
-                                ]
-                            },
-                            options: {
-                                indexAxis: 'y',
-                                responsive: true,
-                                maintainAspectRatio: true,
-                                plugins: {
-                                    legend: {
-                                        position: 'top',
-                                        labels: {
-                                            padding: 15,
-                                            font: {
-                                                size: 13,
-                                                weight: '600'
-                                            },
-                                            usePointStyle: true,
-                                            pointStyle: 'circle'
-                                        }
-                                    },
-                                    tooltip: {
-                                        backgroundColor: 'rgba(0,0,0,0.8)',
-                                        padding: 15,
-                                        cornerRadius: 8,
-                                        titleFont: {
-                                            size: 14,
-                                            weight: 'bold'
+                            charts.piramida = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: data.labels,
+                                    datasets: [{
+                                            label: 'Laki-Laki',
+                                            data: data.datasets[0].data,
+                                            backgroundColor: '#007bff',
+                                            borderWidth: 0,
+                                            borderRadius: 8,
+                                            barThickness: 20
                                         },
-                                        bodyFont: {
-                                            size: 13
-                                        },
-                                        callbacks: {
-                                            label: function(context) {
-                                                const value = Math.abs(context.parsed.x);
-                                                return context.dataset.label + ': ' + value
-                                                    .toLocaleString() + ' orang';
-                                            }
+                                        {
+                                            label: 'Perempuan',
+                                            data: data.datasets[1].data,
+                                            backgroundColor: '#e83e8c',
+                                            borderWidth: 0,
+                                            borderRadius: 8,
+                                            barThickness: 20
                                         }
-                                    }
+                                    ]
                                 },
-                                scales: {
-                                    x: {
-                                        grid: {
-                                            color: 'rgba(0,0,0,0.03)'
+                                options: {
+                                    indexAxis: 'y',
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                            labels: {
+                                                padding: 15,
+                                                font: {
+                                                    size: 13,
+                                                    weight: '600'
+                                                },
+                                                usePointStyle: true,
+                                                pointStyle: 'circle'
+                                            }
                                         },
-                                        ticks: {
-                                            font: {
-                                                size: 12
+                                        tooltip: {
+                                            backgroundColor: 'rgba(0,0,0,0.8)',
+                                            padding: 15,
+                                            cornerRadius: 8,
+                                            titleFont: {
+                                                size: 14,
+                                                weight: 'bold'
                                             },
-                                            callback: function(value) {
-                                                return Math.abs(value).toLocaleString();
+                                            bodyFont: {
+                                                size: 13
+                                            },
+                                            callbacks: {
+                                                label: function(context) {
+                                                    const value = Math.abs(context
+                                                        .parsed.x);
+                                                    return context.dataset.label +
+                                                        ': ' + value
+                                                        .toLocaleString() +
+                                                        ' orang';
+                                                }
                                             }
                                         }
                                     },
-                                    y: {
-                                        grid: {
-                                            display: false
+                                    scales: {
+                                        x: {
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.03)'
+                                            },
+                                            ticks: {
+                                                font: {
+                                                    size: 12
+                                                },
+                                                callback: function(value) {
+                                                    return Math.abs(value)
+                                                        .toLocaleString();
+                                                }
+                                            }
                                         },
-                                        ticks: {
-                                            font: {
-                                                size: 12,
-                                                weight: 'bold'
+                                        y: {
+                                            grid: {
+                                                display: false
+                                            },
+                                            ticks: {
+                                                font: {
+                                                    size: 12,
+                                                    weight: 'bold'
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
+                            });
                         });
                     }
                 });
@@ -1489,6 +1612,21 @@
                         [10, 25, 50, 100, -1],
                         [10, 25, 50, 100, "Semua"]
                     ],
+                    language: {
+                        processing: '<div class="spinner-premium"><div class="double-bounce1"></div><div class="double-bounce2"></div></div><p class="loading-text">Memproses data...</p>',
+                        lengthMenu: 'Tampilkan _MENU_ data per halaman',
+                        zeroRecords: 'Data tidak ditemukan',
+                        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                        infoEmpty: 'Tidak ada data tersedia',
+                        infoFiltered: '(disaring dari _MAX_ total data)',
+                        search: 'Pencarian:',
+                        paginate: {
+                            first: '<i class="fas fa-angle-double-left"></i>',
+                            last: '<i class="fas fa-angle-double-right"></i>',
+                            next: '<i class="fas fa-angle-right"></i>',
+                            previous: '<i class="fas fa-angle-left"></i>'
+                        }
+                    },
                     ajax: {
                         url: '{{ route('pekerjaan.dt.detail.pekerjaan') }}',
                         data: function(d) {
@@ -1553,6 +1691,21 @@
                         [10, 25, 50, 100, -1],
                         [10, 25, 50, 100, "Semua"]
                     ],
+                    language: {
+                        processing: '<div class="spinner-premium"><div class="double-bounce1"></div><div class="double-bounce2"></div></div><p class="loading-text">Memproses data...</p>',
+                        lengthMenu: 'Tampilkan _MENU_ data per halaman',
+                        zeroRecords: 'Data tidak ditemukan',
+                        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                        infoEmpty: 'Tidak ada data tersedia',
+                        infoFiltered: '(disaring dari _MAX_ total data)',
+                        search: 'Pencarian:',
+                        paginate: {
+                            first: '<i class="fas fa-angle-double-left"></i>',
+                            last: '<i class="fas fa-angle-double-right"></i>',
+                            next: '<i class="fas fa-angle-right"></i>',
+                            previous: '<i class="fas fa-angle-left"></i>'
+                        }
+                    },
                     ajax: {
                         url: '{{ route('pekerjaan.dt.detail.pendapatan') }}',
                         data: function(d) {
@@ -1617,6 +1770,21 @@
                         [10, 25, 50, 100, -1],
                         [10, 25, 50, 100, "Semua"]
                     ],
+                    language: {
+                        processing: '<div class="spinner-premium"><div class="double-bounce1"></div><div class="double-bounce2"></div></div><p class="loading-text">Memproses data...</p>',
+                        lengthMenu: 'Tampilkan _MENU_ data per halaman',
+                        zeroRecords: 'Data tidak ditemukan',
+                        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                        infoEmpty: 'Tidak ada data tersedia',
+                        infoFiltered: '(disaring dari _MAX_ total data)',
+                        search: 'Pencarian:',
+                        paginate: {
+                            first: '<i class="fas fa-angle-double-left"></i>',
+                            last: '<i class="fas fa-angle-double-right"></i>',
+                            next: '<i class="fas fa-angle-right"></i>',
+                            previous: '<i class="fas fa-angle-left"></i>'
+                        }
+                    },
                     ajax: {
                         url: '{{ route('pekerjaan.dt.detail.status') }}',
                         data: function(d) {
@@ -1686,6 +1854,21 @@
                         [10, 25, 50, 100, -1],
                         [10, 25, 50, 100, "Semua"]
                     ],
+                    language: {
+                        processing: '<div class="spinner-premium"><div class="double-bounce1"></div><div class="double-bounce2"></div></div><p class="loading-text">Memproses data...</p>',
+                        lengthMenu: 'Tampilkan _MENU_ data per halaman',
+                        zeroRecords: 'Data tidak ditemukan',
+                        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                        infoEmpty: 'Tidak ada data tersedia',
+                        infoFiltered: '(disaring dari _MAX_ total data)',
+                        search: 'Pencarian:',
+                        paginate: {
+                            first: '<i class="fas fa-angle-double-left"></i>',
+                            last: '<i class="fas fa-angle-double-right"></i>',
+                            next: '<i class="fas fa-angle-right"></i>',
+                            previous: '<i class="fas fa-angle-left"></i>'
+                        }
+                    },
                     ajax: {
                         url: '{{ route('pekerjaan.dt.detail.gender') }}',
                         data: function(d) {
@@ -1746,6 +1929,21 @@
                         [10, 25, 50, 100, -1],
                         [10, 25, 50, 100, "Semua"]
                     ],
+                    language: {
+                        processing: '<div class="spinner-premium"><div class="double-bounce1"></div><div class="double-bounce2"></div></div><p class="loading-text">Memproses data...</p>',
+                        lengthMenu: 'Tampilkan _MENU_ data per halaman',
+                        zeroRecords: 'Data tidak ditemukan',
+                        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                        infoEmpty: 'Tidak ada data tersedia',
+                        infoFiltered: '(disaring dari _MAX_ total data)',
+                        search: 'Pencarian:',
+                        paginate: {
+                            first: '<i class="fas fa-angle-double-left"></i>',
+                            last: '<i class="fas fa-angle-double-right"></i>',
+                            next: '<i class="fas fa-angle-right"></i>',
+                            previous: '<i class="fas fa-angle-left"></i>'
+                        }
+                    },
                     ajax: {
                         url: '{{ route('pekerjaan.dt.detail.usia') }}',
                         data: function(d) {

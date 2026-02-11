@@ -3,88 +3,150 @@
 @section('content-header', 'Statistik Kepemilikan Rumah')
 
 @section('content')
-
-    <!-- Premium Info Cards -->
+    <!-- Header Info Card -->
     <div class="row mb-4">
-        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
-            <div class="info-box-premium bg-gradient-info elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-home text-info"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Total Kepala Keluarga</span>
-                    <span class="info-box-premium-number" id="total-kk">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="col-12">
+            <div class="stat-card-premium elevation-2">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-primary text-white">
+                            <i class="fas fa-home"></i>
+                        </div>
 
-        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
-            <div class="info-box-premium bg-gradient-success elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-check-circle text-success"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Milik Sendiri</span>
-                    <span class="info-box-premium-number" id="milik-sendiri">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-lg-0 mb-3">
-            <div class="info-box-premium bg-gradient-warning elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-exclamation-triangle text-warning"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">KK Rentan Perumahan</span>
-                    <span class="info-box-premium-number" id="rentan">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-            <div class="info-box-premium bg-gradient-danger elevation-3">
-                <div class="info-box-premium-icon">
-                    <div class="icon-circle bg-white">
-                        <i class="fas fa-times-circle text-danger"></i>
-                    </div>
-                </div>
-                <div class="info-box-premium-content">
-                    <span class="info-box-premium-text">Data Anomali</span>
-                    <span class="info-box-premium-number" id="anomali">
-                        <div class="spinner-border spinner-border-sm text-white" role="status"></div>
-                    </span>
-                    <div class="progress-premium">
-                        <div class="progress-bar bg-white"></div>
+                        <div class="ml-3">
+                            <h5 class="font-weight-bold mb-1">Ringkasan Statistik Kepemilikan Rumah</h5>
+                            <p class="stat-sublabel-premium mb-0">
+                                Data diperbarui secara otomatis berdasarkan database terkini
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Charts Row 1 - Premium Design -->
-    <div class="row">
+    <!-- Statistics Cards Section -->
+    <div class="row mb-4">
+        <div class="col-12 mb-3">
+            <h4 class="section-title">
+                <i class="fas fa-calculator mr-2"></i> Statistik Jumlah
+            </h4>
+        </div>
+
+        <!-- Total Kepala Keluarga -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-info text-white">
+                            <i class="fas fa-home"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="total-kk">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Total Kepala Keluarga
+                                <i class="fas fa-home stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Jumlah KK</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Milik Sendiri -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-success text-white">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="milik-sendiri">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Milik Sendiri
+                                <i class="fas fa-check-circle stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Rumah Sendiri</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KK Rentan Perumahan -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-warning text-white">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="rentan">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                KK Rentan Perumahan
+                                <i class="fas fa-exclamation-triangle stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Status Rentan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Anomali -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-danger text-white">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="anomali">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Data Anomali
+                                <i class="fas fa-times-circle stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Perlu Review</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <div class="col-12 mb-3">
+            <h4 class="section-title">
+                <i class="fas fa-chart-bar mr-2"></i> Statistik Distribusi
+            </h4>
+        </div>
+
+        <!-- Distribusi Kepemilikan Rumah -->
         <div class="col-lg-6 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-primary">
@@ -109,11 +171,14 @@
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <canvas id="chartDistribusiKK" style="display:none; max-height: 350px;"></canvas>
+                    <div style="position: relative; height: 400px; display: none;" id="distribusiChartWrapper">
+                        <canvas id="chartDistribusiKK"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- Tingkat Kerentanan Perumahan -->
         <div class="col-lg-6 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-warning">
@@ -138,15 +203,17 @@
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <canvas id="chartKerentanan" style="display:none; max-height: 350px;"></canvas>
+                    <div style="position: relative; height: 400px; display: none;" id="kerentananChartWrapper">
+                        <canvas id="chartKerentanan"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Charts Row 2 - Premium Design -->
-    <div class="row">
-        <div class="col-12 mb-4">
+    <!-- Charts Row 2 -->
+    <div class="row mb-4">
+        <div class="col-12">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-success">
                     <div class="card-header-icon">
@@ -170,14 +237,16 @@
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <canvas id="chartUmur" style="display:none; max-height: 400px;"></canvas>
+                    <div style="position: relative; height: 400px; display: none;" id="umurChartWrapper">
+                        <canvas id="chartUmur"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Charts Row 3 - Premium Design -->
-    <div class="row">
+    <!-- Charts Row 3 -->
+    <div class="row mb-4">
         <div class="col-lg-8 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-info">
@@ -202,7 +271,9 @@
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <canvas id="chartWilayah" style="display:none; max-height: 400px;"></canvas>
+                    <div style="position: relative; height: 400px; display: none;" id="wilayahChartWrapper">
+                        <canvas id="chartWilayah"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -231,13 +302,15 @@
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <canvas id="chartAnomali" style="display:none; max-height: 400px;"></canvas>
+                    <div style="position: relative; height: 400px; display: none;" id="anomaliChartWrapper">
+                        <canvas id="chartAnomali"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- DataTable Section - Premium Design -->
+    <!-- DataTable Section -->
     <div class="row">
         <div class="col-12">
             <div class="card card-widget-premium elevation-3">
@@ -260,7 +333,7 @@
                     <div class="filter-section-premium">
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label class="filter-label-premium">
+                                <label class="filter-label">
                                     <i class="fas fa-home mr-2"></i>Kepemilikan Rumah
                                 </label>
                                 <select id="filter-kepemilikan" class="form-control select2-premium">
@@ -273,7 +346,7 @@
                                 </select>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label class="filter-label-premium">
+                                <label class="filter-label">
                                     <i class="fas fa-shield-alt mr-2"></i>Tingkat Kerentanan
                                 </label>
                                 <select id="filter-kerentanan" class="form-control select2-premium">
@@ -284,7 +357,7 @@
                                 </select>
                             </div>
                             <div class="col-md-2 mb-3">
-                                <label class="filter-label-premium">
+                                <label class="filter-label">
                                     <i class="fas fa-map-marker-alt mr-2"></i>RW
                                 </label>
                                 <select id="filter-rw" class="form-control select2-premium">
@@ -292,7 +365,7 @@
                                 </select>
                             </div>
                             <div class="col-md-2 mb-3">
-                                <label class="filter-label-premium">
+                                <label class="filter-label">
                                     <i class="fas fa-location-arrow mr-2"></i>RT
                                 </label>
                                 <select id="filter-rt" class="form-control select2-premium">
@@ -302,7 +375,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label class="filter-label-premium">
+                                <label class="filter-label">
                                     <i class="fas fa-exclamation-triangle mr-2"></i>Filter Anomali
                                 </label>
                                 <select id="filter-anomali" class="form-control select2-premium">
@@ -312,10 +385,10 @@
                                 </select>
                             </div>
                             <div class="col-md-8 d-flex align-items-end justify-content-end mb-3 text-right">
-                                <button id="btn-reset-filter" class="btn btn-reset-premium elevation-2 mr-2">
+                                <button id="btn-reset-filter" class="btn btn-secondary btn-sm elevation-2 mr-2">
                                     <i class="fas fa-redo mr-2"></i>Reset Filter
                                 </button>
-                                <button id="btn-export" class="btn btn-export-premium elevation-2">
+                                <button id="btn-export" class="btn btn-success btn-sm elevation-2">
                                     <i class="fas fa-file-excel mr-2"></i>Export Excel
                                 </button>
                             </div>
@@ -461,8 +534,8 @@
                         name: 'jenkel',
                         className: 'text-center',
                         render: data => data == 1 ?
-                            '<span class="badge-status-premium badge-primary-premium">L</span>' :
-                            '<span class="badge-status-premium badge-danger-premium">P</span>'
+                            '<span class="badge badge-primary">L</span>' :
+                            '<span class="badge badge-danger">P</span>'
                     },
                     {
                         data: 'tgl_lahir',
@@ -486,9 +559,9 @@
                         orderable: false,
                         render: data => {
                             if (data && data.includes('Anomali')) {
-                                return '<span class="badge-status-premium badge-anomali-premium">Anomali</span>';
+                                return '<span class="badge badge-danger">Anomali</span>';
                             }
-                            return '<span class="badge-status-premium badge-normal-premium">Normal</span>';
+                            return '<span class="badge badge-success">Normal</span>';
                         }
                     }
                 ]
@@ -598,7 +671,7 @@
                         $('#milik-sendiri').text(milikSendiri.toLocaleString('id-ID'));
 
                         $('#loading-distribusi').fadeOut(300, function() {
-                            $('#chartDistribusiKK').fadeIn(400);
+                            $('#distribusiChartWrapper').fadeIn(400);
 
                             new Chart($('#chartDistribusiKK'), {
                                 type: 'pie',
@@ -607,38 +680,47 @@
                                     datasets: [{
                                         data: values,
                                         backgroundColor: bgColors,
-                                        borderWidth: 3,
+                                        borderWidth: 4,
                                         borderColor: '#fff',
+                                        hoverBorderWidth: 6,
                                         hoverOffset: 10
                                     }]
                                 },
                                 options: {
                                     responsive: true,
-                                    maintainAspectRatio: true,
+                                    maintainAspectRatio: false,
                                     plugins: {
                                         legend: {
                                             position: 'bottom',
                                             labels: {
                                                 font: {
-                                                    size: 12,
+                                                    size: 13,
                                                     weight: '600'
                                                 },
                                                 usePointStyle: true,
-                                                padding: 15
+                                                pointStyle: 'circle',
+                                                padding: 20
                                             }
                                         },
                                         tooltip: {
                                             backgroundColor: 'rgba(0,0,0,0.8)',
                                             padding: 15,
                                             cornerRadius: 8,
+                                            titleFont: {
+                                                size: 14,
+                                                weight: 'bold'
+                                            },
+                                            bodyFont: {
+                                                size: 13
+                                            },
                                             callbacks: {
                                                 label: function(context) {
                                                     const label = context.label ||
                                                         '';
                                                     const value = context.parsed;
                                                     const total = context.dataset
-                                                        .data.reduce((a,
-                                                            b) => a + b, 0);
+                                                        .data.reduce((
+                                                            a, b) => a + b, 0);
                                                     const percentage = ((value /
                                                             total) * 100)
                                                         .toFixed(1);
@@ -678,7 +760,7 @@
                         $('#rentan').text(rentan.toLocaleString('id-ID'));
 
                         $('#loading-kerentanan').fadeOut(300, function() {
-                            $('#chartKerentanan').fadeIn(400);
+                            $('#kerentananChartWrapper').fadeIn(400);
 
                             new Chart($('#chartKerentanan'), {
                                 type: 'doughnut',
@@ -687,38 +769,47 @@
                                     datasets: [{
                                         data: values,
                                         backgroundColor: bgColors,
-                                        borderWidth: 3,
+                                        borderWidth: 4,
                                         borderColor: '#fff',
+                                        hoverBorderWidth: 6,
                                         hoverOffset: 10
                                     }]
                                 },
                                 options: {
                                     responsive: true,
-                                    maintainAspectRatio: true,
+                                    maintainAspectRatio: false,
                                     plugins: {
                                         legend: {
                                             position: 'bottom',
                                             labels: {
                                                 font: {
-                                                    size: 12,
+                                                    size: 13,
                                                     weight: '600'
                                                 },
                                                 usePointStyle: true,
-                                                padding: 15
+                                                pointStyle: 'circle',
+                                                padding: 20
                                             }
                                         },
                                         tooltip: {
                                             backgroundColor: 'rgba(0,0,0,0.8)',
                                             padding: 15,
                                             cornerRadius: 8,
+                                            titleFont: {
+                                                size: 14,
+                                                weight: 'bold'
+                                            },
+                                            bodyFont: {
+                                                size: 13
+                                            },
                                             callbacks: {
                                                 label: function(context) {
                                                     const label = context.label ||
                                                         '';
                                                     const value = context.parsed;
                                                     const total = context.dataset
-                                                        .data.reduce((a,
-                                                            b) => a + b, 0);
+                                                        .data.reduce((
+                                                            a, b) => a + b, 0);
                                                     const percentage = ((value /
                                                             total) * 100)
                                                         .toFixed(1);
@@ -763,12 +854,12 @@
                                 backgroundColor: color,
                                 borderColor: color.replace('0.8', '1'),
                                 borderWidth: 2,
-                                borderRadius: 6
+                                borderRadius: 8
                             };
                         });
 
                         $('#loading-umur').fadeOut(300, function() {
-                            $('#chartUmur').fadeIn(400);
+                            $('#umurChartWrapper').fadeIn(400);
 
                             new Chart($('#chartUmur'), {
                                 type: 'bar',
@@ -778,7 +869,7 @@
                                 },
                                 options: {
                                     responsive: true,
-                                    maintainAspectRatio: true,
+                                    maintainAspectRatio: false,
                                     plugins: {
                                         legend: {
                                             position: 'top',
@@ -788,6 +879,7 @@
                                                     weight: '600'
                                                 },
                                                 usePointStyle: true,
+                                                pointStyle: 'circle',
                                                 padding: 15
                                             }
                                         },
@@ -795,6 +887,13 @@
                                             backgroundColor: 'rgba(0,0,0,0.8)',
                                             padding: 15,
                                             cornerRadius: 8,
+                                            titleFont: {
+                                                size: 14,
+                                                weight: 'bold'
+                                            },
+                                            bodyFont: {
+                                                size: 13
+                                            },
                                             mode: 'index',
                                             intersect: false
                                         }
@@ -802,27 +901,27 @@
                                     scales: {
                                         x: {
                                             stacked: false,
+                                            grid: {
+                                                display: false
+                                            },
                                             ticks: {
                                                 font: {
                                                     size: 11,
                                                     weight: 'bold'
                                                 }
-                                            },
-                                            grid: {
-                                                display: false
                                             }
                                         },
                                         y: {
                                             stacked: false,
                                             beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.03)'
+                                            },
                                             ticks: {
                                                 stepSize: 1,
                                                 font: {
                                                     size: 12
                                                 }
-                                            },
-                                            grid: {
-                                                color: 'rgba(0,0,0,0.03)'
                                             }
                                         }
                                     }
@@ -861,12 +960,12 @@
                                 backgroundColor: color,
                                 borderColor: color.replace('0.8', '1'),
                                 borderWidth: 2,
-                                borderRadius: 6
+                                borderRadius: 8
                             };
                         });
 
                         $('#loading-wilayah').fadeOut(300, function() {
-                            $('#chartWilayah').fadeIn(400);
+                            $('#wilayahChartWrapper').fadeIn(400);
 
                             new Chart($('#chartWilayah'), {
                                 type: 'bar',
@@ -876,7 +975,7 @@
                                 },
                                 options: {
                                     responsive: true,
-                                    maintainAspectRatio: true,
+                                    maintainAspectRatio: false,
                                     plugins: {
                                         legend: {
                                             position: 'top',
@@ -886,6 +985,7 @@
                                                     weight: '600'
                                                 },
                                                 usePointStyle: true,
+                                                pointStyle: 'circle',
                                                 padding: 15
                                             }
                                         },
@@ -893,6 +993,13 @@
                                             backgroundColor: 'rgba(0,0,0,0.8)',
                                             padding: 15,
                                             cornerRadius: 8,
+                                            titleFont: {
+                                                size: 14,
+                                                weight: 'bold'
+                                            },
+                                            bodyFont: {
+                                                size: 13
+                                            },
                                             mode: 'index',
                                             intersect: false
                                         }
@@ -900,27 +1007,27 @@
                                     scales: {
                                         x: {
                                             stacked: true,
+                                            grid: {
+                                                display: false
+                                            },
                                             ticks: {
                                                 font: {
                                                     size: 11,
                                                     weight: 'bold'
                                                 }
-                                            },
-                                            grid: {
-                                                display: false
                                             }
                                         },
                                         y: {
                                             stacked: true,
                                             beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.03)'
+                                            },
                                             ticks: {
                                                 stepSize: 1,
                                                 font: {
                                                     size: 12
                                                 }
-                                            },
-                                            grid: {
-                                                color: 'rgba(0,0,0,0.03)'
                                             }
                                         }
                                     }
@@ -949,11 +1056,11 @@
                         });
 
                         const anomali = data.find(item => item.kategori.includes('Anomali'))?.total ||
-                            0;
+                        0;
                         $('#anomali').text(anomali.toLocaleString('id-ID'));
 
                         $('#loading-anomali').fadeOut(300, function() {
-                            $('#chartAnomali').fadeIn(400);
+                            $('#anomaliChartWrapper').fadeIn(400);
 
                             new Chart($('#chartAnomali'), {
                                 type: 'pie',
@@ -962,38 +1069,47 @@
                                     datasets: [{
                                         data: values,
                                         backgroundColor: bgColors,
-                                        borderWidth: 3,
+                                        borderWidth: 4,
                                         borderColor: '#fff',
+                                        hoverBorderWidth: 6,
                                         hoverOffset: 10
                                     }]
                                 },
                                 options: {
                                     responsive: true,
-                                    maintainAspectRatio: true,
+                                    maintainAspectRatio: false,
                                     plugins: {
                                         legend: {
                                             position: 'bottom',
                                             labels: {
                                                 font: {
-                                                    size: 12,
+                                                    size: 13,
                                                     weight: '600'
                                                 },
                                                 usePointStyle: true,
-                                                padding: 15
+                                                pointStyle: 'circle',
+                                                padding: 20
                                             }
                                         },
                                         tooltip: {
                                             backgroundColor: 'rgba(0,0,0,0.8)',
                                             padding: 15,
                                             cornerRadius: 8,
+                                            titleFont: {
+                                                size: 14,
+                                                weight: 'bold'
+                                            },
+                                            bodyFont: {
+                                                size: 13
+                                            },
                                             callbacks: {
                                                 label: function(context) {
                                                     const label = context.label ||
                                                         '';
                                                     const value = context.parsed;
                                                     const total = context.dataset
-                                                        .data.reduce((a,
-                                                            b) => a + b, 0);
+                                                        .data.reduce((
+                                                            a, b) => a + b, 0);
                                                     const percentage = ((value /
                                                             total) * 100)
                                                         .toFixed(1);
