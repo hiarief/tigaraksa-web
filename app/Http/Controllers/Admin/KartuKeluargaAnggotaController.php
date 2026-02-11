@@ -22,7 +22,7 @@ class KartuKeluargaAnggotaController extends Controller
         if ($request->ajax()) {
 
             $desaId = auth()->user()->desa;
-            $userId = auth()->user()->id;
+            $user   = auth()->user();
 
             $data = DB::table('t_kartu_keluarga_anggota as t1')
                 ->join('t_kartu_keluarga as t2', 't2.id', '=', 't1.no_kk')
@@ -32,7 +32,9 @@ class KartuKeluargaAnggotaController extends Controller
                 ->leftJoin('m_hubungan_keluarga as t6', 't6.id', '=', 't1.sts_hub_kel')
                 ->where('t2.desa', $desaId)
                 ->where('t1.sts_mati', 0)
-                ->where('t3.id', $userId)
+                ->when(!$user->hasRole('AdminDesa'), function ($query) use ($user) {
+                    $query->where('t3.id', $user->id);
+                })
                 ->orderByDesc('t1.created_at')
                 ->select([
                     't2.id',
@@ -50,6 +52,7 @@ class KartuKeluargaAnggotaController extends Controller
                     't1.id as anggota_id',
                     't6.nama as hubungan_keluarga'
                 ]);
+
 
             return DataTables::of($data)
                 ->addIndexColumn()
