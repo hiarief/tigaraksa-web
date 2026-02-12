@@ -507,8 +507,8 @@
                                 <div class="table-responsive">
                                     <table id="table-pekerjaan" class="table-premium">
                                         <thead>
-                                            <tr>
-                                                <th width="50">No</th>
+                                            <tr class="nowrap">
+                                                <th style="width: 1%">No</th>
                                                 <th>NIK</th>
                                                 <th>Nama</th>
                                                 <th>Usia</th>
@@ -548,21 +548,24 @@
                                 </div>
                             </div>
                             <div class="table-container-premium">
-                                <table id="table-pendapatan" class="table-premium">
-                                    <thead>
-                                        <tr>
-                                            <th width="50">No</th>
-                                            <th>NIK</th>
-                                            <th>Nama</th>
-                                            <th>Usia</th>
-                                            <th>JK</th>
-                                            <th>Pekerjaan</th>
-                                            <th>Pendapatan</th>
-                                            <th>Alamat</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
+                                <div class="table-responsive">
+
+                                    <table id="table-pendapatan" class="table-premium">
+                                        <thead>
+                                            <tr class="nowrap">
+                                                <th style="width: 1%">No</th>
+                                                <th>NIK</th>
+                                                <th>Nama</th>
+                                                <th>Usia</th>
+                                                <th>JK</th>
+                                                <th>Pekerjaan</th>
+                                                <th>Pendapatan</th>
+                                                <th>Alamat</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
 
@@ -589,22 +592,24 @@
                                 </div>
                             </div>
                             <div class="table-container-premium">
-                                <table id="table-status" class="table-premium">
-                                    <thead>
-                                        <tr>
-                                            <th width="50">No</th>
-                                            <th>NIK</th>
-                                            <th>Nama</th>
-                                            <th>Usia</th>
-                                            <th>JK</th>
-                                            <th>Pekerjaan</th>
-                                            <th>Status Pekerjaan</th>
-                                            <th>Pendapatan</th>
-                                            <th>Alamat</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
+                                <div class="table-responsive">
+                                    <table id="table-status" class="table-premium">
+                                        <thead>
+                                            <tr class="nowrap">
+                                                <th style="width: 1%">No</th>
+                                                <th>NIK</th>
+                                                <th>Nama</th>
+                                                <th>Usia</th>
+                                                <th>JK</th>
+                                                <th>Pekerjaan</th>
+                                                <th>Status Pekerjaan</th>
+                                                <th>Pendapatan</th>
+                                                <th>Alamat</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
 
@@ -635,20 +640,22 @@
                                 </div>
                             </div>
                             <div class="table-container-premium">
-                                <table id="table-gender" class="table-premium">
-                                    <thead>
-                                        <tr>
-                                            <th width="50">No</th>
-                                            <th>NIK</th>
-                                            <th>Nama</th>
-                                            <th>Usia</th>
-                                            <th>JK</th>
-                                            <th>Pekerjaan</th>
-                                            <th>Alamat</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
+                                <div class="table-responsive">
+                                    <table id="table-gender" class="table-premium">
+                                        <thead>
+                                            <tr class="nowrap">
+                                                <th style="width: 1%">No</th>
+                                                <th>NIK</th>
+                                                <th>Nama</th>
+                                                <th>Usia</th>
+                                                <th>JK</th>
+                                                <th>Pekerjaan</th>
+                                                <th>Alamat</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
 
@@ -677,22 +684,24 @@
                                 </div>
                             </div>
                             <div class="table-container-premium">
-                                <table id="table-usia" class="table-premium">
-                                    <thead>
-                                        <tr>
-                                            <th width="50">No</th>
-                                            <th>NIK</th>
-                                            <th>Nama</th>
-                                            <th>Tanggal Lahir</th>
-                                            <th>Usia</th>
-                                            <th>Kategori Usia</th>
-                                            <th>JK</th>
-                                            <th>Pekerjaan</th>
-                                            <th>Alamat</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
+                                <div class="table-responsive">
+                                    <table id="table-usia" class="table-premium">
+                                        <thead>
+                                            <tr class="nowrap">
+                                                <th style="width: 1%">No</th>
+                                                <th>NIK</th>
+                                                <th>Nama</th>
+                                                <th>Tanggal Lahir</th>
+                                                <th>Usia</th>
+                                                <th>Kategori Usia</th>
+                                                <th>JK</th>
+                                                <th>Pekerjaan</th>
+                                                <th>Alamat</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
