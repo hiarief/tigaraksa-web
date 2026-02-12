@@ -1481,13 +1481,14 @@
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button {
-    border-radius: 8px;
-    padding: 8px 15px;
-    margin: 0 3px;
+    border-radius: 1px;
+    padding: 3px 2px;      /* Diperkecil dari 8px 15px */
+    margin: 0 2px;          /* Diperkecil dari 0 3px */
     border: none;
     background: #f8f9fa;
     color: #6c757d;
     transition: all 0.3s;
+    font-size: 13px;        /* Tambahkan ini untuk ukuran font lebih kecil */
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
@@ -1500,6 +1501,11 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white !important;
     border: none;
+}
+
+/* Opsional: Kurangi jarak antar elemen pagination */
+.dataTables_wrapper .dataTables_paginate {
+    padding-top: 1px;
 }
 
 /* Clear floats untuk DataTables */
