@@ -78,6 +78,21 @@
                             <span class="nav-glow"></span>
                         </a>
                     </li>
+
+                    <!-- SOSIAL & KESEJAHTERAAN -->
+                    <li class="nav-header">
+                        <i class="fas fa-heart header-icon"></i>
+                        <span>SOSIAL & KESEJAHTERAAN</span>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('kecamatan.pendidikan.index') }}"
+                            class="nav-link {{ Route::is('kecamatan.pendidikan*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-graduation-cap"></i>
+                            <p>Pendidikan</p>
+                            <span class="nav-glow"></span>
+                        </a>
+                    </li>
                 @endcan
 
                 @can('desa-chart')

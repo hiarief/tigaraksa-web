@@ -1,28 +1,29 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\BpjsController;
-use App\Http\Controllers\Admin\UmurController;
-use App\Http\Controllers\Admin\ChartController;
-use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\Admin\AdminDesaController;
+use App\Http\Controllers\Admin\Auth\PermissionController;
 use App\Http\Controllers\Admin\Auth\RoleController;
 use App\Http\Controllers\Admin\Auth\UserController;
+use App\Http\Controllers\Admin\BantuanPemerintahController;
+use App\Http\Controllers\Admin\BpjsController;
+use App\Http\Controllers\Admin\ChartController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\PekerjaanController;
 use App\Http\Controllers\Admin\DataHilangController;
+use App\Http\Controllers\Admin\KartuKeluargaAnggotaController;
+use App\Http\Controllers\Admin\KartuKeluargaController;
+use App\Http\Controllers\Admin\Kecamatan\KependudukanKecamatanContrroller;
+use App\Http\Controllers\Admin\Kecamatan\PendidikanKecamatanController;
+use App\Http\Controllers\Admin\Kecamatan\PerkawinanKecamatanController;
+use App\Http\Controllers\Admin\Kecamatan\UmurKecamatanController;
+use App\Http\Controllers\Admin\KepemilikanRumahController;
+use App\Http\Controllers\Admin\KependudukanController;
+use App\Http\Controllers\Admin\PekerjaanController;
 use App\Http\Controllers\Admin\PendapatanController;
 use App\Http\Controllers\Admin\PendidikanController;
 use App\Http\Controllers\Admin\PerkawinanController;
-use App\Http\Controllers\Admin\KependudukanController;
-use App\Http\Controllers\Admin\KartuKeluargaController;
-use App\Http\Controllers\Admin\Auth\PermissionController;
-use App\Http\Controllers\Admin\KepemilikanRumahController;
-use App\Http\Controllers\Admin\BantuanPemerintahController;
-use App\Http\Controllers\Admin\KartuKeluargaAnggotaController;
-use App\Http\Controllers\Admin\Kecamatan\UmurKecamatanController;
-use App\Http\Controllers\Admin\Kecamatan\PerkawinanKecamatanController;
-use App\Http\Controllers\Admin\Kecamatan\KependudukanKecamatanContrroller;
+use App\Http\Controllers\Admin\UmurController;
+use App\Http\Controllers\LandingPageController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingPageController::class, 'page'])->name('landing.page');
 
@@ -250,21 +251,54 @@ Route::middleware(['auth'])->group(function () {
         });
 
         Route::group(['prefix' => '/perkawinan', 'as' => 'perkawinan.'], function () {
-        Route::get('/', [PerkawinanKecamatanController::class, 'index'])->name('index');
-        Route::get('/jumlah', [PerkawinanKecamatanController::class, 'jumlah'])->name('jumlah');
-        Route::get('/rasio', [PerkawinanKecamatanController::class, 'rasio'])->name('rasio');
-        Route::get('/distribusi/status', [PerkawinanKecamatanController::class, 'distribusiStatus'])->name('distribusi.status');
-        Route::get('/distribusi/tercatat', [PerkawinanKecamatanController::class, 'distribusiTercatat'])->name('distribusi.tercatat');
-        Route::get('/distribusi/desa', [PerkawinanKecamatanController::class, 'distribusiDesa'])->name('distribusi.desa');
-        Route::get('/distribusi/jenkel', [PerkawinanKecamatanController::class, 'distribusiJenkel'])->name('distribusi.jenkel');
-        Route::get('/distribusi/umur', [PerkawinanKecamatanController::class, 'distribusiUmur'])->name('distribusi.umur');
-        Route::get('/analisa/usia', [PerkawinanKecamatanController::class, 'analisaUsiaMenikah'])->name('analisa.usia');
-        Route::get('/distribusi/usia-kategori', [PerkawinanKecamatanController::class, 'distribusiMenikahDibawahUmur'])->name('distribusi.usia.kategori');
-        Route::get('/dibawah-umur/desa', [PerkawinanKecamatanController::class, 'menikahDibawahUmurPerDesa'])->name('dibawah.umur.desa');
-        Route::get('/detail/dibawah-umur', [PerkawinanKecamatanController::class, 'detailMenikahDibawahUmur'])->name('detail.dibawah.umur');
-        Route::get('/data/abnormal', [PerkawinanKecamatanController::class, 'dataAbnormal'])->name('data.abnormal');
-        Route::get('/detail/desa', [PerkawinanKecamatanController::class, 'detailPerDesa'])->name('detail.desa');
-    });
+            Route::get('/', [PerkawinanKecamatanController::class, 'index'])->name('index');
+            Route::get('/jumlah', [PerkawinanKecamatanController::class, 'jumlah'])->name('jumlah');
+            Route::get('/rasio', [PerkawinanKecamatanController::class, 'rasio'])->name('rasio');
+            Route::get('/distribusi/status', [PerkawinanKecamatanController::class, 'distribusiStatus'])->name('distribusi.status');
+            Route::get('/distribusi/tercatat', [PerkawinanKecamatanController::class, 'distribusiTercatat'])->name('distribusi.tercatat');
+            Route::get('/distribusi/desa', [PerkawinanKecamatanController::class, 'distribusiDesa'])->name('distribusi.desa');
+            Route::get('/distribusi/jenkel', [PerkawinanKecamatanController::class, 'distribusiJenkel'])->name('distribusi.jenkel');
+            Route::get('/distribusi/umur', [PerkawinanKecamatanController::class, 'distribusiUmur'])->name('distribusi.umur');
+            Route::get('/analisa/usia', [PerkawinanKecamatanController::class, 'analisaUsiaMenikah'])->name('analisa.usia');
+            Route::get('/distribusi/usia-kategori', [PerkawinanKecamatanController::class, 'distribusiMenikahDibawahUmur'])->name('distribusi.usia.kategori');
+            Route::get('/dibawah-umur/desa', [PerkawinanKecamatanController::class, 'menikahDibawahUmurPerDesa'])->name('dibawah.umur.desa');
+            Route::get('/detail/dibawah-umur', [PerkawinanKecamatanController::class, 'detailMenikahDibawahUmur'])->name('detail.dibawah.umur');
+            Route::get('/data/abnormal', [PerkawinanKecamatanController::class, 'dataAbnormal'])->name('data.abnormal');
+            Route::get('/detail/desa', [PerkawinanKecamatanController::class, 'detailPerDesa'])->name('detail.desa');
+        });
+
+        Route::group(['prefix' => '/pendidikan', 'as' => 'pendidikan.'], function () {
+
+            // Main View
+            Route::get('/', [PendidikanKecamatanController::class, 'index'])->name('index');
+
+            // Statistics APIs
+            Route::get('/jumlah', [PendidikanKecamatanController::class, 'getStatistikJumlah'])->name('jumlah');
+            Route::get('/rasio', [PendidikanKecamatanController::class, 'getStatistikRasio'])->name('rasio');
+
+            // Distribution APIs
+            Route::get('/distribusi/tingkat', [PendidikanKecamatanController::class, 'getDistribusiTingkatPendidikan'])->name('distribusi.tingkat');
+            Route::get('/distribusi/jenkel', [PendidikanKecamatanController::class, 'getDistribusiJenisKelamin'])->name('distribusi.jenkel');
+            Route::get('/distribusi/desa', [PendidikanKecamatanController::class, 'getDistribusiPerDesa'])->name('distribusi.desa');
+            Route::get('/distribusi/umur', [PendidikanKecamatanController::class, 'getDistribusiUmur'])->name('distribusi.umur');
+            Route::get('/distribusi/non-formal', [PendidikanKecamatanController::class, 'getDistribusiPendidikanNonFormal'])->name('distribusi.non.formal');
+
+            // Status & Details APIs
+            Route::get('/status/sedang-sekolah', [PendidikanKecamatanController::class, 'getStatusSedangSekolah'])->name('status.sedang.sekolah');
+            Route::get('/detail/desa', [PendidikanKecamatanController::class, 'getDetailPerDesa'])->name('detail.desa');
+            Route::get('/umur-jenkel', [PendidikanKecamatanController::class, 'getPendidikanByUmurJenkel'])->name('umur.jenkel');
+
+            // Analysis APIs
+            Route::get('/analisa/usia-sekolah', [PendidikanKecamatanController::class, 'getAnalisaUsiaSekolah'])->name('analisa.usia.sekolah');
+            Route::get('/kesesuaian-usia-desa', [PendidikanKecamatanController::class, 'getKesesuaianUsiaPerDesa'])->name('kesesuaian.usia.desa');
+
+            // DataTable & Filters
+            Route::get('/datatable/tidak-sekolah-wajib-belajar', [PendidikanKecamatanController::class, 'getDetailTidakSekolahWajibBelajarDatatable'])->name('datatable.tidak.sekolah.wajib.belajar');
+            Route::get('/list-desa', [PendidikanKecamatanController::class, 'getListDesa'])->name('list.desa');
+            Route::get('/summary/tidak-sekolah-wajib-belajar', [PendidikanKecamatanController::class, 'getSummaryTidakSekolahWajibBelajar'])->name('summary.tidak.sekolah.wajib.belajar');
+
+        });
+
     });
 
 });
