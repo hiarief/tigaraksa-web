@@ -760,6 +760,10 @@ class PendidikanKecamatanController extends Controller
 
             return DataTables::of($query)
                 ->addIndexColumn()
+                ->editColumn('nama', fn($row) => strtoupper($row->nama))
+                ->editColumn('no_nik', function ($row) {
+                    return $this->maskNumber($row->no_nik);
+                })
                 ->addColumn('umur', function($row) {
                     return Carbon::parse($row->tgl_lahir)->age;
                 })
@@ -982,5 +986,16 @@ class PendidikanKecamatanController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    private function maskNumber($number)
+    {
+        if (!$number || strlen($number) < 16) {
+            return $number;
+        }
+
+        return substr($number, 0, 3)
+            . str_repeat('*', 10)
+            . substr($number, -3);
     }
 }
