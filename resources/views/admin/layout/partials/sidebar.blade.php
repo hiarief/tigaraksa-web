@@ -93,6 +93,15 @@
                             <span class="nav-glow"></span>
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('kecamatan.pekerjaan.index') }}"
+                            class="nav-link {{ Route::is('kecamatan.pekerjaan.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-briefcase"></i>
+                            <p>Pekerjaan</p>
+                            <span class="nav-glow"></span>
+                        </a>
+                    </li>
                 @endcan
 
                 @can('desa-chart')

@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\DataHilangController;
 use App\Http\Controllers\Admin\KartuKeluargaAnggotaController;
 use App\Http\Controllers\Admin\KartuKeluargaController;
 use App\Http\Controllers\Admin\Kecamatan\KependudukanKecamatanContrroller;
+use App\Http\Controllers\Admin\Kecamatan\PekerjaanKecamatanController;
 use App\Http\Controllers\Admin\Kecamatan\PendidikanKecamatanController;
 use App\Http\Controllers\Admin\Kecamatan\PerkawinanKecamatanController;
 use App\Http\Controllers\Admin\Kecamatan\UmurKecamatanController;
@@ -268,35 +269,50 @@ Route::middleware(['auth'])->group(function () {
         });
 
         Route::group(['prefix' => '/pendidikan', 'as' => 'pendidikan.'], function () {
-
-            // Main View
             Route::get('/', [PendidikanKecamatanController::class, 'index'])->name('index');
-
-            // Statistics APIs
             Route::get('/jumlah', [PendidikanKecamatanController::class, 'getStatistikJumlah'])->name('jumlah');
             Route::get('/rasio', [PendidikanKecamatanController::class, 'getStatistikRasio'])->name('rasio');
-
-            // Distribution APIs
             Route::get('/distribusi/tingkat', [PendidikanKecamatanController::class, 'getDistribusiTingkatPendidikan'])->name('distribusi.tingkat');
             Route::get('/distribusi/jenkel', [PendidikanKecamatanController::class, 'getDistribusiJenisKelamin'])->name('distribusi.jenkel');
             Route::get('/distribusi/desa', [PendidikanKecamatanController::class, 'getDistribusiPerDesa'])->name('distribusi.desa');
             Route::get('/distribusi/umur', [PendidikanKecamatanController::class, 'getDistribusiUmur'])->name('distribusi.umur');
             Route::get('/distribusi/non-formal', [PendidikanKecamatanController::class, 'getDistribusiPendidikanNonFormal'])->name('distribusi.non.formal');
-
-            // Status & Details APIs
             Route::get('/status/sedang-sekolah', [PendidikanKecamatanController::class, 'getStatusSedangSekolah'])->name('status.sedang.sekolah');
             Route::get('/detail/desa', [PendidikanKecamatanController::class, 'getDetailPerDesa'])->name('detail.desa');
             Route::get('/umur-jenkel', [PendidikanKecamatanController::class, 'getPendidikanByUmurJenkel'])->name('umur.jenkel');
-
-            // Analysis APIs
             Route::get('/analisa/usia-sekolah', [PendidikanKecamatanController::class, 'getAnalisaUsiaSekolah'])->name('analisa.usia.sekolah');
             Route::get('/kesesuaian-usia-desa', [PendidikanKecamatanController::class, 'getKesesuaianUsiaPerDesa'])->name('kesesuaian.usia.desa');
-
-            // DataTable & Filters
             Route::get('/datatable/tidak-sekolah-wajib-belajar', [PendidikanKecamatanController::class, 'getDetailTidakSekolahWajibBelajarDatatable'])->name('datatable.tidak.sekolah.wajib.belajar');
             Route::get('/list-desa', [PendidikanKecamatanController::class, 'getListDesa'])->name('list.desa');
             Route::get('/summary/tidak-sekolah-wajib-belajar', [PendidikanKecamatanController::class, 'getSummaryTidakSekolahWajibBelajar'])->name('summary.tidak.sekolah.wajib.belajar');
+        });
 
+
+        Route::group(['prefix' => '/pekerjaan', 'as' => 'pekerjaan.'], function () {
+            Route::get('/', [PekerjaanKecamatanController::class, 'index'])->name('index');
+            Route::get('/statistik-jumlah', [PekerjaanKecamatanController::class, 'getStatistikJumlah'])->name('jumlah');
+            Route::get('/statistik-rasio', [PekerjaanKecamatanController::class, 'getStatistikRasio'])->name('rasio');
+            Route::get('/distribusi-jenis-pekerjaan', [PekerjaanKecamatanController::class, 'getDistribusiJenisPekerjaan'])->name('distribusi.pekerjaan');
+            Route::get('/distribusi-jenis-kelamin', [PekerjaanKecamatanController::class, 'getDistribusiJenisKelamin'])->name('jenkel');
+            Route::get('/distribusi-per-desa', [PekerjaanKecamatanController::class, 'getDistribusiPerDesa'])->name('desa');
+            Route::get('/distribusi-kelompok-umur', [PekerjaanKecamatanController::class, 'getDistribusiKelompokUmur'])->name('umur');
+            Route::get('/status-pekerjaan', [PekerjaanKecamatanController::class, 'getStatusPekerjaan'])->name('status');
+            Route::get('/pekerjaan-umur-jenkel', [PekerjaanKecamatanController::class, 'getPekerjaanUmurJenisKelamin'])->name('umur.jenkel');
+            Route::get('/detail-pekerjaan-per-desa', [PekerjaanKecamatanController::class, 'getDetailPekerjaanPerDesa'])->name('detail.desa');
+            Route::get('/analisa-usia-produktif', [PekerjaanKecamatanController::class, 'getAnalisaUsiaProduktif'])->name('analisa.usia.produktif');
+            Route::get('/pekerjaan-kelompok-umur', [PekerjaanKecamatanController::class, 'getPekerjaanBerdasarkanKelompokUmur'])->name('umur.kerja');
+            Route::get('/top10-pekerjaan', [PekerjaanKecamatanController::class, 'getTop10Pekerjaan'])->name('top10');
+            Route::get('/pekerjaan-per-desa-stacked', [PekerjaanKecamatanController::class, 'getPekerjaanPerDesa'])->name('desa.stacked');
+            Route::get('/datatable-penduduk', [PekerjaanKecamatanController::class, 'getDatatablePenduduk'])->name('datatable');
+            Route::get('/list-desa', [PekerjaanKecamatanController::class, 'getListDesa'])->name('list.desa');
+            Route::get('/analisis-pekerja-anak', [PekerjaanKecamatanController::class, 'getAnalisisPekerjaAnak'])->name('analisis.pekerja.anak');
+            Route::get('/kesejahteraan-anak', [PekerjaanKecamatanController::class, 'getAnalisisKesejahteraanAnak'])->name('kesejahteraan.anak');
+            Route::get('/pekerja-anak-per-desa', [PekerjaanKecamatanController::class, 'getPekerjaAnakPerDesa'])->name('pekerja.anak.per.desa');
+            Route::get('/jenis-pekerjaan-anak', [PekerjaanKecamatanController::class, 'getJenisPekerjaanAnak'])->name('jenis.pekerjaan.anak');
+            Route::get('/indikator-kesejahteraan-anak', [PekerjaanKecamatanController::class, 'getIndikatorKesejahteraanAnak'])->name('indikator.kesejahteraan.anak');
+            Route::get('/datatable-pekerja-anak', [PekerjaanKecamatanController::class, 'getDatatablePekerjaAnak'])->name('datatable.pekerja.anak');
+            Route::get('/list-desa-pekerja-anak', [PekerjaanKecamatanController::class, 'getListDesaPekerjaAnak'])->name('list.desa.pekerja.anak');
+            Route::get('/clear-cache', [PekerjaanKecamatanController::class, 'clearCache'])->name('clear.cache');
         });
 
     });
