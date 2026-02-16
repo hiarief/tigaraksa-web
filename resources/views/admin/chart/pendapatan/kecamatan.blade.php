@@ -1443,19 +1443,33 @@
                     type: 'GET',
                     success: function(response) {
                         if (response.success) {
-                            const data = response.data;
-                            animateNumber('#totalPenduduk', data.total_penduduk);
-                            animateNumber('#totalLaki', data.total_laki);
-                            animateNumber('#totalPerempuan', data.total_perempuan);
-                            animateNumber('#totalKepalaKeluarga', data.total_kepala_keluarga);
-                            animateNumber('#totalPekerja', data.total_pekerja);
-                            animateNumber('#totalTidakBekerja', data.total_tidak_bekerja);
-                            animateNumber('#pendapatan01', data.pendapatan_0_1);
-                            animateNumber('#pendapatan15', data.pendapatan_1_2 + data.pendapatan_2_3 +
-                                data.pendapatan_3_5);
-                            animateNumber('#pendapatan510', data.pendapatan_5_10);
-                            animateNumber('#pendapatan10Plus', data.pendapatan_10_plus);
+                            const d = response.data;
+
+                            // Gunakan parseInt() agar tidak terjadi string concatenation
+                            const p01 = parseInt(d.pendapatan_0_1) || 0;
+                            const p12 = parseInt(d.pendapatan_1_2) || 0;
+                            const p23 = parseInt(d.pendapatan_2_3) || 0;
+                            const p35 = parseInt(d.pendapatan_3_5) || 0;
+                            const p510 = parseInt(d.pendapatan_5_10) || 0;
+                            const p10p = parseInt(d.pendapatan_10_plus) || 0;
+
+                            animateNumber('#totalPenduduk', parseInt(d.total_penduduk) || 0);
+                            animateNumber('#totalLaki', parseInt(d.total_laki) || 0);
+                            animateNumber('#totalPerempuan', parseInt(d.total_perempuan) || 0);
+                            animateNumber('#totalKepalaKeluarga', parseInt(d.total_kepala_keluarga) ||
+                                0);
+                            animateNumber('#totalPekerja', parseInt(d.total_pekerja) || 0);
+                            animateNumber('#totalTidakBekerja', parseInt(d.total_tidak_bekerja) || 0);
+
+                            // Kategori pendapatan — jumlah eksplisit dengan parseInt
+                            animateNumber('#pendapatan01', p01);
+                            animateNumber('#pendapatan15', p12 + p23 + p35); // FIX: sudah integer
+                            animateNumber('#pendapatan510', p510);
+                            animateNumber('#pendapatan10Plus', p10p);
                         }
+                    },
+                    error: function(xhr) {
+                        console.error('Error statistik jumlah:', xhr.responseJSON);
                     }
                 });
 
