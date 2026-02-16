@@ -8,790 +8,656 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\Facades\DataTables;
 
-class PendapatanKecamatanController extends Controller
+class BpjsKecamatanController extends Controller
 {
-    // Cache TTL (Time To Live) - 2 jam
-    private const CACHE_TTL = 7200;
-
-    // Mapping pendapatan untuk sorting
-    private $pendapatanOrder = [
-        '0-1 Juta' => 1,
-        '1-2 Juta' => 2,
-        '2-3 Juta' => 3,
-        '3-5 Juta' => 4,
-        '5-10 Juta' => 5,
-        '10-20 Juta' => 6,
-        '20-50 Juta' => 7,
-        '50-100 Juta' => 8,
-        '>100 Juta' => 9
-    ];
-
-    // Kategori umur
-    private $kategoriUmur = [
-        '0-17' => [0, 17],
-        '18-25' => [18, 25],
-        '26-35' => [26, 35],
-        '36-45' => [36, 45],
-        '46-55' => [46, 55],
-        '56-65' => [56, 65],
-        '>65' => [66, 999]
-    ];
+    private const CACHE_TTL = 7200; // 2 jam
 
     public function index(Request $request)
     {
-        return view('admin.chart.pendapatan.kecamatan');
+        return view('admin.chart.bpjs.kecamatan');
     }
 
-    /**
-     * Get base query untuk data penduduk
-     */
-    private function getBaseQuery()
-    {
-        return DB::table('t_kartu_keluarga_anggota as t1')
-            ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-            ->leftJoin('indonesia_villages as t3', 't3.code', '=', 't2.desa')
-            ->leftJoin('m_hubungan_keluarga as t4', 't4.id', '=', 't1.sts_hub_kel')
-            ->leftJoin('m_pekerjaan as t5', 't5.id', '=', 't1.jns_pekerjaan')
-            ->select([
-                't1.no_nik',
-                't1.nama',
-                't2.no_kk',
-                't2.kp',
-                't1.jenkel',
-                't1.tgl_lahir',
-                't1.pendapatan_perbulan',
-                't5.nama as jenis_pekerjaan',
-                't4.nama as hubungan_keluarga',
-                DB::raw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) AS umur'),
-                DB::raw("CONCAT(t2.rt,'/',t2.rw) AS rt_rw"),
-                't3.name AS desa',
-                't2.desa as kode_desa'
-            ]);
-    }
-
-    /**
-     * 1. Statistik Jumlah - Overview angka-angka penting
-     */
+    // 1. Statistik Jumlah
     public function getStatistikJumlah()
     {
-        $query = $this->getBaseQuery();
-        $data = $query->get();
+        try {
+            $data = Cache::remember('bpjs_statistik_jumlah', self::CACHE_TTL, function() {
+                return DB::table('t_kartu_keluarga_anggota as t1')
+                    ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                    ->select([
+                        DB::raw('COUNT(*) as total_penduduk'),
+                        DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as total_laki'),
+                        DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as total_perempuan'),
+                        DB::raw('SUM(CASE WHEN t1.punya_bpjs = "ya" THEN 1 ELSE 0 END) as punya_bpjs'),
+                        DB::raw('SUM(CASE WHEN t1.punya_bpjs != "ya" OR t1.punya_bpjs IS NULL THEN 1 ELSE 0 END) as tidak_punya_bpjs'),
+                        DB::raw('SUM(CASE WHEN (t1.jenis_bpjs = "bpjs_kesehatan" OR t1.jenis_bpjs = "BPJS Kesehatan") THEN 1 ELSE 0 END) as bpjs_kesehatan'),
+                        DB::raw('SUM(CASE WHEN t1.jenis_bpjs = "bpjs_ketenagakerjaan" THEN 1 ELSE 0 END) as bpjs_ketenagakerjaan'),
+                        DB::raw('SUM(CASE WHEN (t1.jenis_bpjs = "memiliki_kedua_bpjs" OR t1.jenis_bpjs = "Memiliki Keduanya" OR t1.jenis_bpjs = "memiliki_keduanya") THEN 1 ELSE 0 END) as memiliki_keduanya'),
+                        DB::raw('SUM(CASE WHEN t1.pembayaran_bpjs = "pemerintah" THEN 1 ELSE 0 END) as bayar_pemerintah'),
+                        DB::raw('SUM(CASE WHEN (t1.pembayaran_bpjs = "pemerintah/Perusahaan" OR t1.pembayaran_bpjs = "pemerintah / Perusahaan") THEN 1 ELSE 0 END) as bayar_perusahaan'),
+                        DB::raw('SUM(CASE WHEN t1.pembayaran_bpjs = "mandiri" THEN 1 ELSE 0 END) as bayar_mandiri')
+                    ])
+                    ->first();
+            });
 
-        $stats = [
-            'total_penduduk' => $data->count(),
-            'total_laki' => $data->where('jenkel', 1)->count(),
-            'total_perempuan' => $data->where('jenkel', 2)->count(),
-            'total_kepala_keluarga' => $data->where('hubungan_keluarga', 'KEPALA KELUARGA')->count(),
-            'total_pekerja' => $data->filter(function($item) {
-                return !empty($item->jenis_pekerjaan) &&
-                       !in_array($item->jenis_pekerjaan, ['BELUM/TIDAK BEKERJA', 'MENGURUS RUMAH TANGGA', 'PELAJAR/MAHASISWA']);
-            })->count(),
-            'total_tidak_bekerja' => $data->filter(function($item) {
-                return empty($item->jenis_pekerjaan) ||
-                       in_array($item->jenis_pekerjaan, ['BELUM/TIDAK BEKERJA', 'MENGURUS RUMAH TANGGA', 'PELAJAR/MAHASISWA']);
-            })->count(),
-        ];
-
-        // Hitung pendapatan berdasarkan kategori
-        $pendapatanKategori = $data->whereNotNull('pendapatan_perbulan')
-            ->where('pendapatan_perbulan', '!=', '')
-            ->groupBy('pendapatan_perbulan');
-
-        $stats['pendapatan_0_1'] = $pendapatanKategori->get('0-1 Juta')->count() ?? 0;
-        $stats['pendapatan_1_2'] = $pendapatanKategori->get('1-2 Juta')->count() ?? 0;
-        $stats['pendapatan_2_3'] = $pendapatanKategori->get('2-3 Juta')->count() ?? 0;
-        $stats['pendapatan_3_5'] = $pendapatanKategori->get('3-5 Juta')->count() ?? 0;
-        $stats['pendapatan_5_10'] = $pendapatanKategori->get('5-10 Juta')->count() ?? 0;
-        $stats['pendapatan_10_plus'] =
-            ($pendapatanKategori->get('10-20 Juta')->count() ?? 0) +
-            ($pendapatanKategori->get('20-50 Juta')->count() ?? 0) +
-            ($pendapatanKategori->get('50-100 Juta')->count() ?? 0) +
-            ($pendapatanKategori->get('>100 Juta')->count() ?? 0);
-
-        return response()->json([
-            'success' => true,
-            'data' => $stats
-        ]);
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
-    /**
-     * 2. Statistik Rasio - Persentase dan ratio
-     */
+    // 2. Statistik Rasio & Persentase
     public function getStatistikRasio()
     {
-        $query = $this->getBaseQuery();
-        $data = $query->get();
+        try {
+            $data = Cache::remember('bpjs_statistik_rasio', self::CACHE_TTL, function() {
+                $total = DB::table('t_kartu_keluarga_anggota')->count();
+                $punya_bpjs = DB::table('t_kartu_keluarga_anggota')
+                    ->where('punya_bpjs', 'ya')
+                    ->count();
 
-        $total = $data->count();
-        $totalPekerja = $data->filter(function($item) {
-            return !empty($item->jenis_pekerjaan) &&
-                   !in_array($item->jenis_pekerjaan, ['BELUM/TIDAK BEKERJA', 'MENGURUS RUMAH TANGGA', 'PELAJAR/MAHASISWA']);
-        })->count();
-        $totalTidakBekerja = $data->filter(function($item) {
-            return empty($item->jenis_pekerjaan) ||
-                   in_array($item->jenis_pekerjaan, ['BELUM/TIDAK BEKERJA', 'MENGURUS RUMAH TANGGA', 'PELAJAR/MAHASISWA']);
-        })->count();
+                $tidak_punya = $total - $punya_bpjs;
 
-        $stats = [
-            'persentase_pekerja' => $total > 0 ? number_format(($totalPekerja / $total) * 100, 1) : 0,
-            'persentase_tidak_bekerja' => $total > 0 ? number_format(($totalTidakBekerja / $total) * 100, 1) : 0,
-            'rasio_pekerja' => $totalTidakBekerja > 0 ? number_format($totalPekerja / $totalTidakBekerja, 2) : 0,
-            'rata_rata_pendapatan_keluarga' => $this->hitungRataRataPendapatanKeluarga($data)
-        ];
+                return [
+                    'persentase_punya_bpjs' => $total > 0 ? number_format(($punya_bpjs / $total) * 100, 2) : 0,
+                    'persentase_tidak_punya' => $total > 0 ? number_format(($tidak_punya / $total) * 100, 2) : 0,
+                    'rasio_kepemilikan' => $tidak_punya > 0 ? number_format($punya_bpjs / $tidak_punya, 2) : 0,
+                ];
+            });
 
-        return response()->json([
-            'success' => true,
-            'data' => $stats
-        ]);
-    }
-
-    /**
-     * Helper: Hitung rata-rata pendapatan per keluarga
-     */
-    private function hitungRataRataPendapatanKeluarga($data)
-    {
-        $keluarga = $data->groupBy('no_kk');
-        $totalPendapatan = 0;
-        $jumlahKeluarga = 0;
-
-        foreach ($keluarga as $kk => $anggota) {
-            $pendapatanKK = 0;
-            foreach ($anggota as $item) {
-                $pendapatanKK += $this->konversiPendapatanKeNilai($item->pendapatan_perbulan);
-            }
-            if ($pendapatanKK > 0) {
-                $totalPendapatan += $pendapatanKK;
-                $jumlahKeluarga++;
-            }
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        $rataRata = $jumlahKeluarga > 0 ? $totalPendapatan / $jumlahKeluarga : 0;
-        return $this->formatPendapatan($rataRata);
     }
 
-    /**
-     * Helper: Konversi kategori pendapatan ke nilai tengah
-     */
-    private function konversiPendapatanKeNilai($kategori)
+    // 3. Distribusi Jenis BPJS
+    public function getDistribusiJenisBpjs()
     {
-        $mapping = [
-            '0-1 Juta' => 500000,
-            '1-2 Juta' => 1500000,
-            '2-3 Juta' => 2500000,
-            '3-5 Juta' => 4000000,
-            '5-10 Juta' => 7500000,
-            '10-20 Juta' => 15000000,
-            '20-50 Juta' => 35000000,
-            '50-100 Juta' => 75000000,
-            '>100 Juta' => 150000000
-        ];
+        try {
+            $data = Cache::remember('bpjs_distribusi_jenis', self::CACHE_TTL, function() {
+                return DB::table('t_kartu_keluarga_anggota')
+                    ->select([
+                        DB::raw('CASE
+                            WHEN jenis_bpjs = "bpjs_kesehatan" OR jenis_bpjs = "BPJS Kesehatan" THEN "BPJS Kesehatan"
+                            WHEN jenis_bpjs = "bpjs_ketenagakerjaan" THEN "BPJS Ketenagakerjaan"
+                            WHEN jenis_bpjs IN ("memiliki_kedua_bpjs", "Memiliki Keduanya", "memiliki_keduanya") THEN "Memiliki Keduanya"
+                            ELSE "Belum Terdaftar"
+                        END as jenis'),
+                        DB::raw('COUNT(*) as jumlah')
+                    ])
+                    ->groupBy('jenis')
+                    ->get()
+                    ->pluck('jumlah', 'jenis')
+                    ->toArray();
+            });
 
-        return $mapping[$kategori] ?? 0;
-    }
-
-    /**
-     * Helper: Format pendapatan ke string
-     */
-    private function formatPendapatan($nilai)
-    {
-        if ($nilai >= 1000000) {
-            return number_format($nilai / 1000000, 1) . ' Juta';
-        } else if ($nilai >= 1000) {
-            return number_format($nilai / 1000, 0) . ' Ribu';
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
-        return number_format($nilai, 0);
     }
 
-    /**
-     * 3. Distribusi Pendapatan - Pie Chart
-     */
-    public function getDistribusiPendapatan()
+    // 4. Distribusi Metode Pembayaran
+    public function getDistribusiPembayaran()
     {
-        $query = $this->getBaseQuery();
-        $data = $query->whereNotNull('pendapatan_perbulan')
-            ->where('pendapatan_perbulan', '!=', '')
-            ->get();
+        try {
+            $data = Cache::remember('bpjs_distribusi_pembayaran', self::CACHE_TTL, function() {
+                return DB::table('t_kartu_keluarga_anggota')
+                    ->where('punya_bpjs', 'ya')
+                    ->select([
+                        DB::raw('CASE
+                            WHEN pembayaran_bpjs = "pemerintah" THEN "Pemerintah"
+                            WHEN pembayaran_bpjs IN ("pemerintah/Perusahaan", "pemerintah / Perusahaan") THEN "Perusahaan"
+                            WHEN pembayaran_bpjs = "mandiri" THEN "Mandiri"
+                            ELSE "Tidak Tercatat"
+                        END as metode'),
+                        DB::raw('COUNT(*) as jumlah')
+                    ])
+                    ->groupBy('metode')
+                    ->get()
+                    ->pluck('jumlah', 'metode')
+                    ->toArray();
+            });
 
-        $distribusi = $data->groupBy('pendapatan_perbulan')
-            ->map(function ($item) {
-                return $item->count();
-            })
-            ->sortKeysUsing(function ($a, $b) {
-                return ($this->pendapatanOrder[$a] ?? 999) <=> ($this->pendapatanOrder[$b] ?? 999);
-            })
-            ->toArray();
-
-        return response()->json([
-            'success' => true,
-            'data' => $distribusi
-        ]);
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
-    /**
-     * 4. Distribusi Jenis Kelamin dengan Pendapatan
-     */
+    // 5. Distribusi Jenis Kelamin
     public function getDistribusiJenisKelamin()
     {
-        $query = $this->getBaseQuery();
-        $data = $query->get();
+        try {
+            $data = Cache::remember('bpjs_distribusi_jenkel', self::CACHE_TTL, function() {
+                return DB::table('t_kartu_keluarga_anggota')
+                    ->where('punya_bpjs', 'ya')
+                    ->select([
+                        DB::raw('CASE WHEN jenkel = 1 THEN "Laki-laki" ELSE "Perempuan" END as jenis_kelamin'),
+                        DB::raw('COUNT(*) as jumlah')
+                    ])
+                    ->groupBy('jenkel')
+                    ->get()
+                    ->pluck('jumlah', 'jenis_kelamin')
+                    ->toArray();
+            });
 
-        $distribusi = [
-            'Laki-laki' => $data->where('jenkel', 1)->count(),
-            'Perempuan' => $data->where('jenkel', 2)->count()
-        ];
-
-        return response()->json([
-            'success' => true,
-            'data' => $distribusi
-        ]);
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
-    /**
-     * 5. Distribusi Per Desa - Bar Chart
-     */
+    // 6. Distribusi Per Desa
     public function getDistribusiPerDesa()
     {
-        $query = $this->getBaseQuery();
-        $data = $query->get();
+        try {
+            $data = Cache::remember('bpjs_distribusi_desa', self::CACHE_TTL, function() {
+                return DB::table('t_kartu_keluarga_anggota as t1')
+                    ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                    ->leftJoin('indonesia_villages as t3', 't3.code', '=', 't2.desa')
+                    ->select([
+                        't3.name as desa',
+                        DB::raw('COUNT(*) as total'),
+                        DB::raw('SUM(CASE WHEN t1.punya_bpjs = "ya" THEN 1 ELSE 0 END) as punya_bpjs')
+                    ])
+                    ->groupBy('t3.name')
+                    ->orderBy('punya_bpjs', 'DESC')
+                    ->get()
+                    ->pluck('punya_bpjs', 'desa')
+                    ->toArray();
+            });
 
-        $distribusi = $data->groupBy('desa')
-            ->map(function ($item) {
-                return $item->count();
-            })
-            ->sortDesc()
-            ->toArray();
-
-        return response()->json([
-            'success' => true,
-            'data' => $distribusi
-        ]);
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
-    /**
-     * 6. Distribusi Kelompok Umur
-     */
+    // 7. Distribusi Berdasarkan Kelompok Umur
     public function getDistribusiKelompokUmur()
     {
-        $query = $this->getBaseQuery();
-        $data = $query->get();
-
-        $distribusi = [];
-        foreach ($this->kategoriUmur as $label => $range) {
-            $distribusi[$label] = $data->whereBetween('umur', $range)->count();
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => $distribusi
-        ]);
-    }
-
-    /**
-     * 7. Pendapatan Berdasarkan Umur dan Jenis Kelamin - Grouped Bar
-     */
-    public function getPendapatanUmurJenisKelamin()
-    {
-        $query = $this->getBaseQuery();
-        $data = $query->get();
-
-        $result = [];
-        foreach ($this->kategoriUmur as $label => $range) {
-            $dataUmur = $data->whereBetween('umur', $range);
-            $result[$label] = [
-                'label' => $label,
-                'laki' => $dataUmur->where('jenkel', 1)->count(),
-                'perempuan' => $dataUmur->where('jenkel', 2)->count()
-            ];
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => $result
-        ]);
-    }
-
-    /**
-     * 8. Pendapatan Berdasarkan Kelompok Umur - Detail
-     */
-    public function getPendapatanBerdasarkanUmur()
-    {
-        $query = $this->getBaseQuery();
-        $data = $query->whereNotNull('pendapatan_perbulan')
-            ->where('pendapatan_perbulan', '!=', '')
-            ->get();
-
-        $result = [];
-        foreach ($this->kategoriUmur as $label => $range) {
-            $dataUmur = $data->whereBetween('umur', $range);
-            $distribusiPendapatan = $dataUmur->groupBy('pendapatan_perbulan')
-                ->map(function ($item) {
-                    return $item->count();
-                })
-                ->toArray();
-
-            foreach ($distribusiPendapatan as $kategori => $jumlah) {
-                if (!isset($result[$label])) {
-                    $result[$label] = [];
-                }
-                $result[$label][$kategori] = $jumlah;
-            }
-        }
-
-        // Format untuk stacked bar chart
-        $labels = array_keys($this->kategoriUmur);
-        $datasets = [];
-
-        $semuaKategori = ['0-1 Juta', '1-2 Juta', '2-3 Juta', '3-5 Juta', '5-10 Juta', '10-20 Juta', '20-50 Juta', '50-100 Juta', '>100 Juta'];
-        $colors = ['#28a745', '#20c997', '#17a2b8', '#007bff', '#6f42c1', '#fd7e14', '#ffc107', '#dc3545', '#e83e8c'];
-
-        foreach ($semuaKategori as $index => $kategori) {
-            $dataKategori = [];
-            foreach ($labels as $umur) {
-                $dataKategori[] = $result[$umur][$kategori] ?? 0;
-            }
-
-            $datasets[] = [
-                'label' => $kategori,
-                'data' => $dataKategori,
-                'backgroundColor' => $colors[$index % count($colors)],
-                'borderColor' => $colors[$index % count($colors)],
-                'borderWidth' => 1
-            ];
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'labels' => $labels,
-                'datasets' => $datasets
-            ]
-        ]);
-    }
-
-    /**
-     * 9. Top 10 Pekerjaan dengan Pendapatan Tertinggi
-     */
-    public function getTop10PekerjaanPendapatanTertinggi()
-    {
         try {
-            $query = $this->getBaseQuery();
-            $data = $query->whereNotNull('pendapatan_perbulan')
-                ->where('pendapatan_perbulan', '!=', '')
-                ->whereNotNull('t5.nama')
-                ->where('t5.nama', '!=', '')
-                ->get();
-
-            if ($data->isEmpty()) {
-                return response()->json([
-                    'success' => true,
-                    'data' => []
-                ]);
-            }
-
-            // Group by pekerjaan dan hitung rata-rata pendapatan
-            $pekerjaan = $data->groupBy('jenis_pekerjaan')
-                ->map(function ($items) {
-                    $totalNilai = 0;
-                    $count = 0;
-                    foreach ($items as $item) {
-                        $nilai = $this->konversiPendapatanKeNilai($item->pendapatan_perbulan);
-                        if ($nilai > 0) {
-                            $totalNilai += $nilai;
-                            $count++;
-                        }
-                    }
-                    return [
-                        'jumlah' => $items->count(),
-                        'rata_rata' => $count > 0 ? $totalNilai / $count : 0
-                    ];
-                })
-                ->filter(function ($info) {
-                    return $info['rata_rata'] > 0;
-                })
-                ->sortByDesc('rata_rata')
-                ->take(10);
-
-            $result = [];
-            foreach ($pekerjaan as $nama => $info) {
-                $result[$nama] = $info['jumlah'];
-            }
+            $data = Cache::remember('bpjs_distribusi_umur', self::CACHE_TTL, function() {
+                return DB::table('t_kartu_keluarga_anggota')
+                    ->where('punya_bpjs', 'ya')
+                    ->select([
+                        DB::raw('CASE
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) < 5 THEN "0-4 Tahun"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 5 AND 12 THEN "5-12 Tahun"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 13 AND 17 THEN "13-17 Tahun"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 18 AND 25 THEN "18-25 Tahun"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 26 AND 40 THEN "26-40 Tahun"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 41 AND 60 THEN "41-60 Tahun"
+                            ELSE "60+ Tahun"
+                        END as kelompok_umur'),
+                        DB::raw('COUNT(*) as jumlah')
+                    ])
+                    ->groupBy('kelompok_umur')
+                    ->orderByRaw('MIN(TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()))')
+                    ->get()
+                    ->pluck('jumlah', 'kelompok_umur')
+                    ->toArray();
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => $result
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
-                'data' => []
+                'message' => $e->getMessage()
             ], 500);
         }
     }
 
-    /**
-     * 10. Pendapatan Tertinggi Per Desa
-     */
-    public function getPendapatanTertinggiPerDesa()
-    {
-        $query = $this->getBaseQuery();
-        $data = $query->whereNotNull('pendapatan_perbulan')
-            ->where('pendapatan_perbulan', '!=', '')
-            ->get();
-
-        // Group by desa dan hitung rata-rata pendapatan
-        $desa = $data->groupBy('desa')
-            ->map(function ($items) {
-                $totalNilai = 0;
-                $count = 0;
-                foreach ($items as $item) {
-                    $nilai = $this->konversiPendapatanKeNilai($item->pendapatan_perbulan);
-                    if ($nilai > 0) {
-                        $totalNilai += $nilai;
-                        $count++;
-                    }
-                }
-                return $count > 0 ? $totalNilai / $count : 0;
-            })
-            ->sortDesc();
-
-        $result = [];
-        foreach ($desa as $nama => $rataRata) {
-            $result[$nama] = round($rataRata / 1000000, 2); // Dalam jutaan
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => $result
-        ]);
-    }
-
-    /**
-     * 11. Detail Per Desa - Table
-     */
-    public function getDetailPerDesa()
-    {
-        $query = $this->getBaseQuery();
-        $data = $query->get();
-
-        $desas = DB::table('indonesia_villages')
-            ->whereIn('code', $data->pluck('kode_desa')->unique())
-            ->get()
-            ->keyBy('code');
-
-        $result = [];
-        foreach ($desas as $code => $desaInfo) {
-            $dataDesa = $data->where('kode_desa', $code);
-
-            $totalPendapatan = 0;
-            $countPendapatan = 0;
-            foreach ($dataDesa as $item) {
-                $nilai = $this->konversiPendapatanKeNilai($item->pendapatan_perbulan);
-                if ($nilai > 0) {
-                    $totalPendapatan += $nilai;
-                    $countPendapatan++;
-                }
-            }
-
-            $pekerja = $dataDesa->filter(function($item) {
-                return !empty($item->jenis_pekerjaan) &&
-                       !in_array($item->jenis_pekerjaan, ['BELUM/TIDAK BEKERJA', 'MENGURUS RUMAH TANGGA', 'PELAJAR/MAHASISWA']);
-            })->count();
-
-            $tidakBekerja = $dataDesa->filter(function($item) {
-                return empty($item->jenis_pekerjaan) ||
-                       in_array($item->jenis_pekerjaan, ['BELUM/TIDAK BEKERJA', 'MENGURUS RUMAH TANGGA', 'PELAJAR/MAHASISWA']);
-            })->count();
-
-            $result[] = [
-                'desa' => $desaInfo->name,
-                'total_penduduk' => $dataDesa->count(),
-                'laki_laki' => $dataDesa->where('jenkel', 1)->count(),
-                'perempuan' => $dataDesa->where('jenkel', 2)->count(),
-                'kepala_keluarga' => $dataDesa->where('hubungan_keluarga', 'KEPALA KELUARGA')->count(),
-                'pekerja' => $pekerja,
-                'tidak_bekerja' => $tidakBekerja,
-                'rata_rata_pendapatan' => $countPendapatan > 0 ? $this->formatPendapatan($totalPendapatan / $countPendapatan) : '0'
-            ];
-        }
-
-        // Sort by rata-rata pendapatan tertinggi
-        usort($result, function ($a, $b) {
-            return $this->konversiFormatKeNilai($b['rata_rata_pendapatan']) <=> $this->konversiFormatKeNilai($a['rata_rata_pendapatan']);
-        });
-
-        return response()->json([
-            'success' => true,
-            'data' => $result
-        ]);
-    }
-
-    /**
-     * Helper: Konversi format string ke nilai
-     */
-    private function konversiFormatKeNilai($format)
-    {
-        if (strpos($format, 'Juta') !== false) {
-            return (float) str_replace(' Juta', '', $format) * 1000000;
-        } else if (strpos($format, 'Ribu') !== false) {
-            return (float) str_replace(' Ribu', '', $format) * 1000;
-        }
-        return (float) $format;
-    }
-
-    /**
-     * 12. Distribusi Pekerjaan - Pie Chart
-     */
-    public function getDistribusiPekerjaan()
+    // 8. BPJS Berdasarkan Umur dan Jenis Kelamin
+    public function getBpjsUmurJenisKelamin()
     {
         try {
-            $query = $this->getBaseQuery();
-            $data = $query->whereNotNull('t5.nama')
-                ->where('t5.nama', '!=', '')
-                ->get();
-
-            if ($data->isEmpty()) {
-                return response()->json([
-                    'success' => true,
-                    'data' => []
-                ]);
-            }
-
-            // Ambil top 10 pekerjaan, sisanya masuk "Lainnya"
-            $pekerjaan = $data->groupBy('jenis_pekerjaan')
-                ->map(function ($item) {
-                    return $item->count();
-                })
-                ->sortDesc();
-
-            $top10 = $pekerjaan->take(10)->toArray();
-            $lainnya = $pekerjaan->skip(10)->sum();
-
-            if ($lainnya > 0) {
-                $top10['LAINNYA'] = $lainnya;
-            }
+            $data = Cache::remember('bpjs_umur_jenkel', self::CACHE_TTL, function() {
+                return DB::table('t_kartu_keluarga_anggota')
+                    ->where('punya_bpjs', 'ya')
+                    ->select([
+                        DB::raw('CASE
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) < 5 THEN "0-4 Tahun"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 5 AND 12 THEN "5-12 Tahun"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 13 AND 17 THEN "13-17 Tahun"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 18 AND 25 THEN "18-25 Tahun"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 26 AND 40 THEN "26-40 Tahun"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 41 AND 60 THEN "41-60 Tahun"
+                            ELSE "60+ Tahun"
+                        END as label'),
+                        DB::raw('SUM(CASE WHEN jenkel = 1 THEN 1 ELSE 0 END) as laki'),
+                        DB::raw('SUM(CASE WHEN jenkel = 2 THEN 1 ELSE 0 END) as perempuan')
+                    ])
+                    ->groupBy('label')
+                    ->orderByRaw('MIN(TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()))')
+                    ->get()
+                    ->toArray();
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => $top10
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
-                'data' => []
+                'message' => $e->getMessage()
             ], 500);
         }
     }
 
-    /**
-     * 13. Pendapatan Per Desa - Stacked Bar Chart
-     */
-    public function getPendapatanPerDesa()
+    // 9. Detail BPJS Per Desa
+    public function getDetailBpjsPerDesa()
     {
-        $query = $this->getBaseQuery();
-        $data = $query->whereNotNull('pendapatan_perbulan')
-            ->where('pendapatan_perbulan', '!=', '')
-            ->get();
+        try {
+            $data = Cache::remember('bpjs_detail_desa', self::CACHE_TTL, function() {
+                return DB::table('t_kartu_keluarga_anggota as t1')
+                    ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                    ->leftJoin('indonesia_villages as t3', 't3.code', '=', 't2.desa')
+                    ->select([
+                        't3.name as desa',
+                        DB::raw('COUNT(*) as total_penduduk'),
+                        DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as laki_laki'),
+                        DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as perempuan'),
+                        DB::raw('SUM(CASE WHEN t1.punya_bpjs = "ya" THEN 1 ELSE 0 END) as punya_bpjs'),
+                        DB::raw('SUM(CASE WHEN t1.punya_bpjs != "ya" OR t1.punya_bpjs IS NULL THEN 1 ELSE 0 END) as tidak_punya_bpjs'),
+                        DB::raw('SUM(CASE WHEN (t1.jenis_bpjs = "bpjs_kesehatan" OR t1.jenis_bpjs = "BPJS Kesehatan") THEN 1 ELSE 0 END) as bpjs_kesehatan'),
+                        DB::raw('SUM(CASE WHEN t1.jenis_bpjs = "bpjs_ketenagakerjaan" THEN 1 ELSE 0 END) as bpjs_ketenagakerjaan'),
+                        DB::raw('SUM(CASE WHEN (t1.jenis_bpjs IN ("memiliki_kedua_bpjs", "Memiliki Keduanya", "memiliki_keduanya")) THEN 1 ELSE 0 END) as memiliki_keduanya'),
+                        DB::raw('SUM(CASE WHEN t1.pembayaran_bpjs = "mandiri" THEN 1 ELSE 0 END) as bayar_mandiri'),
+                        DB::raw('SUM(CASE WHEN t1.pembayaran_bpjs = "pemerintah" THEN 1 ELSE 0 END) as bayar_pemerintah')
+                    ])
+                    ->groupBy('t3.name')
+                    ->orderBy('t3.name')
+                    ->get();
+            });
 
-        $desas = $data->pluck('desa')->unique()->values();
-
-        // Prepare datasets
-        $kategoriPendapatan = ['0-1 Juta', '1-2 Juta', '2-3 Juta', '3-5 Juta', '5-10 Juta', '10-20 Juta', '20-50 Juta', '50-100 Juta', '>100 Juta'];
-        $colors = ['#28a745', '#20c997', '#17a2b8', '#007bff', '#6f42c1', '#fd7e14', '#ffc107', '#dc3545', '#e83e8c'];
-
-        $datasets = [];
-        foreach ($kategoriPendapatan as $index => $kategori) {
-            $dataKategori = [];
-            foreach ($desas as $desa) {
-                $count = $data->where('desa', $desa)
-                    ->where('pendapatan_perbulan', $kategori)
-                    ->count();
-                $dataKategori[] = $count;
-            }
-
-            $datasets[] = [
-                'label' => $kategori,
-                'data' => $dataKategori,
-                'backgroundColor' => $colors[$index % count($colors)],
-                'borderColor' => $colors[$index % count($colors)],
-                'borderWidth' => 1
-            ];
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'labels' => $desas->toArray(),
-                'datasets' => $datasets
-            ]
-        ]);
     }
 
-    /**
-     * 14. DataTable Kepala Keluarga dengan Filter
-     */
-    public function getDatatableKepalaKeluarga(Request $request)
+    // 10. Jenis BPJS Per Desa (Stacked Bar)
+    public function getJenisBpjsPerDesa()
     {
-        $query = $this->getBaseQuery()
-            ->where('t4.nama', 'KEPALA KELUARGA');
+        try {
+            $data = Cache::remember('bpjs_jenis_per_desa', self::CACHE_TTL, function() {
+                $rawData = DB::table('t_kartu_keluarga_anggota as t1')
+                    ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                    ->leftJoin('indonesia_villages as t3', 't3.code', '=', 't2.desa')
+                    ->where('t1.punya_bpjs', 'ya')
+                    ->select([
+                        't3.name as desa',
+                        DB::raw('SUM(CASE WHEN (t1.jenis_bpjs = "bpjs_kesehatan" OR t1.jenis_bpjs = "BPJS Kesehatan") THEN 1 ELSE 0 END) as kesehatan'),
+                        DB::raw('SUM(CASE WHEN t1.jenis_bpjs = "bpjs_ketenagakerjaan" THEN 1 ELSE 0 END) as ketenagakerjaan'),
+                        DB::raw('SUM(CASE WHEN (t1.jenis_bpjs IN ("memiliki_kedua_bpjs", "Memiliki Keduanya", "memiliki_keduanya")) THEN 1 ELSE 0 END) as keduanya')
+                    ])
+                    ->groupBy('t3.name')
+                    ->orderBy('t3.name')
+                    ->get();
 
-        // Apply filters
-        if ($request->filled('desa')) {
-            $query->where('t2.desa', $request->desa);
-        }
-
-        if ($request->filled('pendapatan')) {
-            $query->where('t1.pendapatan_perbulan', $request->pendapatan);
-        }
-
-        if ($request->filled('pekerjaan')) {
-            $query->where('t5.nama', $request->pekerjaan);
-        }
-
-        return DataTables::of($query)
-            ->addColumn('jenkel_display', function ($row) {
-                if ($row->jenkel == 1) {
-                    return '<span class="badge badge-info">Laki-laki</span>';
-                } else {
-                    return '<span class="badge badge-danger">Perempuan</span>';
-                }
-            })
-            ->addColumn('umur_display', function ($row) {
-                return '<span class="badge badge-secondary">' . $row->umur . ' th</span>';
-            })
-            ->addColumn('tgl_lahir_display', function ($row) {
-                return date('d-m-Y', strtotime($row->tgl_lahir));
-            })
-            ->addColumn('pendapatan_badge', function ($row) {
-                $colors = [
-                    '0-1 Juta' => 'success',
-                    '1-2 Juta' => 'info',
-                    '2-3 Juta' => 'primary',
-                    '3-5 Juta' => 'warning',
-                    '5-10 Juta' => 'purple',
-                    '10-20 Juta' => 'danger',
-                    '20-50 Juta' => 'dark',
-                    '50-100 Juta' => 'secondary',
-                    '>100 Juta' => 'indigo'
+                $labels = $rawData->pluck('desa')->toArray();
+                $datasets = [
+                    [
+                        'label' => 'BPJS Kesehatan',
+                        'data' => $rawData->pluck('kesehatan')->toArray(),
+                        'backgroundColor' => '#28a745',
+                        'borderColor' => '#28a745',
+                        'borderWidth' => 1
+                    ],
+                    [
+                        'label' => 'BPJS Ketenagakerjaan',
+                        'data' => $rawData->pluck('ketenagakerjaan')->toArray(),
+                        'backgroundColor' => '#007bff',
+                        'borderColor' => '#007bff',
+                        'borderWidth' => 1
+                    ],
+                    [
+                        'label' => 'Memiliki Keduanya',
+                        'data' => $rawData->pluck('keduanya')->toArray(),
+                        'backgroundColor' => '#6f42c1',
+                        'borderColor' => '#6f42c1',
+                        'borderWidth' => 1
+                    ]
                 ];
-                $color = $colors[$row->pendapatan_perbulan] ?? 'secondary';
-                return '<span class="badge badge-' . $color . '">' . ($row->pendapatan_perbulan ?? 'Tidak Ada Data') . '</span>';
-            })
-            ->addColumn('pekerjaan_display', function ($row) {
-                return '<small>' . ($row->jenis_pekerjaan ?? '-') . '</small>';
-            })
-            ->rawColumns(['jenkel_display', 'umur_display', 'pendapatan_badge', 'pekerjaan_display'])
-            ->make(true);
+
+                return [
+                    'labels' => $labels,
+                    'datasets' => $datasets
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
-    /**
-     * 15. List Desa untuk Filter
-     */
+    // 11. Analisis Data Abnormal
+    public function getDataAbnormal()
+    {
+        try {
+            $data = Cache::remember('bpjs_data_abnormal', self::CACHE_TTL, function() {
+                // Hitung berbagai jenis abnormalitas
+                $bpjs_tanpa_jenis = DB::table('t_kartu_keluarga_anggota')
+                    ->where('punya_bpjs', 'ya')
+                    ->where(function($query) {
+                        $query->whereNull('jenis_bpjs')
+                              ->orWhere('jenis_bpjs', '')
+                              ->orWhere('jenis_bpjs', 'Pilih');
+                    })
+                    ->count();
+
+                $bpjs_tanpa_pembayaran = DB::table('t_kartu_keluarga_anggota')
+                    ->where('punya_bpjs', 'ya')
+                    ->whereNotNull('jenis_bpjs')
+                    ->where('jenis_bpjs', '!=', '')
+                    ->where('jenis_bpjs', '!=', 'Pilih')
+                    ->where(function($query) {
+                        $query->whereNull('pembayaran_bpjs')
+                              ->orWhere('pembayaran_bpjs', '')
+                              ->orWhere('pembayaran_bpjs', 'Pilih');
+                    })
+                    ->count();
+
+                $tidak_punya_ada_jenis = DB::table('t_kartu_keluarga_anggota')
+                    ->where(function($query) {
+                        $query->where('punya_bpjs', '!=', 'ya')
+                              ->orWhereNull('punya_bpjs');
+                    })
+                    ->whereNotNull('jenis_bpjs')
+                    ->where('jenis_bpjs', '!=', '')
+                    ->where('jenis_bpjs', '!=', 'Pilih')
+                    ->count();
+
+                $tidak_punya_ada_pembayaran = DB::table('t_kartu_keluarga_anggota')
+                    ->where(function($query) {
+                        $query->where('punya_bpjs', '!=', 'ya')
+                              ->orWhereNull('punya_bpjs');
+                    })
+                    ->whereNotNull('pembayaran_bpjs')
+                    ->where('pembayaran_bpjs', '!=', '')
+                    ->where('pembayaran_bpjs', '!=', 'Pilih')
+                    ->count();
+
+                return [
+                    'Punya BPJS Tanpa Jenis' => $bpjs_tanpa_jenis,
+                    'Punya BPJS Tanpa Metode Bayar' => $bpjs_tanpa_pembayaran,
+                    'Tidak Punya BPJS Ada Jenis' => $tidak_punya_ada_jenis,
+                    'Tidak Punya BPJS Ada Pembayaran' => $tidak_punya_ada_pembayaran,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // 12. DataTable - Semua Penduduk
+    public function getDatatablePenduduk(Request $request)
+    {
+        try {
+            $query = DB::table('t_kartu_keluarga_anggota as t1')
+                ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                ->leftJoin('indonesia_villages as t3', 't3.code', '=', 't2.desa')
+                ->select([
+                    't1.no_nik',
+                    't1.nama',
+                    't2.no_kk',
+                    't1.jenkel',
+                    't1.tgl_lahir',
+                    DB::raw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) AS umur'),
+                    DB::raw("CONCAT(t2.rt,'/',t2.rw) AS rt_rw"),
+                    't3.name AS desa',
+                    't1.punya_bpjs',
+                    't1.jenis_bpjs',
+                    't1.pembayaran_bpjs',
+                ]);
+
+            // Filter
+            if ($request->filled('desa')) {
+                $query->where('t2.desa', $request->desa);
+            }
+
+            if ($request->filled('jenkel')) {
+                $query->where('t1.jenkel', $request->jenkel);
+            }
+
+            if ($request->filled('status_bpjs')) {
+                if ($request->status_bpjs == 'punya') {
+                    $query->where('t1.punya_bpjs', 'ya');
+                } else {
+                    $query->where(function($q) {
+                        $q->where('t1.punya_bpjs', '!=', 'ya')
+                          ->orWhereNull('t1.punya_bpjs');
+                    });
+                }
+            }
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->editColumn('no_nik', function ($row) {
+                    return $this->maskNumber($row->no_nik);
+                })
+                ->editColumn('nama', fn($row) => strtoupper($row->nama))
+                ->addColumn('jenkel_display', function($row) {
+                    if ($row->jenkel == 1) {
+                        return '<span class="badge badge-info"><i class="fas fa-male mr-1"></i> Laki-laki</span>';
+                    } else {
+                        return '<span class="badge badge-danger"><i class="fas fa-female mr-1"></i> Perempuan</span>';
+                    }
+                })
+                ->addColumn('umur_display', function($row) {
+                    return '<span class="badge badge-secondary">' . $row->umur . ' Tahun</span>';
+                })
+                ->addColumn('tgl_lahir_display', function($row) {
+                    return date('d/m/Y', strtotime($row->tgl_lahir));
+                })
+                ->addColumn('status_bpjs', function($row) {
+                    if ($row->punya_bpjs == 'ya') {
+                        return '<span class="badge badge-success badge-lg"><i class="fas fa-check-circle mr-1"></i> Punya BPJS</span>';
+                    } else {
+                        return '<span class="badge badge-danger badge-lg"><i class="fas fa-times-circle mr-1"></i> Tidak Punya</span>';
+                    }
+                })
+                ->addColumn('jenis_display', function($row) {
+                    if (in_array($row->jenis_bpjs, ['bpjs_kesehatan', 'BPJS Kesehatan'])) {
+                        return '<span class="badge badge-success">BPJS Kesehatan</span>';
+                    } elseif ($row->jenis_bpjs == 'bpjs_ketenagakerjaan') {
+                        return '<span class="badge badge-primary">BPJS Ketenagakerjaan</span>';
+                    } elseif (in_array($row->jenis_bpjs, ['memiliki_kedua_bpjs', 'Memiliki Keduanya', 'memiliki_keduanya'])) {
+                        return '<span class="badge badge-purple">Keduanya</span>';
+                    } else {
+                        return '<span class="badge badge-secondary">-</span>';
+                    }
+                })
+                ->addColumn('pembayaran_display', function($row) {
+                    if ($row->pembayaran_bpjs == 'mandiri') {
+                        return '<span class="badge badge-warning">Mandiri</span>';
+                    } elseif ($row->pembayaran_bpjs == 'pemerintah') {
+                        return '<span class="badge badge-info">Pemerintah</span>';
+                    } elseif (in_array($row->pembayaran_bpjs, ['pemerintah/Perusahaan', 'pemerintah / Perusahaan'])) {
+                        return '<span class="badge badge-primary">Perusahaan</span>';
+                    } else {
+                        return '<span class="badge badge-secondary">-</span>';
+                    }
+                })
+                ->rawColumns(['jenkel_display', 'umur_display', 'status_bpjs', 'jenis_display', 'pembayaran_display'])
+                ->make(true);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // 13. DataTable - Data Abnormal
+    public function getDatatableAbnormal(Request $request)
+    {
+        try {
+            $query = DB::table('t_kartu_keluarga_anggota as t1')
+                ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                ->leftJoin('indonesia_villages as t3', 't3.code', '=', 't2.desa')
+                ->select([
+                    't1.no_nik',
+                    't1.nama',
+                    't2.no_kk',
+                    't1.jenkel',
+                    't1.tgl_lahir',
+                    DB::raw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) AS umur'),
+                    DB::raw("CONCAT(t2.rt,'/',t2.rw) AS rt_rw"),
+                    't3.name AS desa',
+                    't1.punya_bpjs',
+                    't1.jenis_bpjs',
+                    't1.pembayaran_bpjs',
+                    DB::raw('CASE
+                        WHEN (t1.punya_bpjs = "ya" AND (t1.jenis_bpjs IS NULL OR t1.jenis_bpjs = "" OR t1.jenis_bpjs = "Pilih")) THEN "Punya BPJS Tanpa Jenis"
+                        WHEN (t1.punya_bpjs = "ya" AND t1.jenis_bpjs IS NOT NULL AND t1.jenis_bpjs != "" AND t1.jenis_bpjs != "Pilih" AND (t1.pembayaran_bpjs IS NULL OR t1.pembayaran_bpjs = "" OR t1.pembayaran_bpjs = "Pilih")) THEN "Punya BPJS Tanpa Metode Bayar"
+                        WHEN ((t1.punya_bpjs != "ya" OR t1.punya_bpjs IS NULL) AND t1.jenis_bpjs IS NOT NULL AND t1.jenis_bpjs != "" AND t1.jenis_bpjs != "Pilih") THEN "Tidak Punya BPJS Ada Jenis"
+                        WHEN ((t1.punya_bpjs != "ya" OR t1.punya_bpjs IS NULL) AND t1.pembayaran_bpjs IS NOT NULL AND t1.pembayaran_bpjs != "" AND t1.pembayaran_bpjs != "Pilih") THEN "Tidak Punya BPJS Ada Pembayaran"
+                        ELSE "Normal"
+                    END as kategori_abnormal')
+                ])
+                ->havingRaw('kategori_abnormal != "Normal"');
+
+            // Filter
+            if ($request->filled('kategori')) {
+                $query->havingRaw('kategori_abnormal = ?', [$request->kategori]);
+            }
+
+            if ($request->filled('desa')) {
+                $query->where('t2.desa', $request->desa);
+            }
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->editColumn('no_nik', function ($row) {
+                    return $this->maskNumber($row->no_nik);
+                })
+                ->editColumn('nama', fn($row) => strtoupper($row->nama))
+                ->addColumn('jenkel_display', function($row) {
+                    if ($row->jenkel == 1) {
+                        return '<span class="badge badge-info"><i class="fas fa-male mr-1"></i> Laki-laki</span>';
+                    } else {
+                        return '<span class="badge badge-danger"><i class="fas fa-female mr-1"></i> Perempuan</span>';
+                    }
+                })
+                ->addColumn('umur_display', function($row) {
+                    return '<span class="badge badge-secondary">' . $row->umur . ' Tahun</span>';
+                })
+                ->addColumn('tgl_lahir_display', function($row) {
+                    return date('d/m/Y', strtotime($row->tgl_lahir));
+                })
+                ->addColumn('kategori_badge', function($row) {
+                    $badges = [
+                        'Punya BPJS Tanpa Jenis' => 'warning',
+                        'Punya BPJS Tanpa Metode Bayar' => 'warning',
+                        'Tidak Punya BPJS Ada Jenis' => 'danger',
+                        'Tidak Punya BPJS Ada Pembayaran' => 'danger'
+                    ];
+
+                    $color = $badges[$row->kategori_abnormal] ?? 'secondary';
+                    return '<span class="badge badge-' . $color . ' badge-lg"><i class="fas fa-exclamation-triangle mr-1"></i> ' . $row->kategori_abnormal . '</span>';
+                })
+                ->addColumn('detail_masalah', function($row) {
+                    $html = '<small class="text-muted">';
+                    $html .= '<strong>Status BPJS:</strong> ' . ($row->punya_bpjs ?? '-') . '<br>';
+                    $html .= '<strong>Jenis:</strong> ' . ($row->jenis_bpjs ?? '-') . '<br>';
+                    $html .= '<strong>Pembayaran:</strong> ' . ($row->pembayaran_bpjs ?? '-');
+                    $html .= '</small>';
+                    return $html;
+                })
+                ->rawColumns(['jenkel_display', 'umur_display', 'kategori_badge', 'detail_masalah'])
+                ->make(true);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // 14. Get List Desa untuk Filter
     public function getListDesa()
     {
-        $desas = DB::table('indonesia_villages')
-            ->whereIn('code', function ($query) {
-                $query->select('desa')
-                    ->from('t_kartu_keluarga')
-                    ->distinct();
-            })
-            ->orderBy('name')
-            ->get(['code', 'name']);
-
-        return response()->json([
-            'success' => true,
-            'data' => $desas
-        ]);
-    }
-
-    /**
-     * 16. List Pendapatan untuk Filter
-     */
-    public function getListPendapatan()
-    {
-        $pendapatan = ['0-1 Juta', '1-2 Juta', '2-3 Juta', '3-5 Juta', '5-10 Juta', '10-20 Juta', '20-50 Juta', '50-100 Juta', '>100 Juta'];
-
-        return response()->json([
-            'success' => true,
-            'data' => $pendapatan
-        ]);
-    }
-
-    /**
-     * 17. List Pekerjaan untuk Filter
-     */
-    public function getListPekerjaan()
-    {
         try {
-            $pekerjaan = DB::table('m_pekerjaan')
-                ->orderBy('nama')
-                ->pluck('nama')
-                ->filter(function($item) {
-                    return !empty($item);
-                })
-                ->values();
+            $desa = Cache::remember('bpjs_list_desa', self::CACHE_TTL, function() {
+                return DB::table('t_kartu_keluarga as t1')
+                    ->join('indonesia_villages as t2', 't2.code', '=', 't1.desa')
+                    ->select('t2.code', 't2.name')
+                    ->groupBy('t2.code', 't2.name')
+                    ->orderBy('t2.name')
+                    ->get();
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => $pekerjaan
+                'data' => $desa
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
-                'data' => []
-            ], 500);
-        }
-    }
-
-    /**
-     * 18. Statistik Pekerjaan Berdasarkan Gender
-     */
-    public function getPekerjaanBerdasarkanGender()
-    {
-        try {
-            $query = $this->getBaseQuery();
-            $data = $query->whereNotNull('t5.nama')
-                ->where('t5.nama', '!=', '')
-                ->whereNotIn('t5.nama', ['BELUM/TIDAK BEKERJA', 'MENGURUS RUMAH TANGGA', 'PELAJAR/MAHASISWA'])
-                ->get();
-
-            if ($data->isEmpty()) {
-                return response()->json([
-                    'success' => true,
-                    'data' => []
-                ]);
-            }
-
-            // Ambil top 10 pekerjaan
-            $topPekerjaan = $data->groupBy('jenis_pekerjaan')
-                ->map(function ($item) {
-                    return $item->count();
-                })
-                ->sortDesc()
-                ->take(10)
-                ->keys();
-
-            $result = [];
-            foreach ($topPekerjaan as $pekerjaan) {
-                $dataPekerjaan = $data->where('jenis_pekerjaan', $pekerjaan);
-                $result[$pekerjaan] = [
-                    'label' => $pekerjaan,
-                    'laki' => $dataPekerjaan->where('jenkel', 1)->count(),
-                    'perempuan' => $dataPekerjaan->where('jenkel', 2)->count()
-                ];
-            }
-
-            return response()->json([
-                'success' => true,
-                'data' => $result
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'data' => []
+                'message' => $e->getMessage()
             ], 500);
         }
     }
