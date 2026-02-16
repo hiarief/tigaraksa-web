@@ -70,48 +70,31 @@ class PendapatanKecamatanController extends Controller
     }
 
     /**
-     * 1. Statistik Jumlah - Overview angka-angka penting
+     * 1. Statistik Jumlah - SQL AGGREGATION (OPTIMIZED)
      */
     public function getStatistikJumlah()
     {
         try {
-            // Tambah cache, tapi TETAP pakai logika original
             $data = Cache::remember('pendapatan_statistik_jumlah', self::CACHE_TTL, function() {
-                $query = $this->getBaseQuery();
-                $data = $query->get();
-
-                $stats = [
-                    'total_penduduk' => $data->count(),
-                    'total_laki' => $data->where('jenkel', 1)->count(),
-                    'total_perempuan' => $data->where('jenkel', 2)->count(),
-                    'total_kepala_keluarga' => $data->where('hubungan_keluarga', 'KEPALA KELUARGA')->count(),
-                    'total_pekerja' => $data->filter(function($item) {
-                        return !empty($item->jenis_pekerjaan) &&
-                               !in_array($item->jenis_pekerjaan, ['BELUM/TIDAK BEKERJA', 'MENGURUS RUMAH TANGGA', 'PELAJAR/MAHASISWA']);
-                    })->count(),
-                    'total_tidak_bekerja' => $data->filter(function($item) {
-                        return empty($item->jenis_pekerjaan) ||
-                               in_array($item->jenis_pekerjaan, ['BELUM/TIDAK BEKERJA', 'MENGURUS RUMAH TANGGA', 'PELAJAR/MAHASISWA']);
-                    })->count(),
-                ];
-
-                // Hitung pendapatan berdasarkan kategori
-                $pendapatanKategori = $data->whereNotNull('pendapatan_perbulan')
-                    ->where('pendapatan_perbulan', '!=', '')
-                    ->groupBy('pendapatan_perbulan');
-
-                $stats['pendapatan_0_1'] = $pendapatanKategori->get('0-1 Juta')->count() ?? 0;
-                $stats['pendapatan_1_2'] = $pendapatanKategori->get('1-2 Juta')->count() ?? 0;
-                $stats['pendapatan_2_3'] = $pendapatanKategori->get('2-3 Juta')->count() ?? 0;
-                $stats['pendapatan_3_5'] = $pendapatanKategori->get('3-5 Juta')->count() ?? 0;
-                $stats['pendapatan_5_10'] = $pendapatanKategori->get('5-10 Juta')->count() ?? 0;
-                $stats['pendapatan_10_plus'] =
-                    ($pendapatanKategori->get('10-20 Juta')->count() ?? 0) +
-                    ($pendapatanKategori->get('20-50 Juta')->count() ?? 0) +
-                    ($pendapatanKategori->get('50-100 Juta')->count() ?? 0) +
-                    ($pendapatanKategori->get('>100 Juta')->count() ?? 0);
-
-                return $stats;
+                return DB::table('t_kartu_keluarga_anggota as t1')
+                    ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                    ->leftJoin('m_hubungan_keluarga as t4', 't4.id', '=', 't1.sts_hub_kel')
+                    ->leftJoin('m_pekerjaan as t5', 't5.id', '=', 't1.jns_pekerjaan')
+                    ->select([
+                        DB::raw('COUNT(*) as total_penduduk'),
+                        DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as total_laki'),
+                        DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as total_perempuan'),
+                        DB::raw('SUM(CASE WHEN t4.nama = "KEPALA KELUARGA" THEN 1 ELSE 0 END) as total_kepala_keluarga'),
+                        DB::raw('SUM(CASE WHEN t5.nama IS NOT NULL AND t5.nama NOT IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") THEN 1 ELSE 0 END) as total_pekerja'),
+                        DB::raw('SUM(CASE WHEN t5.nama IS NULL OR t5.nama IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") THEN 1 ELSE 0 END) as total_tidak_bekerja'),
+                        DB::raw('SUM(CASE WHEN t1.pendapatan_perbulan = "0-1 Juta" THEN 1 ELSE 0 END) as pendapatan_0_1'),
+                        DB::raw('SUM(CASE WHEN t1.pendapatan_perbulan = "1-2 Juta" THEN 1 ELSE 0 END) as pendapatan_1_2'),
+                        DB::raw('SUM(CASE WHEN t1.pendapatan_perbulan = "2-3 Juta" THEN 1 ELSE 0 END) as pendapatan_2_3'),
+                        DB::raw('SUM(CASE WHEN t1.pendapatan_perbulan = "3-5 Juta" THEN 1 ELSE 0 END) as pendapatan_3_5'),
+                        DB::raw('SUM(CASE WHEN t1.pendapatan_perbulan = "5-10 Juta" THEN 1 ELSE 0 END) as pendapatan_5_10'),
+                        DB::raw('SUM(CASE WHEN t1.pendapatan_perbulan IN ("10-20 Juta", "20-50 Juta", "50-100 Juta", ">100 Juta") THEN 1 ELSE 0 END) as pendapatan_10_plus'),
+                    ])
+                    ->first();
             });
 
             return response()->json([
@@ -119,6 +102,7 @@ class PendapatanKecamatanController extends Controller
                 'data' => $data
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error getStatistikJumlah: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -127,12 +111,11 @@ class PendapatanKecamatanController extends Controller
     }
 
     /**
-     * 2. Statistik Rasio - Persentase dan ratio
+     * 2. Statistik Rasio - TETAP ORIGINAL (ini yang working)
      */
     public function getStatistikRasio()
     {
         try {
-            // Tambah cache, tapi TETAP pakai logika original
             $data = Cache::remember('pendapatan_statistik_rasio', self::CACHE_TTL, function() {
                 $query = $this->getBaseQuery();
                 $data = $query->get();
@@ -151,7 +134,7 @@ class PendapatanKecamatanController extends Controller
                     'persentase_pekerja' => $total > 0 ? number_format(($totalPekerja / $total) * 100, 1) : 0,
                     'persentase_tidak_bekerja' => $total > 0 ? number_format(($totalTidakBekerja / $total) * 100, 1) : 0,
                     'rasio_pekerja' => $totalTidakBekerja > 0 ? number_format($totalPekerja / $totalTidakBekerja, 2) : 0,
-                    'rata_rata_pendapatan_keluarga' => $this->hitungRataRataPendapatanKeluarga($data) // ORIGINAL METHOD
+                    'rata_rata_pendapatan_keluarga' => $this->hitungRataRataPendapatanKeluarga($data)
                 ];
 
                 return $stats;
@@ -162,6 +145,7 @@ class PendapatanKecamatanController extends Controller
                 'data' => $data
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error getStatistikRasio: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -170,8 +154,7 @@ class PendapatanKecamatanController extends Controller
     }
 
     /**
-     * Helper: Hitung rata-rata pendapatan per keluarga
-     * LOGIKA ORIGINAL - TIDAK DIUBAH!
+     * Helper: Hitung rata-rata pendapatan per keluarga - ORIGINAL
      */
     private function hitungRataRataPendapatanKeluarga($data)
     {
@@ -228,27 +211,23 @@ class PendapatanKecamatanController extends Controller
     }
 
     /**
-     * 3. Distribusi Pendapatan - Pie Chart
+     * 3. Distribusi Pendapatan - SQL AGGREGATION
      */
     public function getDistribusiPendapatan()
     {
         try {
             $data = Cache::remember('pendapatan_distribusi', self::CACHE_TTL, function() {
-                $query = $this->getBaseQuery();
-                $data = $query->whereNotNull('pendapatan_perbulan')
+                return DB::table('t_kartu_keluarga_anggota')
+                    ->whereNotNull('pendapatan_perbulan')
                     ->where('pendapatan_perbulan', '!=', '')
-                    ->get();
-
-                $distribusi = $data->groupBy('pendapatan_perbulan')
-                    ->map(function ($item) {
-                        return $item->count();
-                    })
+                    ->select('pendapatan_perbulan', DB::raw('COUNT(*) as jumlah'))
+                    ->groupBy('pendapatan_perbulan')
+                    ->get()
+                    ->pluck('jumlah', 'pendapatan_perbulan')
                     ->sortKeysUsing(function ($a, $b) {
                         return ($this->pendapatanOrder[$a] ?? 999) <=> ($this->pendapatanOrder[$b] ?? 999);
                     })
                     ->toArray();
-
-                return $distribusi;
             });
 
             return response()->json([
@@ -256,6 +235,7 @@ class PendapatanKecamatanController extends Controller
                 'data' => $data
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error getDistribusiPendapatan: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -264,21 +244,21 @@ class PendapatanKecamatanController extends Controller
     }
 
     /**
-     * 4. Distribusi Jenis Kelamin dengan Pendapatan
+     * 4. Distribusi Jenis Kelamin - SQL AGGREGATION
      */
     public function getDistribusiJenisKelamin()
     {
         try {
             $data = Cache::remember('pendapatan_jenkel', self::CACHE_TTL, function() {
-                $query = $this->getBaseQuery();
-                $data = $query->get();
-
-                $distribusi = [
-                    'Laki-laki' => $data->where('jenkel', 1)->count(),
-                    'Perempuan' => $data->where('jenkel', 2)->count()
-                ];
-
-                return $distribusi;
+                return DB::table('t_kartu_keluarga_anggota')
+                    ->select([
+                        DB::raw('CASE WHEN jenkel = 1 THEN "Laki-laki" ELSE "Perempuan" END as jenis_kelamin'),
+                        DB::raw('COUNT(*) as jumlah')
+                    ])
+                    ->groupBy('jenkel')
+                    ->get()
+                    ->pluck('jumlah', 'jenis_kelamin')
+                    ->toArray();
             });
 
             return response()->json([
@@ -286,6 +266,7 @@ class PendapatanKecamatanController extends Controller
                 'data' => $data
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error getDistribusiJenisKelamin: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -294,23 +275,21 @@ class PendapatanKecamatanController extends Controller
     }
 
     /**
-     * 5. Distribusi Per Desa - Bar Chart
+     * 5. Distribusi Per Desa - SQL AGGREGATION
      */
     public function getDistribusiPerDesa()
     {
         try {
             $data = Cache::remember('pendapatan_per_desa', self::CACHE_TTL, function() {
-                $query = $this->getBaseQuery();
-                $data = $query->get();
-
-                $distribusi = $data->groupBy('desa')
-                    ->map(function ($item) {
-                        return $item->count();
-                    })
-                    ->sortDesc()
+                return DB::table('t_kartu_keluarga_anggota as t1')
+                    ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                    ->leftJoin('indonesia_villages as t3', 't3.code', '=', 't2.desa')
+                    ->select('t3.name as desa', DB::raw('COUNT(*) as jumlah'))
+                    ->groupBy('t3.name')
+                    ->orderBy('jumlah', 'DESC')
+                    ->get()
+                    ->pluck('jumlah', 'desa')
                     ->toArray();
-
-                return $distribusi;
             });
 
             return response()->json([
@@ -318,6 +297,7 @@ class PendapatanKecamatanController extends Controller
                 'data' => $data
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error getDistribusiPerDesa: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -326,21 +306,30 @@ class PendapatanKecamatanController extends Controller
     }
 
     /**
-     * 6. Distribusi Kelompok Umur
+     * 6. Distribusi Kelompok Umur - SQL AGGREGATION
      */
     public function getDistribusiKelompokUmur()
     {
         try {
             $data = Cache::remember('pendapatan_kelompok_umur', self::CACHE_TTL, function() {
-                $query = $this->getBaseQuery();
-                $data = $query->get();
-
-                $distribusi = [];
-                foreach ($this->kategoriUmur as $label => $range) {
-                    $distribusi[$label] = $data->whereBetween('umur', $range)->count();
-                }
-
-                return $distribusi;
+                return DB::table('t_kartu_keluarga_anggota')
+                    ->select([
+                        DB::raw('CASE
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 0 AND 17 THEN "0-17"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 18 AND 25 THEN "18-25"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 26 AND 35 THEN "26-35"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 36 AND 45 THEN "36-45"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 46 AND 55 THEN "46-55"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 56 AND 65 THEN "56-65"
+                            ELSE ">65"
+                        END as kelompok'),
+                        DB::raw('COUNT(*) as jumlah')
+                    ])
+                    ->groupBy('kelompok')
+                    ->orderByRaw('MIN(TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()))')
+                    ->get()
+                    ->pluck('jumlah', 'kelompok')
+                    ->toArray();
             });
 
             return response()->json([
@@ -348,6 +337,7 @@ class PendapatanKecamatanController extends Controller
                 'data' => $data
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error getDistribusiKelompokUmur: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -356,26 +346,30 @@ class PendapatanKecamatanController extends Controller
     }
 
     /**
-     * 7. Pendapatan Berdasarkan Umur dan Jenis Kelamin - Grouped Bar
+     * 7. Pendapatan Berdasarkan Umur dan Jenis Kelamin - SQL AGGREGATION
      */
     public function getPendapatanUmurJenisKelamin()
     {
         try {
             $data = Cache::remember('pendapatan_umur_jenkel', self::CACHE_TTL, function() {
-                $query = $this->getBaseQuery();
-                $data = $query->get();
-
-                $result = [];
-                foreach ($this->kategoriUmur as $label => $range) {
-                    $dataUmur = $data->whereBetween('umur', $range);
-                    $result[$label] = [
-                        'label' => $label,
-                        'laki' => $dataUmur->where('jenkel', 1)->count(),
-                        'perempuan' => $dataUmur->where('jenkel', 2)->count()
-                    ];
-                }
-
-                return $result;
+                return DB::table('t_kartu_keluarga_anggota')
+                    ->select([
+                        DB::raw('CASE
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 0 AND 17 THEN "0-17"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 18 AND 25 THEN "18-25"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 26 AND 35 THEN "26-35"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 36 AND 45 THEN "36-45"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 46 AND 55 THEN "46-55"
+                            WHEN TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) BETWEEN 56 AND 65 THEN "56-65"
+                            ELSE ">65"
+                        END as label'),
+                        DB::raw('SUM(CASE WHEN jenkel = 1 THEN 1 ELSE 0 END) as laki'),
+                        DB::raw('SUM(CASE WHEN jenkel = 2 THEN 1 ELSE 0 END) as perempuan')
+                    ])
+                    ->groupBy('label')
+                    ->orderByRaw('MIN(TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()))')
+                    ->get()
+                    ->toArray();
             });
 
             return response()->json([
@@ -383,6 +377,7 @@ class PendapatanKecamatanController extends Controller
                 'data' => $data
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error getPendapatanUmurJenisKelamin: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -391,7 +386,7 @@ class PendapatanKecamatanController extends Controller
     }
 
     /**
-     * 8. Pendapatan Berdasarkan Kelompok Umur - Detail
+     * 8. Pendapatan Berdasarkan Kelompok Umur - ORIGINAL (karena kompleks)
      */
     public function getPendapatanBerdasarkanUmur()
     {
@@ -419,10 +414,8 @@ class PendapatanKecamatanController extends Controller
                     }
                 }
 
-                // Format untuk stacked bar chart
                 $labels = array_keys($this->kategoriUmur);
                 $datasets = [];
-
                 $semuaKategori = ['0-1 Juta', '1-2 Juta', '2-3 Juta', '3-5 Juta', '5-10 Juta', '10-20 Juta', '20-50 Juta', '50-100 Juta', '>100 Juta'];
                 $colors = ['#28a745', '#20c997', '#17a2b8', '#007bff', '#6f42c1', '#fd7e14', '#ffc107', '#dc3545', '#e83e8c'];
 
@@ -452,6 +445,7 @@ class PendapatanKecamatanController extends Controller
                 'data' => $data
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error getPendapatanBerdasarkanUmur: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -460,7 +454,7 @@ class PendapatanKecamatanController extends Controller
     }
 
     /**
-     * 9. Top 10 Pekerjaan dengan Pendapatan Tertinggi
+     * 9. Top 10 Pekerjaan - ORIGINAL
      */
     public function getTop10PekerjaanPendapatanTertinggi()
     {
@@ -477,7 +471,6 @@ class PendapatanKecamatanController extends Controller
                     return [];
                 }
 
-                // Group by pekerjaan dan hitung rata-rata pendapatan
                 $pekerjaan = $data->groupBy('jenis_pekerjaan')
                     ->map(function ($items) {
                         $totalNilai = 0;
@@ -513,6 +506,7 @@ class PendapatanKecamatanController extends Controller
                 'data' => $data
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error getTop10PekerjaanPendapatanTertinggi: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -522,7 +516,7 @@ class PendapatanKecamatanController extends Controller
     }
 
     /**
-     * 10. Pendapatan Tertinggi Per Desa
+     * 10. Pendapatan Tertinggi Per Desa - ORIGINAL
      */
     public function getPendapatanTertinggiPerDesa()
     {
@@ -533,7 +527,6 @@ class PendapatanKecamatanController extends Controller
                     ->where('pendapatan_perbulan', '!=', '')
                     ->get();
 
-                // Group by desa dan hitung rata-rata pendapatan
                 $desa = $data->groupBy('desa')
                     ->map(function ($items) {
                         $totalNilai = 0;
@@ -551,7 +544,7 @@ class PendapatanKecamatanController extends Controller
 
                 $result = [];
                 foreach ($desa as $nama => $rataRata) {
-                    $result[$nama] = round($rataRata / 1000000, 2); // Dalam jutaan
+                    $result[$nama] = round($rataRata / 1000000, 2);
                 }
 
                 return $result;
@@ -562,6 +555,7 @@ class PendapatanKecamatanController extends Controller
                 'data' => $data
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error getPendapatanTertinggiPerDesa: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -570,7 +564,7 @@ class PendapatanKecamatanController extends Controller
     }
 
     /**
-     * 11. Detail Per Desa - Table
+     * 11. Detail Per Desa - ORIGINAL
      */
     public function getDetailPerDesa()
     {
@@ -620,7 +614,6 @@ class PendapatanKecamatanController extends Controller
                     ];
                 }
 
-                // Sort by rata-rata pendapatan tertinggi
                 usort($result, function ($a, $b) {
                     return $this->konversiFormatKeNilai($b['rata_rata_pendapatan']) <=> $this->konversiFormatKeNilai($a['rata_rata_pendapatan']);
                 });
@@ -633,6 +626,7 @@ class PendapatanKecamatanController extends Controller
                 'data' => $data
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error getDetailPerDesa: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -640,9 +634,6 @@ class PendapatanKecamatanController extends Controller
         }
     }
 
-    /**
-     * Helper: Konversi format string ke nilai
-     */
     private function konversiFormatKeNilai($format)
     {
         if (strpos($format, 'Juta') !== false) {
@@ -654,30 +645,27 @@ class PendapatanKecamatanController extends Controller
     }
 
     /**
-     * 12. Distribusi Pekerjaan - Pie Chart
+     * 12. Distribusi Pekerjaan - SQL AGGREGATION
      */
     public function getDistribusiPekerjaan()
     {
         try {
             $data = Cache::remember('pendapatan_distribusi_pekerjaan', self::CACHE_TTL, function() {
-                $query = $this->getBaseQuery();
-                $data = $query->whereNotNull('t5.nama')
+                $pekerjaan = DB::table('t_kartu_keluarga_anggota as t1')
+                    ->leftJoin('m_pekerjaan as t5', 't5.id', '=', 't1.jns_pekerjaan')
+                    ->whereNotNull('t5.nama')
                     ->where('t5.nama', '!=', '')
+                    ->select('t5.nama as jenis_pekerjaan', DB::raw('COUNT(*) as jumlah'))
+                    ->groupBy('t5.nama')
+                    ->orderBy('jumlah', 'DESC')
                     ->get();
 
-                if ($data->isEmpty()) {
+                if ($pekerjaan->isEmpty()) {
                     return [];
                 }
 
-                // Ambil top 10 pekerjaan, sisanya masuk "Lainnya"
-                $pekerjaan = $data->groupBy('jenis_pekerjaan')
-                    ->map(function ($item) {
-                        return $item->count();
-                    })
-                    ->sortDesc();
-
-                $top10 = $pekerjaan->take(10)->toArray();
-                $lainnya = $pekerjaan->skip(10)->sum();
+                $top10 = $pekerjaan->take(10)->pluck('jumlah', 'jenis_pekerjaan')->toArray();
+                $lainnya = $pekerjaan->skip(10)->sum('jumlah');
 
                 if ($lainnya > 0) {
                     $top10['LAINNYA'] = $lainnya;
@@ -691,6 +679,7 @@ class PendapatanKecamatanController extends Controller
                 'data' => $data
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error getDistribusiPekerjaan: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -700,7 +689,7 @@ class PendapatanKecamatanController extends Controller
     }
 
     /**
-     * 13. Pendapatan Per Desa - Stacked Bar Chart
+     * 13. Pendapatan Per Desa - ORIGINAL
      */
     public function getPendapatanPerDesa()
     {
@@ -712,8 +701,6 @@ class PendapatanKecamatanController extends Controller
                     ->get();
 
                 $desas = $data->pluck('desa')->unique()->values();
-
-                // Prepare datasets
                 $kategoriPendapatan = ['0-1 Juta', '1-2 Juta', '2-3 Juta', '3-5 Juta', '5-10 Juta', '10-20 Juta', '20-50 Juta', '50-100 Juta', '>100 Juta'];
                 $colors = ['#28a745', '#20c997', '#17a2b8', '#007bff', '#6f42c1', '#fd7e14', '#ffc107', '#dc3545', '#e83e8c'];
 
@@ -747,6 +734,7 @@ class PendapatanKecamatanController extends Controller
                 'data' => $data
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error getPendapatanPerDesa: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -755,26 +743,15 @@ class PendapatanKecamatanController extends Controller
     }
 
     /**
-     * 14. DataTable Kepala Keluarga dengan Filter
+     * 14-18: Method lainnya tetap sama seperti original
      */
     public function getDatatableKepalaKeluarga(Request $request)
     {
         try {
-            $query = $this->getBaseQuery()
-                ->where('t4.nama', 'KEPALA KELUARGA');
-
-            // Apply filters
-            if ($request->filled('desa')) {
-                $query->where('t2.desa', $request->desa);
-            }
-
-            if ($request->filled('pendapatan')) {
-                $query->where('t1.pendapatan_perbulan', $request->pendapatan);
-            }
-
-            if ($request->filled('pekerjaan')) {
-                $query->where('t5.nama', $request->pekerjaan);
-            }
+            $query = $this->getBaseQuery()->where('t4.nama', 'KEPALA KELUARGA');
+            if ($request->filled('desa')) $query->where('t2.desa', $request->desa);
+            if ($request->filled('pendapatan')) $query->where('t1.pendapatan_perbulan', $request->pendapatan);
+            if ($request->filled('pekerjaan')) $query->where('t5.nama', $request->pekerjaan);
 
             return DataTables::of($query)
                 ->addIndexColumn()
@@ -782,175 +759,90 @@ class PendapatanKecamatanController extends Controller
                     return $this->maskNumber($row->no_nik);
                 })
                 ->editColumn('nama', fn($row) => strtoupper($row->nama))
-                ->addColumn('jenkel_display', function ($row) {
-                    if ($row->jenkel == 1) {
-                        return '<span class="badge badge-info">Laki-laki</span>';
-                    } else {
-                        return '<span class="badge badge-danger">Perempuan</span>';
-                    }
-                })
-                ->addColumn('umur_display', function ($row) {
-                    return '<span class="badge badge-secondary">' . $row->umur . ' th</span>';
-                })
-                ->addColumn('tgl_lahir_display', function ($row) {
-                    return date('d-m-Y', strtotime($row->tgl_lahir));
-                })
+                ->addColumn('jenkel_display', fn($row) => $row->jenkel == 1 ? '<span class="badge badge-info">Laki-laki</span>' : '<span class="badge badge-danger">Perempuan</span>')
+                ->addColumn('umur_display', fn($row) => '<span class="badge badge-secondary">' . $row->umur . ' th</span>')
+                ->addColumn('tgl_lahir_display', fn($row) => date('d-m-Y', strtotime($row->tgl_lahir)))
                 ->addColumn('pendapatan_badge', function ($row) {
-                    $colors = [
-                        '0-1 Juta' => 'success',
-                        '1-2 Juta' => 'info',
-                        '2-3 Juta' => 'primary',
-                        '3-5 Juta' => 'warning',
-                        '5-10 Juta' => 'purple',
-                        '10-20 Juta' => 'danger',
-                        '20-50 Juta' => 'dark',
-                        '50-100 Juta' => 'secondary',
-                        '>100 Juta' => 'indigo'
-                    ];
+                    $colors = ['0-1 Juta' => 'success', '1-2 Juta' => 'info', '2-3 Juta' => 'primary', '3-5 Juta' => 'warning', '5-10 Juta' => 'purple', '10-20 Juta' => 'danger', '20-50 Juta' => 'dark', '50-100 Juta' => 'secondary', '>100 Juta' => 'indigo'];
                     $color = $colors[$row->pendapatan_perbulan] ?? 'secondary';
                     return '<span class="badge badge-' . $color . '">' . ($row->pendapatan_perbulan ?? 'Tidak Ada Data') . '</span>';
                 })
-                ->addColumn('pekerjaan_display', function ($row) {
-                    return '<small>' . ($row->jenis_pekerjaan ?? '-') . '</small>';
-                })
+                ->addColumn('pekerjaan_display', fn($row) => '<small>' . ($row->jenis_pekerjaan ?? '-') . '</small>')
                 ->rawColumns(['jenkel_display', 'umur_display', 'pendapatan_badge', 'pekerjaan_display'])
                 ->make(true);
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * 15. List Desa untuk Filter
-     */
     public function getListDesa()
     {
         try {
             $desas = Cache::remember('pendapatan_list_desa', self::CACHE_TTL, function() {
-                return DB::table('indonesia_villages')
-                    ->whereIn('code', function ($query) {
-                        $query->select('desa')
-                            ->from('t_kartu_keluarga')
-                            ->distinct();
-                    })
-                    ->orderBy('name')
-                    ->get(['code', 'name']);
+                return DB::table('indonesia_villages')->whereIn('code', function ($query) {
+                    $query->select('desa')->from('t_kartu_keluarga')->distinct();
+                })->orderBy('name')->get(['code', 'name']);
             });
-
-            return response()->json([
-                'success' => true,
-                'data' => $desas
-            ]);
+            return response()->json(['success' => true, 'data' => $desas]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * 16. List Pendapatan untuk Filter
-     */
     public function getListPendapatan()
     {
         try {
-            $pendapatan = ['0-1 Juta', '1-2 Juta', '2-3 Juta', '3-5 Juta', '5-10 Juta', '10-20 Juta', '20-50 Juta', '50-100 Juta', '>100 Juta'];
-
-            return response()->json([
-                'success' => true,
-                'data' => $pendapatan
-            ]);
+            return response()->json(['success' => true, 'data' => ['0-1 Juta', '1-2 Juta', '2-3 Juta', '3-5 Juta', '5-10 Juta', '10-20 Juta', '20-50 Juta', '50-100 Juta', '>100 Juta']]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * 17. List Pekerjaan untuk Filter
-     */
     public function getListPekerjaan()
     {
         try {
             $pekerjaan = Cache::remember('pendapatan_list_pekerjaan', self::CACHE_TTL, function() {
-                return DB::table('m_pekerjaan')
-                    ->orderBy('nama')
-                    ->pluck('nama')
-                    ->filter(function($item) {
-                        return !empty($item);
-                    })
-                    ->values();
+                return DB::table('m_pekerjaan')->orderBy('nama')->pluck('nama')->filter()->values();
             });
-
-            return response()->json([
-                'success' => true,
-                'data' => $pekerjaan
-            ]);
+            return response()->json(['success' => true, 'data' => $pekerjaan]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'data' => []
-            ], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage(), 'data' => []], 500);
         }
     }
 
-    /**
-     * 18. Statistik Pekerjaan Berdasarkan Gender
-     */
     public function getPekerjaanBerdasarkanGender()
     {
         try {
             $data = Cache::remember('pendapatan_pekerjaan_gender', self::CACHE_TTL, function() {
                 $query = $this->getBaseQuery();
-                $data = $query->whereNotNull('t5.nama')
-                    ->where('t5.nama', '!=', '')
-                    ->whereNotIn('t5.nama', ['BELUM/TIDAK BEKERJA', 'MENGURUS RUMAH TANGGA', 'PELAJAR/MAHASISWA'])
-                    ->get();
+                $data = $query->whereNotNull('t5.nama')->where('t5.nama', '!=', '')->whereNotIn('t5.nama', ['BELUM/TIDAK BEKERJA', 'MENGURUS RUMAH TANGGA', 'PELAJAR/MAHASISWA'])->get();
+                if ($data->isEmpty()) return [];
 
-                if ($data->isEmpty()) {
-                    return [];
-                }
-
-                // Ambil top 10 pekerjaan
-                $topPekerjaan = $data->groupBy('jenis_pekerjaan')
-                    ->map(function ($item) {
-                        return $item->count();
-                    })
-                    ->sortDesc()
-                    ->take(10)
-                    ->keys();
-
+                $topPekerjaan = $data->groupBy('jenis_pekerjaan')->map(fn($item) => $item->count())->sortDesc()->take(10)->keys();
                 $result = [];
                 foreach ($topPekerjaan as $pekerjaan) {
                     $dataPekerjaan = $data->where('jenis_pekerjaan', $pekerjaan);
-                    $result[$pekerjaan] = [
-                        'label' => $pekerjaan,
-                        'laki' => $dataPekerjaan->where('jenkel', 1)->count(),
-                        'perempuan' => $dataPekerjaan->where('jenkel', 2)->count()
-                    ];
+                    $result[$pekerjaan] = ['label' => $pekerjaan, 'laki' => $dataPekerjaan->where('jenkel', 1)->count(), 'perempuan' => $dataPekerjaan->where('jenkel', 2)->count()];
                 }
-
                 return $result;
             });
-
-            return response()->json([
-                'success' => true,
-                'data' => $data
-            ]);
+            return response()->json(['success' => true, 'data' => $data]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'data' => []
-            ], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage(), 'data' => []], 500);
         }
     }
+
+    public function clearCache()
+    {
+        try {
+            $keys = ['pendapatan_statistik_jumlah', 'pendapatan_statistik_rasio', 'pendapatan_distribusi', 'pendapatan_jenkel', 'pendapatan_per_desa', 'pendapatan_kelompok_umur', 'pendapatan_umur_jenkel', 'pendapatan_by_umur_detail', 'top10_pekerjaan_pendapatan', 'pendapatan_tertinggi_desa', 'pendapatan_detail_desa', 'pendapatan_distribusi_pekerjaan', 'pendapatan_stacked_desa', 'pendapatan_list_desa', 'pendapatan_list_pekerjaan', 'pendapatan_pekerjaan_gender'];
+            foreach ($keys as $key) Cache::forget($key);
+            return response()->json(['success' => true, 'message' => 'Cache berhasil dihapus']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
 
     // Helper function untuk masking NIK
     private function maskNumber($number)
@@ -962,46 +854,5 @@ class PendapatanKecamatanController extends Controller
         return substr($number, 0, 3)
             . str_repeat('*', 10)
             . substr($number, -3);
-    }
-
-    /**
-     * 19. Clear Cache
-     */
-    public function clearCache()
-    {
-        try {
-            $cacheKeys = [
-                'pendapatan_statistik_jumlah',
-                'pendapatan_statistik_rasio',
-                'pendapatan_distribusi',
-                'pendapatan_jenkel',
-                'pendapatan_per_desa',
-                'pendapatan_kelompok_umur',
-                'pendapatan_umur_jenkel',
-                'pendapatan_by_umur_detail',
-                'top10_pekerjaan_pendapatan',
-                'pendapatan_tertinggi_desa',
-                'pendapatan_detail_desa',
-                'pendapatan_distribusi_pekerjaan',
-                'pendapatan_stacked_desa',
-                'pendapatan_list_desa',
-                'pendapatan_list_pekerjaan',
-                'pendapatan_pekerjaan_gender',
-            ];
-
-            foreach ($cacheKeys as $key) {
-                Cache::forget($key);
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Cache berhasil dihapus'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }
     }
 }
