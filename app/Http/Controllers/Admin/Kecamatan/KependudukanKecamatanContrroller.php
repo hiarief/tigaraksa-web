@@ -11,7 +11,7 @@ class KependudukanKecamatanContrroller extends Controller
 {
     private const CACHE_TTL = 7200; // 2 jam
 
-    public function index()
+    public function index(Request $request)
     {
         return view('admin.chart.kependudukan.kecamatan');
     }

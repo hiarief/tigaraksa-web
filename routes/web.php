@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DataHilangController;
 use App\Http\Controllers\Admin\KartuKeluargaAnggotaController;
 use App\Http\Controllers\Admin\KartuKeluargaController;
+use App\Http\Controllers\Admin\Kecamatan\BpjsKecamatanController;
+use App\Http\Controllers\Admin\Kecamatan\KepemilikanRumahKecamatanController;
 use App\Http\Controllers\Admin\Kecamatan\KependudukanKecamatanContrroller;
 use App\Http\Controllers\Admin\Kecamatan\PekerjaanKecamatanController;
 use App\Http\Controllers\Admin\Kecamatan\PendidikanKecamatanController;
@@ -287,7 +289,6 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/summary/tidak-sekolah-wajib-belajar', [PendidikanKecamatanController::class, 'getSummaryTidakSekolahWajibBelajar'])->name('summary.tidak.sekolah.wajib.belajar');
         });
 
-
         Route::group(['prefix' => '/pekerjaan', 'as' => 'pekerjaan.'], function () {
             Route::get('/', [PekerjaanKecamatanController::class, 'index'])->name('index');
             Route::get('/statistik-jumlah', [PekerjaanKecamatanController::class, 'getStatistikJumlah'])->name('jumlah');
@@ -313,6 +314,43 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/datatable-pekerja-anak', [PekerjaanKecamatanController::class, 'getDatatablePekerjaAnak'])->name('datatable.pekerja.anak');
             Route::get('/list-desa-pekerja-anak', [PekerjaanKecamatanController::class, 'getListDesaPekerjaAnak'])->name('list.desa.pekerja.anak');
             Route::get('/clear-cache', [PekerjaanKecamatanController::class, 'clearCache'])->name('clear.cache');
+        });
+
+        Route::group(['prefix' => '/bpjs', 'as' => 'bpjs.'], function () {
+            Route::get('/', [BpjsKecamatanController::class, 'index'])->name('index');
+            Route::get('/statistik-jumlah', [BpjsKecamatanController::class, 'getStatistikJumlah'])->name('jumlah');
+            Route::get('/statistik-rasio', [BpjsKecamatanController::class, 'getStatistikRasio'])->name('rasio');
+            Route::get('/distribusi-jenis-bpjs', [BpjsKecamatanController::class, 'getDistribusiJenisBpjs'])->name('jenis');
+            Route::get('/distribusi-pembayaran', [BpjsKecamatanController::class, 'getDistribusiPembayaran'])->name('pembayaran');
+            Route::get('/distribusi-jenis-kelamin', [BpjsKecamatanController::class, 'getDistribusiJenisKelamin'])->name('jenkel');
+            Route::get('/distribusi-per-desa', [BpjsKecamatanController::class, 'getDistribusiPerDesa'])->name('desa');
+            Route::get('/distribusi-kelompok-umur', [BpjsKecamatanController::class, 'getDistribusiKelompokUmur'])->name('umur');
+            Route::get('/bpjs-umur-jenkel', [BpjsKecamatanController::class, 'getBpjsUmurJenisKelamin'])->name('umur.jenkel');
+            Route::get('/detail-bpjs-per-desa', [BpjsKecamatanController::class, 'getDetailBpjsPerDesa'])->name('detail.desa');
+            Route::get('/jenis-bpjs-per-desa', [BpjsKecamatanController::class, 'getJenisBpjsPerDesa'])->name('jenis.desa');
+            Route::get('/data-abnormal', [BpjsKecamatanController::class, 'getDataAbnormal'])->name('abnormal');
+            Route::get('/datatable-penduduk', [BpjsKecamatanController::class, 'getDatatablePenduduk'])->name('datatable.penduduk');
+            Route::get('/datatable-abnormal', [BpjsKecamatanController::class, 'getDatatableAbnormal'])->name('datatable.abnormal');
+            Route::get('/list-desa', [BpjsKecamatanController::class, 'getListDesa'])->name('list.desa');
+        });
+
+        Route::group(['prefix' => '/kepemilikan-rumah', 'as' => 'kepemilikan.rumah.'], function () {
+            Route::get('/', [KepemilikanRumahKecamatanController::class, 'index'])->name('index');
+            Route::get('/statistik-jumlah', [KepemilikanRumahKecamatanController::class, 'getStatistikJumlah'])->name('jumlah');
+            Route::get('/statistik-rasio', [KepemilikanRumahKecamatanController::class, 'getStatistikRasio'])->name('rasio');
+            Route::get('/distribusi-kepemilikan', [KepemilikanRumahKecamatanController::class, 'getDistribusiKepemilikan'])->name('distribusi');
+            Route::get('/distribusi-jenis-kelamin', [KepemilikanRumahKecamatanController::class, 'getDistribusiJenisKelamin'])->name('jenkel');
+            Route::get('/distribusi-per-desa', [KepemilikanRumahKecamatanController::class, 'getDistribusiPerDesa'])->name('desa');
+            Route::get('/distribusi-kelompok-umur', [KepemilikanRumahKecamatanController::class, 'getDistribusiKelompokUmur'])->name('umur');
+            Route::get('/kepemilikan-umur-jenkel', [KepemilikanRumahKecamatanController::class, 'getKepemilikanUmurJenisKelamin'])->name('umur.jenkel');
+            Route::get('/kepemilikan-pendapatan', [KepemilikanRumahKecamatanController::class, 'getKepemilikanBerdasarkanPendapatan'])->name('pendapatan');
+            Route::get('/detail-per-desa', [KepemilikanRumahKecamatanController::class, 'getDetailPerDesa'])->name('detail.desa');
+            Route::get('/kepemilikan-per-desa', [KepemilikanRumahKecamatanController::class, 'getKepemilikanPerDesa'])->name('kepemilikan.desa');
+            Route::get('/data-abnormal', [KepemilikanRumahKecamatanController::class, 'getDataAbnormal'])->name('abnormal');
+            Route::get('/datatable-kepala-keluarga', [KepemilikanRumahKecamatanController::class, 'getDatatableKepalaKeluarga'])->name('datatable.kepala-keluarga');
+            Route::get('/datatable-abnormal', [KepemilikanRumahKecamatanController::class, 'getDatatableAbnormal'])->name('datatable.abnormal');
+            Route::get('/list-desa', [KepemilikanRumahKecamatanController::class, 'getListDesa'])->name('list.desa');
+            Route::get('/list-pendapatan', [KepemilikanRumahKecamatanController::class, 'getListPendapatan'])->name('list.pendapatan');
         });
 
     });

@@ -102,6 +102,30 @@
                             <span class="nav-glow"></span>
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('kecamatan.bpjs.index') }}"
+                            class="nav-link {{ Route::is('kecamatan.bpjs.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-heartbeat"></i>
+                            <p>Kesehatan (BPJS)</p>
+                            <span class="nav-glow"></span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('kecamatan.kepemilikan.rumah.index') }}"
+                            class="nav-link {{ Route::is('kecamatan.kepemilikan.rumah.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-house-user"></i>
+                            <p>Kepemilikan Rumah</p>
+                            <span class="nav-glow"></span>
+                        </a>
+                    </li>
+
+                    <!-- EKONOMI & BANTUAN -->
+                    <li class="nav-header">
+                        <i class="fas fa-wallet header-icon"></i>
+                        <span>EKONOMI & BANTUAN</span>
+                    </li>
                 @endcan
 
                 @can('desa-chart')

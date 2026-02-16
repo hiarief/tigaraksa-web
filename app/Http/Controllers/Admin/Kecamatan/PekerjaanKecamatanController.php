@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Admin\Kecamatan;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
 
 class PekerjaanKecamatanController extends Controller
 {
+    private const CACHE_TTL = 7200; // 2 jam
+
     public function index()
     {
         return view('admin.chart.pekerjaan.kecamatan');
@@ -21,23 +24,25 @@ class PekerjaanKecamatanController extends Controller
     public function getStatistikJumlah()
     {
         try {
-            $data = DB::table('t_kartu_keluarga_anggota as t1')
-                ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-                ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                ->select([
-                    DB::raw('COUNT(*) as total_penduduk'),
-                    DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as total_laki'),
-                    DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as total_perempuan'),
-                    DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" THEN 1 ELSE 0 END) as belum_bekerja'),
-                    DB::raw('SUM(CASE WHEN t3.nama = "MENGURUS RUMAH TANGGA" THEN 1 ELSE 0 END) as mengurus_rumah_tangga'),
-                    DB::raw('SUM(CASE WHEN t3.nama = "PELAJAR/MAHASISWA" THEN 1 ELSE 0 END) as pelajar_mahasiswa'),
-                    DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as bekerja'),
-                    DB::raw('SUM(CASE WHEN t3.nama IN ("PEGAWAI NEGERI SIPIL (PNS)", "TENTARA NASIONAL INDONESIA (TNI)", "KEPOLISIAN RI (POLRI)") THEN 1 ELSE 0 END) as pns_tni_polri'),
-                    DB::raw('SUM(CASE WHEN t3.nama IN ("KARYAWAN SWASTA", "KARYAWAN BUMN", "KARYAWAN BUMD") THEN 1 ELSE 0 END) as karyawan'),
-                    DB::raw('SUM(CASE WHEN t3.nama LIKE "%WIRASWASTA%" OR t3.nama LIKE "%PEDAGANG%" THEN 1 ELSE 0 END) as wiraswasta'),
-                    DB::raw('SUM(CASE WHEN t3.nama IN ("PETANI/PEKEBUN", "BURUH TANI/PERKEBUNAN") THEN 1 ELSE 0 END) as petani'),
-                ])
-                ->first();
+            $data = Cache::remember('pekerjaan_statistik_jumlah', self::CACHE_TTL, function() {
+                return DB::table('t_kartu_keluarga_anggota as t1')
+                    ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                    ->select([
+                        DB::raw('COUNT(*) as total_penduduk'),
+                        DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as total_laki'),
+                        DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as total_perempuan'),
+                        DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" THEN 1 ELSE 0 END) as belum_bekerja'),
+                        DB::raw('SUM(CASE WHEN t3.nama = "MENGURUS RUMAH TANGGA" THEN 1 ELSE 0 END) as mengurus_rumah_tangga'),
+                        DB::raw('SUM(CASE WHEN t3.nama = "PELAJAR/MAHASISWA" THEN 1 ELSE 0 END) as pelajar_mahasiswa'),
+                        DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as bekerja'),
+                        DB::raw('SUM(CASE WHEN t3.nama IN ("PEGAWAI NEGERI SIPIL (PNS)", "TENTARA NASIONAL INDONESIA (TNI)", "KEPOLISIAN RI (POLRI)") THEN 1 ELSE 0 END) as pns_tni_polri'),
+                        DB::raw('SUM(CASE WHEN t3.nama IN ("KARYAWAN SWASTA", "KARYAWAN BUMN", "KARYAWAN BUMD") THEN 1 ELSE 0 END) as karyawan'),
+                        DB::raw('SUM(CASE WHEN t3.nama LIKE "%WIRASWASTA%" OR t3.nama LIKE "%PEDAGANG%" THEN 1 ELSE 0 END) as wiraswasta'),
+                        DB::raw('SUM(CASE WHEN t3.nama IN ("PETANI/PEKEBUN", "BURUH TANI/PERKEBUNAN") THEN 1 ELSE 0 END) as petani'),
+                    ])
+                    ->first();
+            });
 
             return response()->json([
                 'success' => true,
@@ -57,51 +62,52 @@ class PekerjaanKecamatanController extends Controller
     public function getStatistikRasio()
     {
         try {
-            $total = DB::table('t_kartu_keluarga_anggota')->count();
+            $data = Cache::remember('pekerjaan_statistik_rasio', self::CACHE_TTL, function() {
+                $total = DB::table('t_kartu_keluarga_anggota')->count();
 
-            if ($total == 0) {
-                return response()->json([
-                    'success' => true,
-                    'data' => [
+                if ($total == 0) {
+                    return [
                         'persentase_bekerja' => '0.00',
                         'persentase_tidak_bekerja' => '0.00',
                         'tingkat_partisipasi_kerja' => '0.00',
                         'tingkat_pengangguran' => '0.00'
-                    ]
-                ]);
-            }
+                    ];
+                }
 
-            $stats = DB::table('t_kartu_keluarga_anggota as t1')
-                ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                ->select([
-                    DB::raw('COUNT(*) as total'),
-                    DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as bekerja'),
-                    DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" THEN 1 ELSE 0 END) as tidak_bekerja'),
-                    DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 15 AND 64 THEN 1 ELSE 0 END) as usia_produktif'),
-                    DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 15 AND 64 AND t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as usia_produktif_bekerja'),
-                ])
-                ->first();
+                $stats = DB::table('t_kartu_keluarga_anggota as t1')
+                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                    ->select([
+                        DB::raw('COUNT(*) as total'),
+                        DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as bekerja'),
+                        DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" THEN 1 ELSE 0 END) as tidak_bekerja'),
+                        DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 15 AND 64 THEN 1 ELSE 0 END) as usia_produktif'),
+                        DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 15 AND 64 AND t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as usia_produktif_bekerja'),
+                    ])
+                    ->first();
 
-            $persentaseBekerja = number_format(($stats->bekerja / $total) * 100, 2);
-            $persentaseTidakBekerja = number_format(($stats->tidak_bekerja / $total) * 100, 2);
-            $tingkatPartisipasiKerja = $stats->usia_produktif > 0 ? number_format(($stats->usia_produktif_bekerja / $stats->usia_produktif) * 100, 2) : '0.00';
+                $persentaseBekerja = number_format(($stats->bekerja / $total) * 100, 2);
+                $persentaseTidakBekerja = number_format(($stats->tidak_bekerja / $total) * 100, 2);
+                $tingkatPartisipasiKerja = $stats->usia_produktif > 0 ? number_format(($stats->usia_produktif_bekerja / $stats->usia_produktif) * 100, 2) : '0.00';
 
-            $tidakBekerjaUsiaProduktif = DB::table('t_kartu_keluarga_anggota as t1')
-                ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 15 AND 64')
-                ->where('t3.nama', 'BELUM/TIDAK BEKERJA')
-                ->count();
+                $tidakBekerjaUsiaProduktif = DB::table('t_kartu_keluarga_anggota as t1')
+                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                    ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 15 AND 64')
+                    ->where('t3.nama', 'BELUM/TIDAK BEKERJA')
+                    ->count();
 
-            $tingkatPengangguran = $stats->usia_produktif > 0 ? number_format(($tidakBekerjaUsiaProduktif / $stats->usia_produktif) * 100, 2) : '0.00';
+                $tingkatPengangguran = $stats->usia_produktif > 0 ? number_format(($tidakBekerjaUsiaProduktif / $stats->usia_produktif) * 100, 2) : '0.00';
 
-            return response()->json([
-                'success' => true,
-                'data' => [
+                return [
                     'persentase_bekerja' => $persentaseBekerja,
                     'persentase_tidak_bekerja' => $persentaseTidakBekerja,
                     'tingkat_partisipasi_kerja' => $tingkatPartisipasiKerja,
                     'tingkat_pengangguran' => $tingkatPengangguran
-                ]
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -117,16 +123,18 @@ class PekerjaanKecamatanController extends Controller
     public function getDistribusiJenisPekerjaan()
     {
         try {
-            $data = DB::table('t_kartu_keluarga_anggota as t1')
-                ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                ->select('t3.nama as pekerjaan', DB::raw('COUNT(*) as jumlah'))
-                ->whereNotNull('t3.nama')
-                ->groupBy('t3.nama')
-                ->orderBy('jumlah', 'DESC')
-                ->limit(10)
-                ->get()
-                ->pluck('jumlah', 'pekerjaan')
-                ->toArray();
+            $data = Cache::remember('pekerjaan_distribusi_jenis', self::CACHE_TTL, function() {
+                return DB::table('t_kartu_keluarga_anggota as t1')
+                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                    ->select('t3.nama as pekerjaan', DB::raw('COUNT(*) as jumlah'))
+                    ->whereNotNull('t3.nama')
+                    ->groupBy('t3.nama')
+                    ->orderBy('jumlah', 'DESC')
+                    ->limit(10)
+                    ->get()
+                    ->pluck('jumlah', 'pekerjaan')
+                    ->toArray();
+            });
 
             return response()->json([
                 'success' => true,
@@ -146,16 +154,20 @@ class PekerjaanKecamatanController extends Controller
     public function getDistribusiJenisKelamin()
     {
         try {
-            $data = DB::table('t_kartu_keluarga_anggota as t1')
-                ->select([
-                    DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as "Laki-laki"'),
-                    DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as "Perempuan"')
-                ])
-                ->first();
+            $data = Cache::remember('pekerjaan_distribusi_jenkel', self::CACHE_TTL, function() {
+                $result = DB::table('t_kartu_keluarga_anggota as t1')
+                    ->select([
+                        DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as "Laki-laki"'),
+                        DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as "Perempuan"')
+                    ])
+                    ->first();
+
+                return (array) $result;
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => (array) $data
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -171,16 +183,18 @@ class PekerjaanKecamatanController extends Controller
     public function getDistribusiPerDesa()
     {
         try {
-            $data = DB::table('t_kartu_keluarga_anggota as t1')
-                ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-                ->leftJoin('indonesia_villages as t4', 't4.code', '=', 't2.desa')
-                ->select('t4.name as desa', DB::raw('COUNT(*) as jumlah'))
-                ->whereNotNull('t4.name')
-                ->groupBy('t4.name')
-                ->orderBy('jumlah', 'DESC')
-                ->get()
-                ->pluck('jumlah', 'desa')
-                ->toArray();
+            $data = Cache::remember('pekerjaan_distribusi_desa', self::CACHE_TTL, function() {
+                return DB::table('t_kartu_keluarga_anggota as t1')
+                    ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                    ->leftJoin('indonesia_villages as t4', 't4.code', '=', 't2.desa')
+                    ->select('t4.name as desa', DB::raw('COUNT(*) as jumlah'))
+                    ->whereNotNull('t4.name')
+                    ->groupBy('t4.name')
+                    ->orderBy('jumlah', 'DESC')
+                    ->get()
+                    ->pluck('jumlah', 'desa')
+                    ->toArray();
+            });
 
             return response()->json([
                 'success' => true,
@@ -200,21 +214,25 @@ class PekerjaanKecamatanController extends Controller
     public function getDistribusiKelompokUmur()
     {
         try {
-            $data = DB::table('t_kartu_keluarga_anggota as t1')
-                ->select([
-                    DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) < 15 THEN 1 ELSE 0 END) as "0-14 tahun"'),
-                    DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 15 AND 24 THEN 1 ELSE 0 END) as "15-24 tahun"'),
-                    DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 25 AND 34 THEN 1 ELSE 0 END) as "25-34 tahun"'),
-                    DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 35 AND 44 THEN 1 ELSE 0 END) as "35-44 tahun"'),
-                    DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 45 AND 54 THEN 1 ELSE 0 END) as "45-54 tahun"'),
-                    DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 55 AND 64 THEN 1 ELSE 0 END) as "55-64 tahun"'),
-                    DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) >= 65 THEN 1 ELSE 0 END) as "65+ tahun"')
-                ])
-                ->first();
+            $data = Cache::remember('pekerjaan_distribusi_umur', self::CACHE_TTL, function() {
+                $result = DB::table('t_kartu_keluarga_anggota as t1')
+                    ->select([
+                        DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) < 15 THEN 1 ELSE 0 END) as "0-14 tahun"'),
+                        DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 15 AND 24 THEN 1 ELSE 0 END) as "15-24 tahun"'),
+                        DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 25 AND 34 THEN 1 ELSE 0 END) as "25-34 tahun"'),
+                        DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 35 AND 44 THEN 1 ELSE 0 END) as "35-44 tahun"'),
+                        DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 45 AND 54 THEN 1 ELSE 0 END) as "45-54 tahun"'),
+                        DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 55 AND 64 THEN 1 ELSE 0 END) as "55-64 tahun"'),
+                        DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) >= 65 THEN 1 ELSE 0 END) as "65+ tahun"')
+                    ])
+                    ->first();
+
+                return (array) $result;
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => (array) $data
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -230,23 +248,27 @@ class PekerjaanKecamatanController extends Controller
     public function getStatusPekerjaan()
     {
         try {
-            $data = DB::table('t_kartu_keluarga_anggota as t1')
-                ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                ->select([
-                    DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" THEN 1 ELSE 0 END) as "Belum/Tidak Bekerja"'),
-                    DB::raw('SUM(CASE WHEN t3.nama = "MENGURUS RUMAH TANGGA" THEN 1 ELSE 0 END) as "Mengurus Rumah Tangga"'),
-                    DB::raw('SUM(CASE WHEN t3.nama = "PELAJAR/MAHASISWA" THEN 1 ELSE 0 END) as "Pelajar/Mahasiswa"'),
-                    DB::raw('SUM(CASE WHEN t3.nama IN ("PEGAWAI NEGERI SIPIL (PNS)", "TENTARA NASIONAL INDONESIA (TNI)", "KEPOLISIAN RI (POLRI)") THEN 1 ELSE 0 END) as "PNS/TNI/POLRI"'),
-                    DB::raw('SUM(CASE WHEN t3.nama IN ("KARYAWAN SWASTA", "KARYAWAN BUMN", "KARYAWAN BUMD", "KARYAWAN HONORER") THEN 1 ELSE 0 END) as "Karyawan"'),
-                    DB::raw('SUM(CASE WHEN t3.nama LIKE "%WIRASWASTA%" OR t3.nama LIKE "%PEDAGANG%" THEN 1 ELSE 0 END) as "Wiraswasta/Pedagang"'),
-                    DB::raw('SUM(CASE WHEN t3.nama IN ("PETANI/PEKEBUN", "BURUH TANI/PERKEBUNAN") THEN 1 ELSE 0 END) as "Petani"'),
-                    DB::raw('SUM(CASE WHEN t3.nama LIKE "%BURUH%" AND t3.nama NOT LIKE "%TANI%" THEN 1 ELSE 0 END) as "Buruh"')
-                ])
-                ->first();
+            $data = Cache::remember('pekerjaan_status', self::CACHE_TTL, function() {
+                $result = DB::table('t_kartu_keluarga_anggota as t1')
+                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                    ->select([
+                        DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" THEN 1 ELSE 0 END) as "Belum/Tidak Bekerja"'),
+                        DB::raw('SUM(CASE WHEN t3.nama = "MENGURUS RUMAH TANGGA" THEN 1 ELSE 0 END) as "Mengurus Rumah Tangga"'),
+                        DB::raw('SUM(CASE WHEN t3.nama = "PELAJAR/MAHASISWA" THEN 1 ELSE 0 END) as "Pelajar/Mahasiswa"'),
+                        DB::raw('SUM(CASE WHEN t3.nama IN ("PEGAWAI NEGERI SIPIL (PNS)", "TENTARA NASIONAL INDONESIA (TNI)", "KEPOLISIAN RI (POLRI)") THEN 1 ELSE 0 END) as "PNS/TNI/POLRI"'),
+                        DB::raw('SUM(CASE WHEN t3.nama IN ("KARYAWAN SWASTA", "KARYAWAN BUMN", "KARYAWAN BUMD", "KARYAWAN HONORER") THEN 1 ELSE 0 END) as "Karyawan"'),
+                        DB::raw('SUM(CASE WHEN t3.nama LIKE "%WIRASWASTA%" OR t3.nama LIKE "%PEDAGANG%" THEN 1 ELSE 0 END) as "Wiraswasta/Pedagang"'),
+                        DB::raw('SUM(CASE WHEN t3.nama IN ("PETANI/PEKEBUN", "BURUH TANI/PERKEBUNAN") THEN 1 ELSE 0 END) as "Petani"'),
+                        DB::raw('SUM(CASE WHEN t3.nama LIKE "%BURUH%" AND t3.nama NOT LIKE "%TANI%" THEN 1 ELSE 0 END) as "Buruh"')
+                    ])
+                    ->first();
+
+                return (array) $result;
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => (array) $data
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -262,37 +284,41 @@ class PekerjaanKecamatanController extends Controller
     public function getPekerjaanUmurJenisKelamin()
     {
         try {
-            $kelompokUmur = [
-                '0-14' => [0, 14],
-                '15-24' => [15, 24],
-                '25-34' => [25, 34],
-                '35-44' => [35, 44],
-                '45-54' => [45, 54],
-                '55-64' => [55, 64],
-                '65+' => [65, 150]
-            ];
-
-            $result = [];
-
-            foreach ($kelompokUmur as $label => $range) {
-                $data = DB::table('t_kartu_keluarga_anggota as t1')
-                    ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN ? AND ?', $range)
-                    ->select([
-                        DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as laki'),
-                        DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as perempuan')
-                    ])
-                    ->first();
-
-                $result[$label] = [
-                    'label' => $label . ' tahun',
-                    'laki' => $data->laki ?? 0,
-                    'perempuan' => $data->perempuan ?? 0
+            $data = Cache::remember('pekerjaan_umur_jenkel', self::CACHE_TTL, function() {
+                $kelompokUmur = [
+                    '0-14' => [0, 14],
+                    '15-24' => [15, 24],
+                    '25-34' => [25, 34],
+                    '35-44' => [35, 44],
+                    '45-54' => [45, 54],
+                    '55-64' => [55, 64],
+                    '65+' => [65, 150]
                 ];
-            }
+
+                $result = [];
+
+                foreach ($kelompokUmur as $label => $range) {
+                    $data = DB::table('t_kartu_keluarga_anggota as t1')
+                        ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN ? AND ?', $range)
+                        ->select([
+                            DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as laki'),
+                            DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as perempuan')
+                        ])
+                        ->first();
+
+                    $result[$label] = [
+                        'label' => $label . ' tahun',
+                        'laki' => $data->laki ?? 0,
+                        'perempuan' => $data->perempuan ?? 0
+                    ];
+                }
+
+                return $result;
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => $result
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -308,53 +334,57 @@ class PekerjaanKecamatanController extends Controller
     public function getDetailPekerjaanPerDesa()
     {
         try {
-            $desas = DB::table('indonesia_villages')
-                ->whereIn('code', function($query) {
-                    $query->select('desa')
-                        ->from('t_kartu_keluarga')
-                        ->distinct();
-                })
-                ->pluck('name', 'code');
+            $data = Cache::remember('pekerjaan_detail_desa', self::CACHE_TTL, function() {
+                $desas = DB::table('indonesia_villages')
+                    ->whereIn('code', function($query) {
+                        $query->select('desa')
+                            ->from('t_kartu_keluarga')
+                            ->distinct();
+                    })
+                    ->pluck('name', 'code');
 
-            $result = [];
+                $result = [];
 
-            foreach ($desas as $code => $name) {
-                $data = DB::table('t_kartu_keluarga_anggota as t1')
-                    ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                    ->where('t2.desa', $code)
-                    ->select([
-                        DB::raw('COUNT(*) as total_penduduk'),
-                        DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as laki_laki'),
-                        DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as perempuan'),
-                        DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" THEN 1 ELSE 0 END) as tidak_bekerja'),
-                        DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as bekerja'),
-                        DB::raw('SUM(CASE WHEN t3.nama IN ("PEGAWAI NEGERI SIPIL (PNS)", "TENTARA NASIONAL INDONESIA (TNI)", "KEPOLISIAN RI (POLRI)") THEN 1 ELSE 0 END) as pns_tni_polri'),
-                        DB::raw('SUM(CASE WHEN t3.nama IN ("KARYAWAN SWASTA", "KARYAWAN BUMN", "KARYAWAN BUMD") THEN 1 ELSE 0 END) as karyawan'),
-                        DB::raw('SUM(CASE WHEN t3.nama LIKE "%WIRASWASTA%" OR t3.nama LIKE "%PEDAGANG%" THEN 1 ELSE 0 END) as wiraswasta'),
-                        DB::raw('SUM(CASE WHEN t3.nama IN ("PETANI/PEKEBUN", "BURUH TANI/PERKEBUNAN") THEN 1 ELSE 0 END) as petani'),
-                        DB::raw('SUM(CASE WHEN t3.nama = "MENGURUS RUMAH TANGGA" THEN 1 ELSE 0 END) as irt'),
-                    ])
-                    ->first();
+                foreach ($desas as $code => $name) {
+                    $data = DB::table('t_kartu_keluarga_anggota as t1')
+                        ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                        ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                        ->where('t2.desa', $code)
+                        ->select([
+                            DB::raw('COUNT(*) as total_penduduk'),
+                            DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as laki_laki'),
+                            DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as perempuan'),
+                            DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" THEN 1 ELSE 0 END) as tidak_bekerja'),
+                            DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as bekerja'),
+                            DB::raw('SUM(CASE WHEN t3.nama IN ("PEGAWAI NEGERI SIPIL (PNS)", "TENTARA NASIONAL INDONESIA (TNI)", "KEPOLISIAN RI (POLRI)") THEN 1 ELSE 0 END) as pns_tni_polri'),
+                            DB::raw('SUM(CASE WHEN t3.nama IN ("KARYAWAN SWASTA", "KARYAWAN BUMN", "KARYAWAN BUMD") THEN 1 ELSE 0 END) as karyawan'),
+                            DB::raw('SUM(CASE WHEN t3.nama LIKE "%WIRASWASTA%" OR t3.nama LIKE "%PEDAGANG%" THEN 1 ELSE 0 END) as wiraswasta'),
+                            DB::raw('SUM(CASE WHEN t3.nama IN ("PETANI/PEKEBUN", "BURUH TANI/PERKEBUNAN") THEN 1 ELSE 0 END) as petani'),
+                            DB::raw('SUM(CASE WHEN t3.nama = "MENGURUS RUMAH TANGGA" THEN 1 ELSE 0 END) as irt'),
+                        ])
+                        ->first();
 
-                $result[] = [
-                    'desa' => $name,
-                    'total_penduduk' => $data->total_penduduk,
-                    'laki_laki' => $data->laki_laki,
-                    'perempuan' => $data->perempuan,
-                    'tidak_bekerja' => $data->tidak_bekerja,
-                    'bekerja' => $data->bekerja,
-                    'pns_tni_polri' => $data->pns_tni_polri,
-                    'karyawan' => $data->karyawan,
-                    'wiraswasta' => $data->wiraswasta,
-                    'petani' => $data->petani,
-                    'irt' => $data->irt
-                ];
-            }
+                    $result[] = [
+                        'desa' => $name,
+                        'total_penduduk' => $data->total_penduduk,
+                        'laki_laki' => $data->laki_laki,
+                        'perempuan' => $data->perempuan,
+                        'tidak_bekerja' => $data->tidak_bekerja,
+                        'bekerja' => $data->bekerja,
+                        'pns_tni_polri' => $data->pns_tni_polri,
+                        'karyawan' => $data->karyawan,
+                        'wiraswasta' => $data->wiraswasta,
+                        'petani' => $data->petani,
+                        'irt' => $data->irt
+                    ];
+                }
+
+                return $result;
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => $result
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -370,35 +400,39 @@ class PekerjaanKecamatanController extends Controller
     public function getAnalisaUsiaProduktif()
     {
         try {
-            $data = DB::table('t_kartu_keluarga_anggota as t1')
-                ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 15 AND 64')
-                ->select([
-                    DB::raw('COUNT(*) as total_usia_produktif'),
-                    DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as bekerja'),
-                    DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" THEN 1 ELSE 0 END) as tidak_bekerja'),
-                    DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as laki_laki'),
-                    DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as perempuan'),
-                ])
-                ->first();
+            $data = Cache::remember('pekerjaan_usia_produktif', self::CACHE_TTL, function() {
+                $result = DB::table('t_kartu_keluarga_anggota as t1')
+                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                    ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 15 AND 64')
+                    ->select([
+                        DB::raw('COUNT(*) as total_usia_produktif'),
+                        DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as bekerja'),
+                        DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" THEN 1 ELSE 0 END) as tidak_bekerja'),
+                        DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as laki_laki'),
+                        DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as perempuan'),
+                    ])
+                    ->first();
 
-            $persentaseBekerja = $data->total_usia_produktif > 0 ?
-                number_format(($data->bekerja / $data->total_usia_produktif) * 100, 2) : '0.00';
+                $persentaseBekerja = $result->total_usia_produktif > 0 ?
+                    number_format(($result->bekerja / $result->total_usia_produktif) * 100, 2) : '0.00';
 
-            $persentaseTidakBekerja = $data->total_usia_produktif > 0 ?
-                number_format(($data->tidak_bekerja / $data->total_usia_produktif) * 100, 2) : '0.00';
+                $persentaseTidakBekerja = $result->total_usia_produktif > 0 ?
+                    number_format(($result->tidak_bekerja / $result->total_usia_produktif) * 100, 2) : '0.00';
+
+                return [
+                    'total_usia_produktif' => $result->total_usia_produktif,
+                    'bekerja' => $result->bekerja,
+                    'tidak_bekerja' => $result->tidak_bekerja,
+                    'laki_laki' => $result->laki_laki,
+                    'perempuan' => $result->perempuan,
+                    'persentase_bekerja' => $persentaseBekerja,
+                    'persentase_tidak_bekerja' => $persentaseTidakBekerja
+                ];
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => [
-                    'total_usia_produktif' => $data->total_usia_produktif,
-                    'bekerja' => $data->bekerja,
-                    'tidak_bekerja' => $data->tidak_bekerja,
-                    'laki_laki' => $data->laki_laki,
-                    'perempuan' => $data->perempuan,
-                    'persentase_bekerja' => $persentaseBekerja,
-                    'persentase_tidak_bekerja' => $persentaseTidakBekerja
-                ]
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -414,38 +448,42 @@ class PekerjaanKecamatanController extends Controller
     public function getPekerjaanBerdasarkanKelompokUmur()
     {
         try {
-            $kelompokUmur = [
-                '15-24' => [15, 24],
-                '25-34' => [25, 34],
-                '35-44' => [35, 44],
-                '45-54' => [45, 54],
-                '55-64' => [55, 64],
-            ];
-
-            $result = [];
-
-            foreach ($kelompokUmur as $label => $range) {
-                $data = DB::table('t_kartu_keluarga_anggota as t1')
-                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                    ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN ? AND ?', $range)
-                    ->select([
-                        DB::raw('COUNT(*) as total'),
-                        DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as bekerja'),
-                        DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" THEN 1 ELSE 0 END) as tidak_bekerja'),
-                    ])
-                    ->first();
-
-                $result[] = [
-                    'label' => $label . ' tahun',
-                    'total' => $data->total,
-                    'bekerja' => $data->bekerja,
-                    'tidak_bekerja' => $data->tidak_bekerja
+            $data = Cache::remember('pekerjaan_kelompok_umur', self::CACHE_TTL, function() {
+                $kelompokUmur = [
+                    '15-24' => [15, 24],
+                    '25-34' => [25, 34],
+                    '35-44' => [35, 44],
+                    '45-54' => [45, 54],
+                    '55-64' => [55, 64],
                 ];
-            }
+
+                $result = [];
+
+                foreach ($kelompokUmur as $label => $range) {
+                    $data = DB::table('t_kartu_keluarga_anggota as t1')
+                        ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                        ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN ? AND ?', $range)
+                        ->select([
+                            DB::raw('COUNT(*) as total'),
+                            DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as bekerja'),
+                            DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" THEN 1 ELSE 0 END) as tidak_bekerja'),
+                        ])
+                        ->first();
+
+                    $result[] = [
+                        'label' => $label . ' tahun',
+                        'total' => $data->total,
+                        'bekerja' => $data->bekerja,
+                        'tidak_bekerja' => $data->tidak_bekerja
+                    ];
+                }
+
+                return $result;
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => $result
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -561,19 +599,21 @@ class PekerjaanKecamatanController extends Controller
     public function getListDesa()
     {
         try {
-            $desas = DB::table('indonesia_villages')
-                ->whereIn('code', function($query) {
-                    $query->select('desa')
-                        ->from('t_kartu_keluarga')
-                        ->distinct();
-                })
-                ->select('code', 'name')
-                ->orderBy('name')
-                ->get();
+            $data = Cache::remember('pekerjaan_list_desa', self::CACHE_TTL, function() {
+                return DB::table('indonesia_villages')
+                    ->whereIn('code', function($query) {
+                        $query->select('desa')
+                            ->from('t_kartu_keluarga')
+                            ->distinct();
+                    })
+                    ->select('code', 'name')
+                    ->orderBy('name')
+                    ->get();
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => $desas
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -589,15 +629,17 @@ class PekerjaanKecamatanController extends Controller
     public function getTop10Pekerjaan()
     {
         try {
-            $data = DB::table('t_kartu_keluarga_anggota as t1')
-                ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                ->select('t3.nama as pekerjaan', DB::raw('COUNT(*) as jumlah'))
-                ->whereNotNull('t3.nama')
-                ->whereNotIn('t3.nama', ['BELUM/TIDAK BEKERJA', 'PELAJAR/MAHASISWA'])
-                ->groupBy('t3.nama')
-                ->orderBy('jumlah', 'DESC')
-                ->limit(10)
-                ->get();
+            $data = Cache::remember('pekerjaan_top10', self::CACHE_TTL, function() {
+                return DB::table('t_kartu_keluarga_anggota as t1')
+                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                    ->select('t3.nama as pekerjaan', DB::raw('COUNT(*) as jumlah'))
+                    ->whereNotNull('t3.nama')
+                    ->whereNotIn('t3.nama', ['BELUM/TIDAK BEKERJA', 'PELAJAR/MAHASISWA'])
+                    ->groupBy('t3.nama')
+                    ->orderBy('jumlah', 'DESC')
+                    ->limit(10)
+                    ->get();
+            });
 
             return response()->json([
                 'success' => true,
@@ -617,64 +659,68 @@ class PekerjaanKecamatanController extends Controller
     public function getPekerjaanPerDesa()
     {
         try {
-            $desas = DB::table('indonesia_villages')
-                ->whereIn('code', function($query) {
-                    $query->select('desa')
-                        ->from('t_kartu_keluarga')
-                        ->distinct();
-                })
-                ->pluck('name', 'code');
+            $data = Cache::remember('pekerjaan_per_desa_stacked', self::CACHE_TTL, function() {
+                $desas = DB::table('indonesia_villages')
+                    ->whereIn('code', function($query) {
+                        $query->select('desa')
+                            ->from('t_kartu_keluarga')
+                            ->distinct();
+                    })
+                    ->pluck('name', 'code');
 
-            $result = [
-                'labels' => [],
-                'datasets' => [
-                    [
-                        'label' => 'Bekerja',
-                        'data' => [],
-                        'backgroundColor' => '#28a745'
-                    ],
-                    [
-                        'label' => 'Tidak Bekerja',
-                        'data' => [],
-                        'backgroundColor' => '#dc3545'
-                    ],
-                    [
-                        'label' => 'IRT',
-                        'data' => [],
-                        'backgroundColor' => '#17a2b8'
-                    ],
-                    [
-                        'label' => 'Pelajar/Mahasiswa',
-                        'data' => [],
-                        'backgroundColor' => '#ffc107'
+                $result = [
+                    'labels' => [],
+                    'datasets' => [
+                        [
+                            'label' => 'Bekerja',
+                            'data' => [],
+                            'backgroundColor' => '#28a745'
+                        ],
+                        [
+                            'label' => 'Tidak Bekerja',
+                            'data' => [],
+                            'backgroundColor' => '#dc3545'
+                        ],
+                        [
+                            'label' => 'IRT',
+                            'data' => [],
+                            'backgroundColor' => '#17a2b8'
+                        ],
+                        [
+                            'label' => 'Pelajar/Mahasiswa',
+                            'data' => [],
+                            'backgroundColor' => '#ffc107'
+                        ]
                     ]
-                ]
-            ];
+                ];
 
-            foreach ($desas as $code => $name) {
-                $result['labels'][] = $name;
+                foreach ($desas as $code => $name) {
+                    $result['labels'][] = $name;
 
-                $data = DB::table('t_kartu_keluarga_anggota as t1')
-                    ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                    ->where('t2.desa', $code)
-                    ->select([
-                        DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as bekerja'),
-                        DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" THEN 1 ELSE 0 END) as tidak_bekerja'),
-                        DB::raw('SUM(CASE WHEN t3.nama = "MENGURUS RUMAH TANGGA" THEN 1 ELSE 0 END) as irt'),
-                        DB::raw('SUM(CASE WHEN t3.nama = "PELAJAR/MAHASISWA" THEN 1 ELSE 0 END) as pelajar'),
-                    ])
-                    ->first();
+                    $data = DB::table('t_kartu_keluarga_anggota as t1')
+                        ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                        ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                        ->where('t2.desa', $code)
+                        ->select([
+                            DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "MENGURUS RUMAH TANGGA", "PELAJAR/MAHASISWA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as bekerja'),
+                            DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" THEN 1 ELSE 0 END) as tidak_bekerja'),
+                            DB::raw('SUM(CASE WHEN t3.nama = "MENGURUS RUMAH TANGGA" THEN 1 ELSE 0 END) as irt'),
+                            DB::raw('SUM(CASE WHEN t3.nama = "PELAJAR/MAHASISWA" THEN 1 ELSE 0 END) as pelajar'),
+                        ])
+                        ->first();
 
-                $result['datasets'][0]['data'][] = $data->bekerja;
-                $result['datasets'][1]['data'][] = $data->tidak_bekerja;
-                $result['datasets'][2]['data'][] = $data->irt;
-                $result['datasets'][3]['data'][] = $data->pelajar;
-            }
+                    $result['datasets'][0]['data'][] = $data->bekerja;
+                    $result['datasets'][1]['data'][] = $data->tidak_bekerja;
+                    $result['datasets'][2]['data'][] = $data->irt;
+                    $result['datasets'][3]['data'][] = $data->pelajar;
+                }
+
+                return $result;
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => $result
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -690,32 +736,31 @@ class PekerjaanKecamatanController extends Controller
     public function getAnalisisPekerjaAnak()
     {
         try {
-            $pekerjaAnak = DB::table('t_kartu_keluarga_anggota as t1')
-                ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) < 15')
-                ->where(function($query) {
-                    $query->whereNotIn('t3.nama', ['BELUM/TIDAK BEKERJA', 'PELAJAR/MAHASISWA', 'MENGURUS RUMAH TANGGA'])
-                        ->whereNotNull('t3.nama');
-                })
-                ->select([
-                    DB::raw('COUNT(*) as total_pekerja_anak'),
-                    DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as laki_laki'),
-                    DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as perempuan'),
-                    DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) < 10 THEN 1 ELSE 0 END) as usia_di_bawah_10'),
-                    DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 10 AND 14 THEN 1 ELSE 0 END) as usia_10_14'),
-                ])
-                ->first();
+            $data = Cache::remember('pekerjaan_analisis_pekerja_anak', self::CACHE_TTL, function() {
+                $pekerjaAnak = DB::table('t_kartu_keluarga_anggota as t1')
+                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                    ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) < 15')
+                    ->where(function($query) {
+                        $query->whereNotIn('t3.nama', ['BELUM/TIDAK BEKERJA', 'PELAJAR/MAHASISWA', 'MENGURUS RUMAH TANGGA'])
+                            ->whereNotNull('t3.nama');
+                    })
+                    ->select([
+                        DB::raw('COUNT(*) as total_pekerja_anak'),
+                        DB::raw('SUM(CASE WHEN t1.jenkel = 1 THEN 1 ELSE 0 END) as laki_laki'),
+                        DB::raw('SUM(CASE WHEN t1.jenkel = 2 THEN 1 ELSE 0 END) as perempuan'),
+                        DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) < 10 THEN 1 ELSE 0 END) as usia_di_bawah_10'),
+                        DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 10 AND 14 THEN 1 ELSE 0 END) as usia_10_14'),
+                    ])
+                    ->first();
 
-            $totalAnak = DB::table('t_kartu_keluarga_anggota')
-                ->whereRaw('TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) < 15')
-                ->count();
+                $totalAnak = DB::table('t_kartu_keluarga_anggota')
+                    ->whereRaw('TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) < 15')
+                    ->count();
 
-            $persentase = $totalAnak > 0 ?
-                number_format(($pekerjaAnak->total_pekerja_anak / $totalAnak) * 100, 2) : '0.00';
+                $persentase = $totalAnak > 0 ?
+                    number_format(($pekerjaAnak->total_pekerja_anak / $totalAnak) * 100, 2) : '0.00';
 
-            return response()->json([
-                'success' => true,
-                'data' => [
+                return [
                     'total_pekerja_anak' => $pekerjaAnak->total_pekerja_anak,
                     'laki_laki' => $pekerjaAnak->laki_laki,
                     'perempuan' => $pekerjaAnak->perempuan,
@@ -724,7 +769,12 @@ class PekerjaanKecamatanController extends Controller
                     'total_anak' => $totalAnak,
                     'persentase' => $persentase,
                     'status' => $pekerjaAnak->total_pekerja_anak > 0 ? 'perlu_perhatian' : 'aman'
-                ]
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -740,44 +790,48 @@ class PekerjaanKecamatanController extends Controller
     public function getAnalisisKesejahteraanAnak()
     {
         try {
-            $kelompokUmur = [
-                '0-4' => [0, 4, 'Balita'],
-                '5-9' => [5, 9, 'Anak Usia SD'],
-                '10-14' => [10, 14, 'Anak Usia SMP'],
-            ];
-
-            $result = [];
-
-            foreach ($kelompokUmur as $key => $range) {
-                $data = DB::table('t_kartu_keluarga_anggota as t1')
-                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                    ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN ? AND ?', [$range[0], $range[1]])
-                    ->select([
-                        DB::raw('COUNT(*) as total'),
-                        DB::raw('SUM(CASE WHEN t3.nama = "PELAJAR/MAHASISWA" THEN 1 ELSE 0 END) as sekolah'),
-                        DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" OR t3.nama IS NULL THEN 1 ELSE 0 END) as tidak_bekerja_tidak_sekolah'),
-                        DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "PELAJAR/MAHASISWA", "MENGURUS RUMAH TANGGA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as bekerja'),
-                    ])
-                    ->first();
-
-                $persenSekolah = $data->total > 0 ? number_format(($data->sekolah / $data->total) * 100, 1) : '0.0';
-                $persenBekerja = $data->total > 0 ? number_format(($data->bekerja / $data->total) * 100, 1) : '0.0';
-
-                $result[] = [
-                    'label' => $range[2] . ' (' . $key . ' tahun)',
-                    'total' => $data->total,
-                    'sekolah' => $data->sekolah,
-                    'bekerja' => $data->bekerja,
-                    'tidak_bekerja_tidak_sekolah' => $data->tidak_bekerja_tidak_sekolah,
-                    'persen_sekolah' => $persenSekolah,
-                    'persen_bekerja' => $persenBekerja,
-                    'status' => $data->bekerja > 0 ? 'perlu_perhatian' : 'normal'
+            $data = Cache::remember('pekerjaan_kesejahteraan_anak', self::CACHE_TTL, function() {
+                $kelompokUmur = [
+                    '0-4' => [0, 4, 'Balita'],
+                    '5-9' => [5, 9, 'Anak Usia SD'],
+                    '10-14' => [10, 14, 'Anak Usia SMP'],
                 ];
-            }
+
+                $result = [];
+
+                foreach ($kelompokUmur as $key => $range) {
+                    $data = DB::table('t_kartu_keluarga_anggota as t1')
+                        ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                        ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN ? AND ?', [$range[0], $range[1]])
+                        ->select([
+                            DB::raw('COUNT(*) as total'),
+                            DB::raw('SUM(CASE WHEN t3.nama = "PELAJAR/MAHASISWA" THEN 1 ELSE 0 END) as sekolah'),
+                            DB::raw('SUM(CASE WHEN t3.nama = "BELUM/TIDAK BEKERJA" OR t3.nama IS NULL THEN 1 ELSE 0 END) as tidak_bekerja_tidak_sekolah'),
+                            DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "PELAJAR/MAHASISWA", "MENGURUS RUMAH TANGGA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as bekerja'),
+                        ])
+                        ->first();
+
+                    $persenSekolah = $data->total > 0 ? number_format(($data->sekolah / $data->total) * 100, 1) : '0.0';
+                    $persenBekerja = $data->total > 0 ? number_format(($data->bekerja / $data->total) * 100, 1) : '0.0';
+
+                    $result[] = [
+                        'label' => $range[2] . ' (' . $key . ' tahun)',
+                        'total' => $data->total,
+                        'sekolah' => $data->sekolah,
+                        'bekerja' => $data->bekerja,
+                        'tidak_bekerja_tidak_sekolah' => $data->tidak_bekerja_tidak_sekolah,
+                        'persen_sekolah' => $persenSekolah,
+                        'persen_bekerja' => $persenBekerja,
+                        'status' => $data->bekerja > 0 ? 'perlu_perhatian' : 'normal'
+                    ];
+                }
+
+                return $result;
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => $result
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -793,51 +847,55 @@ class PekerjaanKecamatanController extends Controller
     public function getPekerjaAnakPerDesa()
     {
         try {
-            $desas = DB::table('indonesia_villages')
-                ->whereIn('code', function($query) {
-                    $query->select('desa')
-                        ->from('t_kartu_keluarga')
-                        ->distinct();
-                })
-                ->pluck('name', 'code');
+            $data = Cache::remember('pekerjaan_pekerja_anak_per_desa', self::CACHE_TTL, function() {
+                $desas = DB::table('indonesia_villages')
+                    ->whereIn('code', function($query) {
+                        $query->select('desa')
+                            ->from('t_kartu_keluarga')
+                            ->distinct();
+                    })
+                    ->pluck('name', 'code');
 
-            $result = [];
+                $result = [];
 
-            foreach ($desas as $code => $name) {
-                $data = DB::table('t_kartu_keluarga_anggota as t1')
-                    ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                    ->where('t2.desa', $code)
-                    ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) < 15')
-                    ->select([
-                        DB::raw('COUNT(*) as total_anak'),
-                        DB::raw('SUM(CASE WHEN t3.nama = "PELAJAR/MAHASISWA" THEN 1 ELSE 0 END) as sekolah'),
-                        DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "PELAJAR/MAHASISWA", "MENGURUS RUMAH TANGGA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as pekerja_anak'),
-                        DB::raw('SUM(CASE WHEN (t3.nama = "BELUM/TIDAK BEKERJA" OR t3.nama IS NULL) THEN 1 ELSE 0 END) as tidak_sekolah_tidak_bekerja'),
-                    ])
-                    ->first();
+                foreach ($desas as $code => $name) {
+                    $data = DB::table('t_kartu_keluarga_anggota as t1')
+                        ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                        ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                        ->where('t2.desa', $code)
+                        ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) < 15')
+                        ->select([
+                            DB::raw('COUNT(*) as total_anak'),
+                            DB::raw('SUM(CASE WHEN t3.nama = "PELAJAR/MAHASISWA" THEN 1 ELSE 0 END) as sekolah'),
+                            DB::raw('SUM(CASE WHEN t3.nama NOT IN ("BELUM/TIDAK BEKERJA", "PELAJAR/MAHASISWA", "MENGURUS RUMAH TANGGA") AND t3.nama IS NOT NULL THEN 1 ELSE 0 END) as pekerja_anak'),
+                            DB::raw('SUM(CASE WHEN (t3.nama = "BELUM/TIDAK BEKERJA" OR t3.nama IS NULL) THEN 1 ELSE 0 END) as tidak_sekolah_tidak_bekerja'),
+                        ])
+                        ->first();
 
-                $persenSekolah = $data->total_anak > 0 ?
-                    number_format(($data->sekolah / $data->total_anak) * 100, 1) : '0.0';
+                    $persenSekolah = $data->total_anak > 0 ?
+                        number_format(($data->sekolah / $data->total_anak) * 100, 1) : '0.0';
 
-                $tingkatRisiko = 'Rendah';
-                if ($data->pekerja_anak > 5) $tingkatRisiko = 'Tinggi';
-                elseif ($data->pekerja_anak > 2) $tingkatRisiko = 'Sedang';
+                    $tingkatRisiko = 'Rendah';
+                    if ($data->pekerja_anak > 5) $tingkatRisiko = 'Tinggi';
+                    elseif ($data->pekerja_anak > 2) $tingkatRisiko = 'Sedang';
 
-                $result[] = [
-                    'desa' => $name,
-                    'total_anak' => $data->total_anak,
-                    'sekolah' => $data->sekolah,
-                    'pekerja_anak' => $data->pekerja_anak,
-                    'tidak_sekolah_tidak_bekerja' => $data->tidak_sekolah_tidak_bekerja,
-                    'persen_sekolah' => $persenSekolah,
-                    'tingkat_risiko' => $tingkatRisiko
-                ];
-            }
+                    $result[] = [
+                        'desa' => $name,
+                        'total_anak' => $data->total_anak,
+                        'sekolah' => $data->sekolah,
+                        'pekerja_anak' => $data->pekerja_anak,
+                        'tidak_sekolah_tidak_bekerja' => $data->tidak_sekolah_tidak_bekerja,
+                        'persen_sekolah' => $persenSekolah,
+                        'tingkat_risiko' => $tingkatRisiko
+                    ];
+                }
+
+                return $result;
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => $result
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -853,17 +911,19 @@ class PekerjaanKecamatanController extends Controller
     public function getJenisPekerjaanAnak()
     {
         try {
-            $data = DB::table('t_kartu_keluarga_anggota as t1')
-                ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) < 15')
-                ->whereNotIn('t3.nama', ['BELUM/TIDAK BEKERJA', 'PELAJAR/MAHASISWA', 'MENGURUS RUMAH TANGGA'])
-                ->whereNotNull('t3.nama')
-                ->select('t3.nama as pekerjaan', DB::raw('COUNT(*) as jumlah'))
-                ->groupBy('t3.nama')
-                ->orderBy('jumlah', 'DESC')
-                ->get()
-                ->pluck('jumlah', 'pekerjaan')
-                ->toArray();
+            $data = Cache::remember('pekerjaan_jenis_pekerja_anak', self::CACHE_TTL, function() {
+                return DB::table('t_kartu_keluarga_anggota as t1')
+                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                    ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) < 15')
+                    ->whereNotIn('t3.nama', ['BELUM/TIDAK BEKERJA', 'PELAJAR/MAHASISWA', 'MENGURUS RUMAH TANGGA'])
+                    ->whereNotNull('t3.nama')
+                    ->select('t3.nama as pekerjaan', DB::raw('COUNT(*) as jumlah'))
+                    ->groupBy('t3.nama')
+                    ->orderBy('jumlah', 'DESC')
+                    ->get()
+                    ->pluck('jumlah', 'pekerjaan')
+                    ->toArray();
+            });
 
             return response()->json([
                 'success' => true,
@@ -966,81 +1026,85 @@ class PekerjaanKecamatanController extends Controller
     public function getIndikatorKesejahteraanAnak()
     {
         try {
-            $desas = DB::table('indonesia_villages')
-                ->whereIn('code', function($query) {
-                    $query->select('desa')
-                        ->from('t_kartu_keluarga')
-                        ->distinct();
-                })
-                ->pluck('name', 'code');
+            $data = Cache::remember('pekerjaan_indikator_kesejahteraan_anak', self::CACHE_TTL, function() {
+                $desas = DB::table('indonesia_villages')
+                    ->whereIn('code', function($query) {
+                        $query->select('desa')
+                            ->from('t_kartu_keluarga')
+                            ->distinct();
+                    })
+                    ->pluck('name', 'code');
 
-            $result = [];
+                $result = [];
 
-            foreach ($desas as $code => $name) {
-                $totalAnakWajibBelajar = DB::table('t_kartu_keluarga_anggota as t1')
-                    ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-                    ->where('t2.desa', $code)
-                    ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 7 AND 15')
-                    ->count();
+                foreach ($desas as $code => $name) {
+                    $totalAnakWajibBelajar = DB::table('t_kartu_keluarga_anggota as t1')
+                        ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                        ->where('t2.desa', $code)
+                        ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 7 AND 15')
+                        ->count();
 
-                $sekolahWajibBelajar = DB::table('t_kartu_keluarga_anggota as t1')
-                    ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                    ->where('t2.desa', $code)
-                    ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 7 AND 15')
-                    ->where('t3.nama', 'PELAJAR/MAHASISWA')
-                    ->count();
+                    $sekolahWajibBelajar = DB::table('t_kartu_keluarga_anggota as t1')
+                        ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                        ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                        ->where('t2.desa', $code)
+                        ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 7 AND 15')
+                        ->where('t3.nama', 'PELAJAR/MAHASISWA')
+                        ->count();
 
-                $pekerjaAnakWajibBelajar = DB::table('t_kartu_keluarga_anggota as t1')
-                    ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-                    ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                    ->where('t2.desa', $code)
-                    ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 7 AND 15')
-                    ->whereNotIn('t3.nama', ['BELUM/TIDAK BEKERJA', 'PELAJAR/MAHASISWA', 'MENGURUS RUMAH TANGGA'])
-                    ->whereNotNull('t3.nama')
-                    ->count();
+                    $pekerjaAnakWajibBelajar = DB::table('t_kartu_keluarga_anggota as t1')
+                        ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                        ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                        ->where('t2.desa', $code)
+                        ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) BETWEEN 7 AND 15')
+                        ->whereNotIn('t3.nama', ['BELUM/TIDAK BEKERJA', 'PELAJAR/MAHASISWA', 'MENGURUS RUMAH TANGGA'])
+                        ->whereNotNull('t3.nama')
+                        ->count();
 
-                $angkaPartisipasiSekolah = $totalAnakWajibBelajar > 0 ?
-                    number_format(($sekolahWajibBelajar / $totalAnakWajibBelajar) * 100, 1) : '0.0';
+                    $angkaPartisipasiSekolah = $totalAnakWajibBelajar > 0 ?
+                        number_format(($sekolahWajibBelajar / $totalAnakWajibBelajar) * 100, 1) : '0.0';
 
-                $angkaPekerjaAnak = $totalAnakWajibBelajar > 0 ?
-                    number_format(($pekerjaAnakWajibBelajar / $totalAnakWajibBelajar) * 100, 1) : '0.0';
+                    $angkaPekerjaAnak = $totalAnakWajibBelajar > 0 ?
+                        number_format(($pekerjaAnakWajibBelajar / $totalAnakWajibBelajar) * 100, 1) : '0.0';
 
-                $score = 100;
-                if ($angkaPartisipasiSekolah < 90) $score -= 30;
-                elseif ($angkaPartisipasiSekolah < 95) $score -= 15;
+                    $score = 100;
+                    if ($angkaPartisipasiSekolah < 90) $score -= 30;
+                    elseif ($angkaPartisipasiSekolah < 95) $score -= 15;
 
-                if ($pekerjaAnakWajibBelajar > 0) $score -= (min($pekerjaAnakWajibBelajar, 10) * 5);
+                    if ($pekerjaAnakWajibBelajar > 0) $score -= (min($pekerjaAnakWajibBelajar, 10) * 5);
 
-                $kategori = 'Sangat Baik';
-                $warna = 'success';
-                if ($score < 60) {
-                    $kategori = 'Perlu Perhatian Serius';
-                    $warna = 'danger';
-                } elseif ($score < 75) {
-                    $kategori = 'Perlu Perbaikan';
-                    $warna = 'warning';
-                } elseif ($score < 90) {
-                    $kategori = 'Cukup Baik';
-                    $warna = 'info';
+                    $kategori = 'Sangat Baik';
+                    $warna = 'success';
+                    if ($score < 60) {
+                        $kategori = 'Perlu Perhatian Serius';
+                        $warna = 'danger';
+                    } elseif ($score < 75) {
+                        $kategori = 'Perlu Perbaikan';
+                        $warna = 'warning';
+                    } elseif ($score < 90) {
+                        $kategori = 'Cukup Baik';
+                        $warna = 'info';
+                    }
+
+                    $result[] = [
+                        'desa' => $name,
+                        'total_anak_wajib_belajar' => $totalAnakWajibBelajar,
+                        'sekolah' => $sekolahWajibBelajar,
+                        'pekerja_anak' => $pekerjaAnakWajibBelajar,
+                        'angka_partisipasi_sekolah' => $angkaPartisipasiSekolah,
+                        'angka_pekerja_anak' => $angkaPekerjaAnak,
+                        'score' => $score,
+                        'kategori' => $kategori,
+                        'warna' => $warna
+                    ];
                 }
 
-                $result[] = [
-                    'desa' => $name,
-                    'total_anak_wajib_belajar' => $totalAnakWajibBelajar,
-                    'sekolah' => $sekolahWajibBelajar,
-                    'pekerja_anak' => $pekerjaAnakWajibBelajar,
-                    'angka_partisipasi_sekolah' => $angkaPartisipasiSekolah,
-                    'angka_pekerja_anak' => $angkaPekerjaAnak,
-                    'score' => $score,
-                    'kategori' => $kategori,
-                    'warna' => $warna
-                ];
-            }
+                return $result;
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => $result
+                'data' => $data
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -1056,24 +1120,71 @@ class PekerjaanKecamatanController extends Controller
     public function getListDesaPekerjaAnak()
     {
         try {
-            $desas = DB::table('indonesia_villages')
-                ->whereIn('code', function($query) {
-                    $query->select('t2.desa')
-                        ->from('t_kartu_keluarga_anggota as t1')
-                        ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
-                        ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
-                        ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) < 15')
-                        ->whereNotIn('t3.nama', ['BELUM/TIDAK BEKERJA', 'PELAJAR/MAHASISWA', 'MENGURUS RUMAH TANGGA'])
-                        ->whereNotNull('t3.nama')
-                        ->distinct();
-                })
-                ->select('code', 'name')
-                ->orderBy('name')
-                ->get();
+            $data = Cache::remember('pekerjaan_list_desa_pekerja_anak', self::CACHE_TTL, function() {
+                return DB::table('indonesia_villages')
+                    ->whereIn('code', function($query) {
+                        $query->select('t2.desa')
+                            ->from('t_kartu_keluarga_anggota as t1')
+                            ->join('t_kartu_keluarga as t2', 't1.no_kk', '=', 't2.id')
+                            ->leftJoin('m_pekerjaan as t3', 't1.jns_pekerjaan', '=', 't3.id')
+                            ->whereRaw('TIMESTAMPDIFF(YEAR, t1.tgl_lahir, CURDATE()) < 15')
+                            ->whereNotIn('t3.nama', ['BELUM/TIDAK BEKERJA', 'PELAJAR/MAHASISWA', 'MENGURUS RUMAH TANGGA'])
+                            ->whereNotNull('t3.nama')
+                            ->distinct();
+                    })
+                    ->select('code', 'name')
+                    ->orderBy('name')
+                    ->get();
+            });
 
             return response()->json([
                 'success' => true,
-                'data' => $desas
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Clear Cache (Optional - untuk admin)
+     */
+    public function clearCache()
+    {
+        try {
+            $cacheKeys = [
+                'pekerjaan_statistik_jumlah',
+                'pekerjaan_statistik_rasio',
+                'pekerjaan_distribusi_jenis',
+                'pekerjaan_distribusi_jenkel',
+                'pekerjaan_distribusi_desa',
+                'pekerjaan_distribusi_umur',
+                'pekerjaan_status',
+                'pekerjaan_umur_jenkel',
+                'pekerjaan_detail_desa',
+                'pekerjaan_usia_produktif',
+                'pekerjaan_kelompok_umur',
+                'pekerjaan_list_desa',
+                'pekerjaan_top10',
+                'pekerjaan_per_desa_stacked',
+                'pekerjaan_analisis_pekerja_anak',
+                'pekerjaan_kesejahteraan_anak',
+                'pekerjaan_pekerja_anak_per_desa',
+                'pekerjaan_jenis_pekerja_anak',
+                'pekerjaan_indikator_kesejahteraan_anak',
+                'pekerjaan_list_desa_pekerja_anak',
+            ];
+
+            foreach ($cacheKeys as $key) {
+                Cache::forget($key);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cache berhasil dihapus'
             ]);
         } catch (\Exception $e) {
             return response()->json([
