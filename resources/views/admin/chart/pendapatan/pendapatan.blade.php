@@ -1,6 +1,6 @@
 @extends('admin.layout.main')
-@section('title', 'Statistik Pekerjaan')
-@section('content-header', 'Statistik Pekerjaan')
+@section('title', 'Statistik Pendapatan')
+@section('content-header', 'Statistik Pendapatan')
 
 @section('content')
     <!-- Header Info Card -->
@@ -9,12 +9,12 @@
             <div class="stat-card-premium elevation-2">
                 <div class="stat-card-body">
                     <div class="d-flex align-items-center">
-                        <div class="stat-icon-premium icon-primary text-white">
-                            <i class="fas fa-briefcase"></i>
+                        <div class="stat-icon-premium icon-success text-white">
+                            <i class="fas fa-money-bill-wave"></i>
                         </div>
 
                         <div class="ml-3">
-                            <h5 class="font-weight-bold mb-1">Ringkasan Statistik Pekerjaan</h5>
+                            <h5 class="font-weight-bold mb-1">Ringkasan Statistik Pendapatan</h5>
                             <p class="stat-sublabel-premium mb-0">
                                 Data diperbarui secara otomatis berdasarkan database terkini
                             </p>
@@ -38,12 +38,12 @@
             <div class="stat-card-premium elevation-3">
                 <div class="stat-card-body">
                     <div class="d-flex align-items-center">
-                        <div class="stat-icon-premium icon-info text-white">
+                        <div class="stat-icon-premium icon-primary text-white">
                             <i class="fas fa-users"></i>
                         </div>
 
                         <div class="flex-grow-1 ml-3">
-                            <p class="stat-number-premium" id="total_penduduk">
+                            <p class="stat-number-premium" id="total-penduduk">
                                 <span class="skeleton-premium skeleton-number-premium"></span>
                             </p>
 
@@ -59,78 +59,78 @@
             </div>
         </div>
 
-        <!-- Usia Kerja -->
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="stat-card-premium elevation-3">
-                <div class="stat-card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="stat-icon-premium icon-primary text-white">
-                            <i class="fas fa-user-check"></i>
-                        </div>
-
-                        <div class="flex-grow-1 ml-3">
-                            <p class="stat-number-premium" id="usia_kerja">
-                                <span class="skeleton-premium skeleton-number-premium"></span>
-                            </p>
-
-                            <p class="stat-label-premium mb-0">
-                                Usia Kerja
-                                <i class="fas fa-user-check stat-mini-icon"></i>
-                            </p>
-
-                            <p class="stat-sublabel-premium mb-0">15-64 Tahun</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pekerja Aktif -->
+        <!-- Total KK -->
         <div class="col-lg-3 col-md-6 mb-4">
             <div class="stat-card-premium elevation-3">
                 <div class="stat-card-body">
                     <div class="d-flex align-items-center">
                         <div class="stat-icon-premium icon-success text-white">
-                            <i class="fas fa-briefcase"></i>
+                            <i class="fas fa-home"></i>
                         </div>
 
                         <div class="flex-grow-1 ml-3">
-                            <p class="stat-number-premium" id="pekerja_aktif">
+                            <p class="stat-number-premium" id="total-kk">
                                 <span class="skeleton-premium skeleton-number-premium"></span>
                             </p>
 
                             <p class="stat-label-premium mb-0">
-                                Pekerja Aktif
-                                <i class="fas fa-briefcase stat-mini-icon"></i>
+                                Total KK
+                                <i class="fas fa-home stat-mini-icon"></i>
                             </p>
 
-                            <p class="stat-sublabel-premium mb-0">Total Bekerja</p>
+                            <p class="stat-sublabel-premium mb-0">Kepala Keluarga</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Pengangguran -->
+        <!-- Rata-rata Anggota/KK -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card-premium elevation-3">
+                <div class="stat-card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon-premium icon-warning text-white">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+
+                        <div class="flex-grow-1 ml-3">
+                            <p class="stat-number-premium" id="rata-anggota">
+                                <span class="skeleton-premium skeleton-number-premium"></span>
+                            </p>
+
+                            <p class="stat-label-premium mb-0">
+                                Rata-rata Anggota/KK
+                                <i class="fas fa-chart-pie stat-mini-icon"></i>
+                            </p>
+
+                            <p class="stat-sublabel-premium mb-0">Per Keluarga</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lansia Rentan -->
         <div class="col-lg-3 col-md-6 mb-4">
             <div class="stat-card-premium elevation-3">
                 <div class="stat-card-body">
                     <div class="d-flex align-items-center">
                         <div class="stat-icon-premium icon-danger text-white">
-                            <i class="fas fa-user-times"></i>
+                            <i class="fas fa-user-shield"></i>
                         </div>
 
                         <div class="flex-grow-1 ml-3">
-                            <p class="stat-number-premium" id="pengangguran">
+                            <p class="stat-number-premium" id="lansia-rentan-count">
                                 <span class="skeleton-premium skeleton-number-premium"></span>
                             </p>
 
                             <p class="stat-label-premium mb-0">
-                                Pengangguran
-                                <i class="fas fa-user-times stat-mini-icon"></i>
+                                Lansia Rentan
+                                <i class="fas fa-user-shield stat-mini-icon"></i>
                             </p>
 
-                            <p class="stat-sublabel-premium mb-0">Persentase</p>
+                            <p class="stat-sublabel-premium mb-0">Perlu Perhatian</p>
                         </div>
                     </div>
                 </div>
@@ -146,82 +146,16 @@
             </h4>
         </div>
 
-        <!-- Distribusi Pekerjaan -->
-        <div class="col-lg-8 mb-4">
-            <div class="card card-widget-premium elevation-3">
-                <div class="card-header-premium bg-gradient-primary">
-                    <div class="card-header-icon">
-                        <i class="fas fa-briefcase"></i>
-                    </div>
-                    <div class="card-header-text">
-                        <h3 class="card-title-premium">Distribusi Pekerjaan</h3>
-                        <p class="card-subtitle-premium">10 Jenis Pekerjaan Terbanyak (Usia Kerja ≥15 Tahun)</p>
-                    </div>
-                    <div class="card-tools-premium">
-                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body-premium">
-                    <div id="loading-pekerjaan" class="loading-premium">
-                        <div class="spinner-premium">
-                            <div class="double-bounce1"></div>
-                            <div class="double-bounce2"></div>
-                        </div>
-                        <p class="loading-text">Memproses data...</p>
-                    </div>
-                    <div style="position: relative; height: 400px; display: none;" id="container-pekerjaan">
-                        <canvas id="chartDistribusiPekerjaan"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Distribusi Pendapatan -->
-        <div class="col-lg-4 mb-4">
+        <!-- Chart Distribusi Pendapatan -->
+        <div class="col-lg-6 mb-4">
             <div class="card card-widget-premium elevation-3">
                 <div class="card-header-premium bg-gradient-success">
-                    <div class="card-header-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <div class="card-header-text">
-                        <h3 class="card-title-premium">Distribusi Pendapatan</h3>
-                        <p class="card-subtitle-premium">Kategori Pendapatan Per Bulan</p>
-                    </div>
-                    <div class="card-tools-premium">
-                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body-premium">
-                    <div id="loading-pendapatan" class="loading-premium">
-                        <div class="spinner-premium">
-                            <div class="double-bounce1"></div>
-                            <div class="double-bounce2"></div>
-                        </div>
-                        <p class="loading-text">Memproses data...</p>
-                    </div>
-                    <div style="position: relative; height: 400px; display: none;" id="pendapatanChartWrapper">
-                        <canvas id="chartDistribusiPendapatan"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Chart Row 2: Pekerjaan vs Pendapatan -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card card-widget-premium elevation-3">
-                <div class="card-header-premium bg-gradient-info">
                     <div class="card-header-icon">
                         <i class="fas fa-chart-bar"></i>
                     </div>
                     <div class="card-header-text">
-                        <h3 class="card-title-premium">Analisis Pekerjaan vs Pendapatan</h3>
-                        <p class="card-subtitle-premium">Distribusi Pendapatan Berdasarkan Jenis Pekerjaan</p>
+                        <h3 class="card-title-premium">Distribusi Pendapatan</h3>
+                        <p class="card-subtitle-premium">Klasifikasi tingkat pendapatan penduduk</p>
                     </div>
                     <div class="card-tools-premium">
                         <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
@@ -230,97 +164,28 @@
                     </div>
                 </div>
                 <div class="card-body-premium">
-                    <div id="loading-cross" class="loading-premium">
+                    <div id="loading-distribusi" class="loading-premium">
                         <div class="spinner-premium">
                             <div class="double-bounce1"></div>
                             <div class="double-bounce2"></div>
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <div style="position: relative; height: 400px; display: none;" id="crossChartWrapper">
-                        <canvas id="chartPekerjaanVsPendapatan"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Chart Row 3: Status & Analisis -->
-    <div class="row mb-4">
-        <div class="col-lg-5 mb-4">
-            <div class="card card-widget-premium elevation-3">
-                <div class="card-header-premium" style="background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);">
-                    <div class="card-header-icon">
-                        <i class="fas fa-chart-pie"></i>
-                    </div>
-                    <div class="card-header-text">
-                        <h3 class="card-title-premium">Status Pekerjaan</h3>
-                        <p class="card-subtitle-premium">Usia Kerja (15-64 Tahun)</p>
-                    </div>
-                    <div class="card-tools-premium">
-                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body-premium">
-                    <div id="loading-status" class="loading-premium">
-                        <div class="spinner-premium">
-                            <div class="double-bounce1"></div>
-                            <div class="double-bounce2"></div>
-                        </div>
-                        <p class="loading-text">Memproses data...</p>
-                    </div>
-                    <div style="position: relative; height: 400px; display: none;" id="statusChartWrapper">
-                        <canvas id="chartStatusPekerjaan"></canvas>
-                    </div>
+                    <canvas id="chartDistribusiPendapatan" style="display:none; max-height: 320px;"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-7 mb-4">
+        <!-- Chart Jenis Kelamin -->
+        <div class="col-lg-6 mb-4">
             <div class="card card-widget-premium elevation-3">
-                <div class="card-header-premium" style="background: linear-gradient(135deg, #20c997 0%, #17a085 100%);">
-                    <div class="card-header-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="card-header-text">
-                        <h3 class="card-title-premium">Rata-rata Pendapatan Per Usia</h3>
-                        <p class="card-subtitle-premium">Usia Produktif (15-64 Tahun)</p>
-                    </div>
-                    <div class="card-tools-premium">
-                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body-premium">
-                    <div id="loading-analisis" class="loading-premium">
-                        <div class="spinner-premium">
-                            <div class="double-bounce1"></div>
-                            <div class="double-bounce2"></div>
-                        </div>
-                        <p class="loading-text">Memproses data...</p>
-                    </div>
-                    <div style="position: relative; height: 400px; display: none;" id="analisisChartWrapper">
-                        <canvas id="chartAnalisisPendapatan"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts Row 4: Gender & Usia -->
-    <div class="row mb-4">
-        <div class="col-lg-12 mb-4">
-            <div class="card card-widget-premium elevation-3">
-                <div class="card-header-premium bg-gradient-warning">
+                <div class="card-header-premium bg-gradient-primary">
                     <div class="card-header-icon">
                         <i class="fas fa-venus-mars"></i>
                     </div>
                     <div class="card-header-text">
-                        <h3 class="card-title-premium">Pekerjaan Berdasarkan Gender</h3>
-                        <p class="card-subtitle-premium">Perbandingan Laki-Laki & Perempuan</p>
+                        <h3 class="card-title-premium">Distribusi Jenis Kelamin</h3>
+                        <p class="card-subtitle-premium">Komposisi gender populasi</p>
                     </div>
                     <div class="card-tools-premium">
                         <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
@@ -329,31 +194,28 @@
                     </div>
                 </div>
                 <div class="card-body-premium">
-                    <div id="loading-gender" class="loading-premium">
+                    <div id="loading-jenkel" class="loading-premium">
                         <div class="spinner-premium">
                             <div class="double-bounce1"></div>
                             <div class="double-bounce2"></div>
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <div style="position: relative; height: 400px; display: none;" id="genderChartWrapper">
-                        <canvas id="chartPekerjaanGender"></canvas>
-                    </div>
+                    <canvas id="chartJenisKelamin" style="display:none; max-height: 320px;"></canvas>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row mb-4">
-        <div class="col-lg-12 mb-4">
+        <!-- Chart Pendapatan Berdasarkan Kelompok Umur -->
+        <div class="col-lg-6 mb-4">
             <div class="card card-widget-premium elevation-3">
-                <div class="card-header-premium bg-gradient-secondary">
+                <div class="card-header-premium bg-gradient-info">
                     <div class="card-header-icon">
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="card-header-text">
-                        <h3 class="card-title-premium">Pekerjaan Berdasarkan Usia</h3>
-                        <p class="card-subtitle-premium">Standar BPS: Anak s/d Lansia</p>
+                        <h3 class="card-title-premium">Pendapatan Berdasarkan Kelompok Umur</h3>
+                        <p class="card-subtitle-premium">Analisis pendapatan per kelompok usia</p>
                     </div>
                     <div class="card-tools-premium">
                         <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
@@ -362,32 +224,28 @@
                     </div>
                 </div>
                 <div class="card-body-premium">
-                    <div id="loading-usia" class="loading-premium">
+                    <div id="loading-umur" class="loading-premium">
                         <div class="spinner-premium">
                             <div class="double-bounce1"></div>
                             <div class="double-bounce2"></div>
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <div style="position: relative; height: 400px; display: none;" id="usiaChartWrapper">
-                        <canvas id="chartPekerjaanUsia"></canvas>
-                    </div>
+                    <canvas id="chartPendapatanUmur" style="display:none; max-height: 320px;"></canvas>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Chart Row 5: Piramida Penduduk -->
-    <div class="row mb-4">
-        <div class="col-12">
+        <!-- Chart Pendapatan Berdasarkan Jenis Kelamin -->
+        <div class="col-lg-6 mb-4">
             <div class="card card-widget-premium elevation-3">
-                <div class="card-header-premium bg-gradient-dark">
+                <div class="card-header-premium bg-gradient-secondary">
                     <div class="card-header-icon">
-                        <i class="fas fa-chart-area"></i>
+                        <i class="fas fa-chart-line"></i>
                     </div>
                     <div class="card-header-text">
-                        <h3 class="card-title-premium">Piramida Penduduk Berdasarkan Usia</h3>
-                        <p class="card-subtitle-premium">Distribusi Laki-Laki dan Perempuan Per Kategori Usia</p>
+                        <h3 class="card-title-premium">Pendapatan Berdasarkan Jenis Kelamin</h3>
+                        <p class="card-subtitle-premium">Perbandingan pendapatan gender</p>
                     </div>
                     <div class="card-tools-premium">
                         <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
@@ -396,16 +254,44 @@
                     </div>
                 </div>
                 <div class="card-body-premium">
-                    <div id="loading-piramida" class="loading-premium">
+                    <div id="loading-jenkel-pendapatan" class="loading-premium">
                         <div class="spinner-premium">
                             <div class="double-bounce1"></div>
                             <div class="double-bounce2"></div>
                         </div>
                         <p class="loading-text">Memproses data...</p>
                     </div>
-                    <div style="position: relative; height: 400px; display: none;" id="piramidaChartWrapper">
-                        <canvas id="chartPiramidaPenduduk"></canvas>
+                    <canvas id="chartPendapatanJenkel" style="display:none; max-height: 320px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Top 10 RT - Full Width -->
+        <div class="col-12 mb-4">
+            <div class="card card-widget-premium elevation-3">
+                <div class="card-header-premium bg-gradient-danger">
+                    <div class="card-header-icon">
+                        <i class="fas fa-map-marked-alt"></i>
                     </div>
+                    <div class="card-header-text">
+                        <h3 class="card-title-premium">Top 10 RT dengan Pendapatan Rendah Tertinggi</h3>
+                        <p class="card-subtitle-premium">Wilayah dengan konsentrasi pendapatan rendah</p>
+                    </div>
+                    <div class="card-tools-premium">
+                        <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body-premium">
+                    <div id="loading-rt" class="loading-premium">
+                        <div class="spinner-premium">
+                            <div class="double-bounce1"></div>
+                            <div class="double-bounce2"></div>
+                        </div>
+                        <p class="loading-text">Memproses data...</p>
+                    </div>
+                    <canvas id="chartPendapatanRT" style="display:none; max-height: 350px;"></canvas>
                 </div>
             </div>
         </div>
@@ -420,8 +306,8 @@
                         <i class="fas fa-database"></i>
                     </div>
                     <div class="card-header-text">
-                        <h3 class="card-title-premium">Data Detail Pekerjaan</h3>
-                        <p class="card-subtitle-premium">Eksplorasi data berdasarkan kategori pekerjaan</p>
+                        <h3 class="card-title-premium">Data Detail & Analisis Mendalam</h3>
+                        <p class="card-subtitle-premium">Eksplorasi data dengan filter multi-kategori</p>
                     </div>
                     <div class="card-tools-premium">
                         <button type="button" class="btn btn-tool-premium" data-card-widget="collapse">
@@ -434,134 +320,93 @@
                     <div class="pills-container-premium">
                         <ul class="nav nav-pills-premium" id="categoryTab" role="tablist">
                             <li class="nav-item-premium">
-                                <a class="nav-link-premium active" id="pekerjaan-tab" data-toggle="pill"
-                                    href="#pekerjaan-kategori">
-                                    <div class="pill-icon"><i class="fas fa-briefcase"></i></div>
-                                    <div class="pill-text">
-                                        <span class="pill-title">Pekerjaan</span>
-                                        <span class="pill-subtitle">Jenis pekerjaan</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="nav-item-premium">
-                                <a class="nav-link-premium" id="pendapatan-tab" data-toggle="pill"
-                                    href="#pendapatan-kategori">
-                                    <div class="pill-icon"><i class="fas fa-money-bill-wave"></i></div>
-                                    <div class="pill-text">
-                                        <span class="pill-title">Pendapatan</span>
-                                        <span class="pill-subtitle">Kategori pendapatan</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="nav-item-premium">
-                                <a class="nav-link-premium" id="status-tab" data-toggle="pill" href="#status-kategori">
-                                    <div class="pill-icon"><i class="fas fa-user-check"></i></div>
-                                    <div class="pill-text">
-                                        <span class="pill-title">Status Pekerjaan</span>
-                                        <span class="pill-subtitle">Status ketenagakerjaan</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="nav-item-premium">
-                                <a class="nav-link-premium" id="gender-tab" data-toggle="pill" href="#gender-kategori">
-                                    <div class="pill-icon"><i class="fas fa-venus-mars"></i></div>
-                                    <div class="pill-text">
-                                        <span class="pill-title">Gender</span>
-                                        <span class="pill-subtitle">Per jenis kelamin</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="nav-item-premium">
-                                <a class="nav-link-premium" id="usia-tab" data-toggle="pill" href="#usia-kategori">
+                                <a class="nav-link-premium active" id="semua-tab" data-toggle="pill"
+                                    href="#semua-penduduk">
                                     <div class="pill-icon"><i class="fas fa-users"></i></div>
                                     <div class="pill-text">
-                                        <span class="pill-title">Kategori Usia</span>
-                                        <span class="pill-subtitle">Kelompok umur</span>
+                                        <span class="pill-title">Semua Penduduk</span>
+                                        <span class="pill-subtitle">Data lengkap</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="nav-item-premium">
+                                <a class="nav-link-premium" id="lansia-tab" data-toggle="pill"
+                                    href="#tab-lansia-rentan">
+                                    <div class="pill-icon"><i class="fas fa-user-shield"></i></div>
+                                    <div class="pill-text">
+                                        <span class="pill-title">Lansia Rentan</span>
+                                        <span class="pill-subtitle">Perlu perhatian</span>
                                     </div>
                                 </a>
                             </li>
                         </ul>
                     </div>
 
-                    <!-- Tab Content -->
                     <div class="tab-content-premium" id="categoryTabContent">
-                        <!-- Tab Pekerjaan -->
-                        <div class="tab-pane fade show active" id="pekerjaan-kategori">
+                        <!-- Tab Semua Penduduk -->
+                        <div class="tab-pane fade show active" id="semua-penduduk" role="tabpanel">
+                            <!-- Filter Section -->
                             <div class="filter-section-premium">
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        <label class="filter-label">Filter Jenis Pekerjaan:</label>
-                                        <select class="form-control select2-premium" id="filter-pekerjaan">
-                                            <option value="">Semua Pekerjaan</option>
+                                    <div class="col-md-3 mb-3">
+                                        <label class="filter-label-premium">
+                                            <i class="fas fa-money-bill-wave mr-2"></i>Filter Pendapatan
+                                        </label>
+                                        <select class="form-control select2-premium" id="filter-pendapatan">
+                                            <option value="">Semua Pendapatan</option>
+                                            <option value="0-1 Juta">0-1 Juta</option>
+                                            <option value="1-2 Juta">1-2 Juta</option>
+                                            <option value="2-3 Juta">2-3 Juta</option>
+                                            <option value="3-5 Juta">3-5 Juta</option>
+                                            <option value=">5 Juta">>5 Juta</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-2 d-flex align-items-end">
-                                        <button class="btn btn-primary btn-block btn-filter"
-                                            onclick="applyFilter('pekerjaan')">
-                                            <i class="fas fa-filter mr-1"></i> Terapkan
+                                    <div class="col-md-3 mb-3">
+                                        <label class="filter-label-premium">
+                                            <i class="fas fa-birthday-cake mr-2"></i>Filter Kelompok Umur
+                                        </label>
+                                        <select class="form-control select2-premium" id="filter-kelompok-umur">
+                                            <option value="">Semua Umur</option>
+                                            <option value="<25">&lt;25 tahun</option>
+                                            <option value="26-40">26-40 tahun</option>
+                                            <option value="41-60">41-60 tahun</option>
+                                            <option value=">60">&gt;60 tahun</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label class="filter-label-premium">
+                                            <i class="fas fa-map-marker-alt mr-2"></i>Filter RT/RW
+                                        </label>
+                                        <select class="form-control select2-premium" id="filter-rt-rw">
+                                            <option value="">Semua RT/RW</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end mb-3">
+                                        <button type="button" class="btn btn-reset-premium btn-block elevation-2"
+                                            id="reset-filter">
+                                            <i class="fas fa-sync-alt mr-2"></i>Reset Filter
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="table-container-premium">
-                                <div class="table-responsive">
-                                    <div class="table-responsive">
-                                        <table id="table-pekerjaan" class="table-premium">
-                                            <thead>
-                                                <tr>
-                                                    <th style="width: 1%">No</th>
-                                                    <th>NIK</th>
-                                                    <th>Nama</th>
-                                                    <th>Usia</th>
-                                                    <th>JK</th>
-                                                    <th>Pekerjaan</th>
-                                                    <th>Pendapatan</th>
-                                                    <th>Alamat</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody></tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Tab Pendapatan -->
-                        <div class="tab-pane fade" id="pendapatan-kategori">
-                            <div class="filter-section-premium">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <label class="filter-label">Filter Kategori Pendapatan:</label>
-                                        <select class="form-control filter-select" id="filter-pendapatan">
-                                            <option value="">Semua Kategori</option>
-                                            <option value="Tidak Ada">Tidak Ada</option>
-                                            <option value="0-1 Juta">0 - 1 Juta</option>
-                                            <option value="1-2 Juta">1 - 2 Juta</option>
-                                            <option value="2-5 Juta">2 - 5 Juta</option>
-                                            <option value=">5 Juta">&gt; 5 Juta</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2 d-flex align-items-end">
-                                        <button class="btn btn-primary btn-block btn-filter"
-                                            onclick="applyFilter('pendapatan')">
-                                            <i class="fas fa-filter mr-1"></i> Terapkan
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <!-- Table Section -->
                             <div class="table-container-premium">
                                 <div class="table-responsive">
-                                    <table id="table-pendapatan" class="table-premium">
+                                    <table class="table-premium" id="table-penduduk">
                                         <thead>
-                                            <tr class="nowrap">
-                                                <th style="width: 1%">No</th>
+                                            <tr>
+                                                <th width="5%">NO</th>
                                                 <th>NIK</th>
                                                 <th>Nama</th>
-                                                <th>Usia</th>
                                                 <th>JK</th>
-                                                <th>Pekerjaan</th>
+                                                <th>Tgl Lahir</th>
+                                                <th>Umur</th>
+                                                <th>Alamat</th>
+                                                <th>RT/RW</th>
                                                 <th>Pendapatan</th>
-                                                <th>Alamat</th>
+                                                <th>BPJS</th>
+                                                <th>Pembayaran BPJS</th>
                                             </tr>
                                         </thead>
                                         <tbody></tbody>
@@ -570,134 +415,66 @@
                             </div>
                         </div>
 
-                        <!-- Tab Status -->
-                        <div class="tab-pane fade" id="status-kategori">
+                        <!-- Tab Lansia Rentan -->
+                        <div class="tab-pane fade" id="tab-lansia-rentan" role="tabpanel">
+                            <div class="alert-premium alert-warning-premium">
+                                <div class="alert-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="alert-content">
+                                    <h5 class="alert-title">Perhatian Khusus</h5>
+                                    <p class="alert-text">Data berikut menampilkan lansia dengan pendapatan rendah yang
+                                        memerlukan perhatian khusus.</p>
+                                </div>
+                            </div>
+
+                            <!-- Filter Section -->
                             <div class="filter-section-premium">
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        <label class="filter-label">Filter Status Pekerjaan:</label>
-                                        <select class="form-control filter-select" id="filter-status">
-                                            <option value="">Semua Status</option>
-                                            <option value="Bekerja">Bekerja</option>
-                                            <option value="Pengangguran">Pengangguran</option>
-                                            <option value="Mengurus Rumah Tangga">Mengurus Rumah Tangga</option>
-                                            <option value="Pelajar/Mahasiswa">Pelajar/Mahasiswa</option>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="filter-label-premium">
+                                            <i class="fas fa-money-bill-wave mr-2"></i>Filter Pendapatan
+                                        </label>
+                                        <select class="form-control select2-premium" id="filter-lansia-pendapatan">
+                                            <option value="">Semua Pendapatan</option>
+                                            <option value="0-1 Juta">0-1 Juta</option>
+                                            <option value="1-2 Juta">1-2 Juta</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-2 d-flex align-items-end">
-                                        <button class="btn btn-primary btn-block btn-filter"
-                                            onclick="applyFilter('status')">
-                                            <i class="fas fa-filter mr-1"></i> Terapkan
+                                    <div class="col-md-4 mb-3">
+                                        <label class="filter-label-premium">
+                                            <i class="fas fa-map-marker-alt mr-2"></i>Filter RT/RW
+                                        </label>
+                                        <select class="form-control select2-premium" id="filter-lansia-rt-rw">
+                                            <option value="">Semua RT/RW</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 d-flex align-items-end mb-3">
+                                        <button type="button" class="btn btn-reset-premium btn-block elevation-2"
+                                            id="reset-filter-lansia">
+                                            <i class="fas fa-sync-alt mr-2"></i>Reset Filter
                                         </button>
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Table Section -->
                             <div class="table-container-premium">
                                 <div class="table-responsive">
-                                    <table id="table-status" class="table-premium">
+                                    <table class="table-premium" id="table-lansia">
                                         <thead>
-                                            <tr class="nowrap">
-                                                <th style="width: 1%">No</th>
+                                            <tr>
+                                                <th width="5%">NO</th>
                                                 <th>NIK</th>
                                                 <th>Nama</th>
-                                                <th>Usia</th>
                                                 <th>JK</th>
-                                                <th>Pekerjaan</th>
-                                                <th>Status Pekerjaan</th>
+                                                <th>Tgl Lahir</th>
+                                                <th>Umur</th>
+                                                <th>Alamat</th>
+                                                <th>RT/RW</th>
                                                 <th>Pendapatan</th>
-                                                <th>Alamat</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Tab Gender -->
-                        <div class="tab-pane fade" id="gender-kategori">
-                            <div class="filter-section-premium">
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <label class="filter-label">Filter Jenis Kelamin:</label>
-                                        <select class="form-control filter-select" id="filter-gender">
-                                            <option value="">Semua</option>
-                                            <option value="L">Laki-Laki</option>
-                                            <option value="P">Perempuan</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="filter-label">Filter Pekerjaan:</label>
-                                        <select class="form-control filter-select" id="filter-gender-pekerjaan">
-                                            <option value="">Semua Pekerjaan</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2 d-flex align-items-end">
-                                        <button class="btn btn-primary btn-block btn-filter"
-                                            onclick="applyFilter('gender')">
-                                            <i class="fas fa-filter mr-1"></i> Terapkan
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="table-container-premium">
-                                <div class="table-responsive">
-                                    <table id="table-gender" class="table-premium">
-                                        <thead>
-                                            <tr class="nowrap">
-                                                <th style="width: 1%">No</th>
-                                                <th>NIK</th>
-                                                <th>Nama</th>
-                                                <th>Usia</th>
-                                                <th>JK</th>
-                                                <th>Pekerjaan</th>
-                                                <th>Alamat</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Tab Usia -->
-                        <div class="tab-pane fade" id="usia-kategori">
-                            <div class="filter-section-premium">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <label class="filter-label">Filter Kategori Usia:</label>
-                                        <select class="form-control filter-select" id="filter-usia">
-                                            <option value="">Semua Kategori</option>
-                                            <option value="Anak (<15)">Anak (<15)< /option>
-                                            <option value="Usia Sekolah (15-17)">Usia Sekolah (15-17)</option>
-                                            <option value="Produktif Awal (18-24)">Produktif Awal (18-24)</option>
-                                            <option value="Produktif Utama (25-44)">Produktif Utama (25-44)</option>
-                                            <option value="Produktif Akhir (45-59)">Produktif Akhir (45-59)</option>
-                                            <option value="Lansia (≥60)">Lansia (≥60)</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2 d-flex align-items-end">
-                                        <button class="btn btn-primary btn-block btn-filter"
-                                            onclick="applyFilter('usia')">
-                                            <i class="fas fa-filter mr-1"></i> Terapkan
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="table-container-premium">
-                                <div class="table-responsive">
-                                    <table id="table-usia" class="table-premium">
-                                        <thead>
-                                            <tr class="nowrap">
-                                                <th style="width: 1%">No</th>
-                                                <th>NIK</th>
-                                                <th>Nama</th>
-                                                <th>Tanggal Lahir</th>
-                                                <th>Usia</th>
-                                                <th>Kategori Usia</th>
-                                                <th>JK</th>
-                                                <th>Pekerjaan</th>
-                                                <th>Alamat</th>
+                                                <th>BPJS</th>
+                                                <th>Pembayaran BPJS</th>
                                             </tr>
                                         </thead>
                                         <tbody></tbody>
@@ -718,1359 +495,667 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            // Initialize Select2 with premium theme
-            $('.select2-primary').select2({
-                theme: 'bootstrap4',
-                width: '100%',
-                placeholder: 'Pilih RT/RW'
-            });
-
+            // Initialize Select2
             $('.select2-premium').select2({
                 theme: 'bootstrap4',
                 width: '100%'
             });
 
-            $('.select2-success').select2({
-                theme: 'bootstrap4',
-                width: '100%',
-                placeholder: 'Pilih Kampung'
+            // ==================== LOAD STATISTIK DASAR ====================
+            $.ajax({
+                url: '{{ route('pendapatan.statistik.dasar') }}',
+                method: 'GET',
+                success: function(data) {
+                    $('#total-penduduk').text(data.total_penduduk.toLocaleString('id-ID'));
+                    $('#total-kk').text(data.total_kk.toLocaleString('id-ID'));
+                    $('#rata-anggota').text(data.rata_anggota_per_kk);
+
+                    // Chart Jenis Kelamin
+                    $('#loading-jenkel').fadeOut(300, function() {
+                        $('#chartJenisKelamin').fadeIn(400);
+
+                        new Chart($('#chartJenisKelamin'), {
+                            type: 'doughnut',
+                            data: {
+                                labels: Object.keys(data.jenis_kelamin),
+                                datasets: [{
+                                    data: Object.values(data.jenis_kelamin),
+                                    backgroundColor: [
+                                        'rgba(55, 136, 216, 0.8)',
+                                        'rgba(232, 62, 140, 0.8)'
+                                    ],
+                                    borderWidth: 4,
+                                    borderColor: '#fff',
+                                    hoverBorderWidth: 6,
+                                    hoverOffset: 10
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            font: {
+                                                size: 13,
+                                                weight: '600'
+                                            },
+                                            usePointStyle: true,
+                                            padding: 20,
+                                            pointStyle: 'circle'
+                                        }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(0,0,0,0.8)',
+                                        padding: 15,
+                                        cornerRadius: 8,
+                                        titleFont: {
+                                            size: 14,
+                                            weight: 'bold'
+                                        },
+                                        bodyFont: {
+                                            size: 13
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+                }
             });
 
-            $('.select2-info').select2({
-                theme: 'bootstrap4',
-                width: '100%',
-                placeholder: 'Pilih Jenis Kelamin'
+            // ==================== DISTRIBUSI PENDAPATAN ====================
+            $.ajax({
+                url: '{{ route('pendapatan.distribusi.pendapatan') }}',
+                method: 'GET',
+                success: function(data) {
+                    const labels = Object.keys(data);
+                    const values = labels.map(k => data[k].jumlah);
+
+                    $('#loading-distribusi').fadeOut(300, function() {
+                        $('#chartDistribusiPendapatan').fadeIn(400);
+
+                        new Chart($('#chartDistribusiPendapatan'), {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Jumlah Penduduk',
+                                    data: values,
+                                    backgroundColor: 'rgba(40, 167, 69, 0.8)',
+                                    borderColor: '#28a745',
+                                    borderWidth: 2,
+                                    borderRadius: 10
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(0,0,0,0.8)',
+                                        padding: 15,
+                                        cornerRadius: 8
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            font: {
+                                                size: 12
+                                            }
+                                        },
+                                        grid: {
+                                            color: 'rgba(0,0,0,0.03)'
+                                        }
+                                    },
+                                    x: {
+                                        ticks: {
+                                            font: {
+                                                size: 12,
+                                                weight: 'bold'
+                                            }
+                                        },
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+                }
             });
 
-            // Chart instances
-            let charts = {
-                pekerjaan: null,
-                pendapatan: null,
-                cross: null,
-                gender: null,
-                usia: null,
-                piramida: null,
-                status: null,
-                analisis: null
-            };
+            // ==================== PENDAPATAN PER UMUR ====================
+            $.ajax({
+                url: '{{ route('pendapatan.pendapatan.per.umur') }}',
+                method: 'GET',
+                success: function(data) {
+                    const kelompokUmur = Object.keys(data);
+                    const pendapatanKategori = ['0-1 Juta', '1-2 Juta', '2-3 Juta', '3-5 Juta',
+                        '>5 Juta'
+                    ];
+                    const colors = [
+                        'rgba(220, 53, 69, 0.8)',
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(23, 162, 184, 0.8)',
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(111, 66, 193, 0.8)'
+                    ];
 
-            // DataTable instances
-            let dataTables = {
-                pekerjaan: null,
-                pendapatan: null,
-                status: null,
-                gender: null,
-                usia: null
-            };
+                    const datasets = pendapatanKategori.map((kategori, idx) => ({
+                        label: kategori,
+                        data: kelompokUmur.map(umur => data[umur][kategori] || 0),
+                        backgroundColor: colors[idx],
+                        borderWidth: 2,
+                        borderRadius: 10
+                    }));
 
-            // Color schemes
-            const colors = {
-                primary: ['#007bff', '#0056b3', '#004085', '#003d82', '#003366'],
-                success: ['#28a745', '#20c997', '#17a2b8', '#138496', '#0e6e7e'],
-                info: ['#17a2b8', '#138496', '#117a8b', '#0c6980', '#0a5875'],
-                warm: ['#fd7e14', '#ffc107', '#28a745', '#20c997', '#17a2b8'],
-                multi: ['#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#20c997', '#fd7e14', '#e83e8c'],
-                status: ['#28a745', '#dc3545', '#ff6b6b', '#ffc107']
-            };
+                    $('#loading-umur').fadeOut(300, function() {
+                        $('#chartPendapatanUmur').fadeIn(400);
 
-            // Load KPI Data
-            function loadKPIData() {
-                $.ajax({
-                    url: '{{ route('pekerjaan.api.kpi') }}',
-                    method: 'GET',
-                    success: function(data) {
-                        $('#total_penduduk').html(data.total_penduduk.toLocaleString('id-ID'));
-                        $('#usia_kerja').html(
-                            data.usia_kerja.toLocaleString('id-ID') +
-                            ' <small style="font-size: 0.75rem; opacity: 0.9;">(' +
-                            ((data.usia_kerja / data.total_penduduk) * 100).toFixed(1) +
-                            '%)</small>'
-                        );
-                        $('#pekerja_aktif').html(
-                            data.pekerja_aktif.toLocaleString('id-ID') +
-                            ' <small style="font-size: 0.75rem; opacity: 0.9;">(TPAK: ' +
-                            data.tpak + '%)</small>'
-                        );
-                        $('#pengangguran').html(
-                            data.persentase_pengangguran + '% ' +
-                            '<small style="font-size: 0.75rem; opacity: 0.9;">(' +
-                            data.pengangguran.toLocaleString('id-ID') + ' orang)</small>'
-                        );
-                    }
-                });
-            }
-
-            // Load Distribusi Pekerjaan
-            function loadDistribusiPekerjaan() {
-                $.ajax({
-                    url: '{{ route('pekerjaan.api.distribusi.pekerjaan') }}',
-                    method: 'GET',
-                    success: function(data) {
-                        // Populate filter dropdown
-                        $('#filter-pekerjaan, #filter-gender-pekerjaan').html(
-                            '<option value="">Semua Pekerjaan</option>');
-                        data.forEach(item => {
-                            $('#filter-pekerjaan, #filter-gender-pekerjaan').append(
-                                `<option value="${item.pekerjaan}">${item.pekerjaan} (${item.jumlah})</option>`
-                            );
-                        });
-
-                        $('#loading-pekerjaan').fadeOut(300, function() {
-                            $('#container-pekerjaan').fadeIn(400);
-
-                            const ctx = document.getElementById('chartDistribusiPekerjaan')
-                                .getContext('2d');
-                            if (charts.pekerjaan) charts.pekerjaan.destroy();
-
-                            charts.pekerjaan = new Chart(ctx, {
-                                type: 'bar',
-                                data: {
-                                    labels: data.map(item => item.pekerjaan),
-                                    datasets: [{
-                                        label: 'Jumlah Penduduk',
-                                        data: data.map(item => item.jumlah),
-                                        backgroundColor: colors.primary[0],
-                                        borderColor: colors.primary[1],
-                                        borderWidth: 1,
-                                        borderRadius: 10,
-                                        barThickness: 25
-                                    }]
+                        new Chart($('#chartPendapatanUmur'), {
+                            type: 'bar',
+                            data: {
+                                labels: kelompokUmur,
+                                datasets: datasets
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            font: {
+                                                size: 13,
+                                                weight: '600'
+                                            },
+                                            usePointStyle: true,
+                                            padding: 20,
+                                            pointStyle: 'circle'
+                                        }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(0,0,0,0.8)',
+                                        padding: 15,
+                                        cornerRadius: 8
+                                    }
                                 },
-                                options: {
-                                    indexAxis: 'y',
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
+                                scales: {
+                                    x: {
+                                        stacked: true,
+                                        ticks: {
+                                            font: {
+                                                size: 12,
+                                                weight: 'bold'
+                                            }
+                                        },
+                                        grid: {
                                             display: false
-                                        },
-                                        tooltip: {
-                                            backgroundColor: 'rgba(0,0,0,0.8)',
-                                            padding: 15,
-                                            cornerRadius: 8,
-                                            titleFont: {
-                                                size: 14,
-                                                weight: 'bold'
-                                            },
-                                            bodyFont: {
-                                                size: 13
-                                            },
-                                            callbacks: {
-                                                label: function(context) {
-                                                    return 'Jumlah: ' + context
-                                                        .parsed.x
-                                                        .toLocaleString() +
-                                                        ' orang';
-                                                }
-                                            }
                                         }
                                     },
-                                    scales: {
-                                        x: {
-                                            beginAtZero: true,
-                                            grid: {
-                                                color: 'rgba(0,0,0,0.03)'
-                                            },
-                                            ticks: {
-                                                font: {
-                                                    size: 12
-                                                },
-                                                callback: function(value) {
-                                                    return value.toLocaleString();
-                                                }
+                                    y: {
+                                        stacked: true,
+                                        beginAtZero: true,
+                                        ticks: {
+                                            font: {
+                                                size: 12
                                             }
                                         },
-                                        y: {
-                                            grid: {
-                                                display: false
+                                        grid: {
+                                            color: 'rgba(0,0,0,0.03)'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+
+            // ==================== PENDAPATAN PER JENIS KELAMIN ====================
+            $.ajax({
+                url: '{{ route('pendapatan.pendapatan.per.jenkel') }}',
+                method: 'GET',
+                success: function(data) {
+                    const pendapatanKategori = ['0-1 Juta', '1-2 Juta', '2-3 Juta', '3-5 Juta',
+                        '>5 Juta'
+                    ];
+
+                    const datasets = [{
+                            label: 'Laki-laki',
+                            data: pendapatanKategori.map(k => data['Laki-laki'][k] || 0),
+                            backgroundColor: 'rgba(55, 136, 216, 0.8)',
+                            borderColor: '#3788d8',
+                            borderWidth: 2,
+                            borderRadius: 10
+                        },
+                        {
+                            label: 'Perempuan',
+                            data: pendapatanKategori.map(k => data['Perempuan'][k] || 0),
+                            backgroundColor: 'rgba(232, 62, 140, 0.8)',
+                            borderColor: '#e83e8c',
+                            borderWidth: 2,
+                            borderRadius: 10
+                        }
+                    ];
+
+                    $('#loading-jenkel-pendapatan').fadeOut(300, function() {
+                        $('#chartPendapatanJenkel').fadeIn(400);
+
+                        new Chart($('#chartPendapatanJenkel'), {
+                            type: 'bar',
+                            data: {
+                                labels: pendapatanKategori,
+                                datasets: datasets
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            font: {
+                                                size: 13,
+                                                weight: '600'
                                             },
-                                            ticks: {
-                                                font: {
-                                                    size: 11,
-                                                    weight: 'bold'
-                                                },
-                                                autoSkip: false,
-                                                maxRotation: 0,
-                                                minRotation: 0
-                                            }
+                                            usePointStyle: true,
+                                            padding: 20,
+                                            pointStyle: 'circle'
                                         }
                                     },
-                                    layout: {
-                                        padding: {
-                                            left: 10,
-                                            right: 20,
-                                            top: 10,
-                                            bottom: 10
-                                        }
+                                    tooltip: {
+                                        backgroundColor: 'rgba(0,0,0,0.8)',
+                                        padding: 15,
+                                        cornerRadius: 8
                                     }
-                                }
-                            });
-                        });
-                    }
-                });
-            }
-
-            // Load Distribusi Pendapatan
-            function loadDistribusiPendapatan() {
-                $.ajax({
-                    url: '{{ route('pekerjaan.api.distribusi.pendapatan') }}',
-                    method: 'GET',
-                    success: function(data) {
-                        $('#loading-pendapatan').fadeOut(300, function() {
-                            $('#pendapatanChartWrapper').fadeIn(400);
-
-                            const ctx = document.getElementById('chartDistribusiPendapatan')
-                                .getContext('2d');
-                            if (charts.pendapatan) charts.pendapatan.destroy();
-
-                            charts.pendapatan = new Chart(ctx, {
-                                type: 'doughnut',
-                                data: {
-                                    labels: data.map(item => item.kategori),
-                                    datasets: [{
-                                        data: data.map(item => item.jumlah),
-                                        backgroundColor: colors.success,
-                                        borderWidth: 4,
-                                        borderColor: '#fff',
-                                        hoverBorderWidth: 6,
-                                        hoverOffset: 10
-                                    }]
                                 },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            position: 'bottom',
-                                            labels: {
-                                                padding: 20,
-                                                font: {
-                                                    size: 13,
-                                                    weight: '600'
-                                                },
-                                                usePointStyle: true,
-                                                pointStyle: 'circle'
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            font: {
+                                                size: 12
                                             }
                                         },
-                                        tooltip: {
-                                            backgroundColor: 'rgba(0,0,0,0.8)',
-                                            padding: 15,
-                                            cornerRadius: 8,
-                                            titleFont: {
-                                                size: 14,
-                                                weight: 'bold'
-                                            },
-                                            bodyFont: {
-                                                size: 13
-                                            },
-                                            callbacks: {
-                                                label: function(context) {
-                                                    const total = context.dataset
-                                                        .data.reduce((
-                                                            a, b) => a + b, 0);
-                                                    const percentage = ((context
-                                                        .parsed /
-                                                        total) * 100).toFixed(1);
-                                                    return context.label + ': ' +
-                                                        context.parsed
-                                                        .toLocaleString() + ' (' +
-                                                        percentage +
-                                                        '%)';
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        });
-                    }
-                });
-            }
-
-            // Load Pekerjaan vs Pendapatan
-            function loadPekerjaanVsPendapatan() {
-                $.ajax({
-                    url: '{{ route('pekerjaan.api.pekerjaan.pendapatan') }}',
-                    method: 'GET',
-                    success: function(data) {
-                        $('#loading-cross').fadeOut(300, function() {
-                            $('#crossChartWrapper').fadeIn(400);
-
-                            const ctx = document.getElementById('chartPekerjaanVsPendapatan')
-                                .getContext('2d');
-                            if (charts.cross) charts.cross.destroy();
-
-                            const datasets = data.datasets.map((dataset, index) => ({
-                                label: dataset.label,
-                                data: dataset.data,
-                                backgroundColor: colors.info[index % colors.info
-                                    .length],
-                                borderWidth: 0,
-                                borderRadius: 8
-                            }));
-
-                            charts.cross = new Chart(ctx, {
-                                type: 'bar',
-                                data: {
-                                    labels: data.labels,
-                                    datasets: datasets
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            position: 'top',
-                                            labels: {
-                                                padding: 15,
-                                                font: {
-                                                    size: 13,
-                                                    weight: '600'
-                                                },
-                                                usePointStyle: true,
-                                                pointStyle: 'circle'
-                                            }
-                                        },
-                                        tooltip: {
-                                            mode: 'index',
-                                            intersect: false,
-                                            backgroundColor: 'rgba(0,0,0,0.8)',
-                                            padding: 15,
-                                            cornerRadius: 8,
-                                            titleFont: {
-                                                size: 14,
-                                                weight: 'bold'
-                                            },
-                                            bodyFont: {
-                                                size: 13
-                                            },
-                                            callbacks: {
-                                                footer: function(tooltipItems) {
-                                                    let sum = 0;
-                                                    tooltipItems.forEach(function(
-                                                        tooltipItem) {
-                                                        sum += tooltipItem
-                                                            .parsed.y;
-                                                    });
-                                                    return 'Total: ' + sum
-                                                        .toLocaleString() +
-                                                        ' orang';
-                                                }
-                                            }
+                                        grid: {
+                                            color: 'rgba(0,0,0,0.03)'
                                         }
                                     },
-                                    scales: {
-                                        x: {
-                                            stacked: true,
-                                            grid: {
-                                                display: false
-                                            },
-                                            ticks: {
-                                                font: {
-                                                    size: 11,
-                                                    weight: 'bold'
-                                                }
-                                            }
-                                        },
-                                        y: {
-                                            stacked: true,
-                                            beginAtZero: true,
-                                            grid: {
-                                                color: 'rgba(0,0,0,0.03)'
-                                            },
-                                            ticks: {
-                                                font: {
-                                                    size: 12
-                                                },
-                                                callback: function(value) {
-                                                    return value.toLocaleString();
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        });
-                    }
-                });
-            }
-
-            // Load Status Pekerjaan
-            function loadStatusPekerjaan() {
-                $.ajax({
-                    url: '{{ route('pekerjaan.api.status.pekerjaan') }}',
-                    method: 'GET',
-                    success: function(data) {
-                        $('#loading-status').fadeOut(300, function() {
-                            $('#statusChartWrapper').fadeIn(400);
-
-                            const ctx = document.getElementById('chartStatusPekerjaan')
-                                .getContext('2d');
-                            if (charts.status) charts.status.destroy();
-
-                            charts.status = new Chart(ctx, {
-                                type: 'pie',
-                                data: {
-                                    labels: data.map(item => item.status),
-                                    datasets: [{
-                                        data: data.map(item => item.jumlah),
-                                        backgroundColor: colors.status,
-                                        borderWidth: 4,
-                                        borderColor: '#fff',
-                                        hoverBorderWidth: 6,
-                                        hoverOffset: 10
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            position: 'bottom',
-                                            labels: {
-                                                padding: 20,
-                                                font: {
-                                                    size: 13,
-                                                    weight: '600'
-                                                },
-                                                usePointStyle: true,
-                                                pointStyle: 'circle'
-                                            }
-                                        },
-                                        tooltip: {
-                                            backgroundColor: 'rgba(0,0,0,0.8)',
-                                            padding: 15,
-                                            cornerRadius: 8,
-                                            titleFont: {
-                                                size: 14,
+                                    x: {
+                                        ticks: {
+                                            font: {
+                                                size: 12,
                                                 weight: 'bold'
-                                            },
-                                            bodyFont: {
-                                                size: 13
-                                            },
-                                            callbacks: {
-                                                label: function(context) {
-                                                    const total = context.dataset
-                                                        .data.reduce((
-                                                            a, b) => a + b, 0);
-                                                    const percentage = ((context
-                                                        .parsed /
-                                                        total) * 100).toFixed(1);
-                                                    return context.label + ': ' +
-                                                        context.parsed
-                                                        .toLocaleString() + ' (' +
-                                                        percentage +
-                                                        '%)';
-                                                }
                                             }
-                                        }
-                                    }
-                                }
-                            });
-                        });
-                    }
-                });
-            }
-
-            // Load Analisis Pendapatan
-            function loadAnalisisPendapatan() {
-                $.ajax({
-                    url: '{{ route('pekerjaan.api.analisis.pendapatan') }}',
-                    method: 'GET',
-                    success: function(data) {
-                        $('#loading-analisis').fadeOut(300, function() {
-                            $('#analisisChartWrapper').fadeIn(400);
-
-                            const ctx = document.getElementById('chartAnalisisPendapatan')
-                                .getContext('2d');
-                            if (charts.analisis) charts.analisis.destroy();
-
-                            charts.analisis = new Chart(ctx, {
-                                type: 'bar',
-                                data: {
-                                    labels: data.map(item => item.kategori_usia),
-                                    datasets: [{
-                                        label: 'Rata-rata Pendapatan',
-                                        data: data.map(item => item
-                                            .rata_pendapatan),
-                                        backgroundColor: '#20c997',
-                                        borderColor: '#17a085',
-                                        borderWidth: 1,
-                                        borderRadius: 10,
-                                        barThickness: 40
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
+                                        },
+                                        grid: {
                                             display: false
-                                        },
-                                        tooltip: {
-                                            backgroundColor: 'rgba(0,0,0,0.8)',
-                                            padding: 15,
-                                            cornerRadius: 8,
-                                            titleFont: {
-                                                size: 14,
-                                                weight: 'bold'
-                                            },
-                                            bodyFont: {
-                                                size: 13
-                                            },
-                                            callbacks: {
-                                                label: function(context) {
-                                                    return 'Rata-rata: Rp ' +
-                                                        context.parsed.y
-                                                        .toLocaleString('id-ID');
-                                                },
-                                                afterLabel: function(context) {
-                                                    const index = context.dataIndex;
-                                                    return [
-                                                        'Min: Rp ' + data[index]
-                                                        .min_pendapatan
-                                                        .toLocaleString(
-                                                            'id-ID'),
-                                                        'Max: Rp ' + data[index]
-                                                        .max_pendapatan
-                                                        .toLocaleString(
-                                                            'id-ID'),
-                                                        'Jumlah: ' + data[index]
-                                                        .jumlah
-                                                        .toLocaleString() +
-                                                        ' orang'
-                                                    ];
-                                                }
-                                            }
-                                        }
-                                    },
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true,
-                                            grid: {
-                                                color: 'rgba(0,0,0,0.03)'
-                                            },
-                                            ticks: {
-                                                font: {
-                                                    size: 12
-                                                },
-                                                callback: function(value) {
-                                                    return value.toLocaleString();
-                                                }
-                                            }
-                                        },
-                                        x: {
-                                            grid: {
-                                                display: false
-                                            },
-                                            ticks: {
-                                                font: {
-                                                    size: 12,
-                                                    weight: 'bold'
-                                                }
-                                            }
                                         }
                                     }
                                 }
-                            });
+                            }
                         });
-                    }
-                });
-            }
+                    });
+                }
+            });
 
-            // Load Pekerjaan by Gender
-            function loadPekerjaanByGender() {
-                $.ajax({
-                    url: '{{ route('pekerjaan.api.pekerjaan.gender') }}',
-                    method: 'GET',
-                    success: function(data) {
-                        $('#loading-gender').fadeOut(300, function() {
-                            $('#genderChartWrapper').fadeIn(400);
+            // ==================== TOP 10 RT TERMISKIN ====================
+            $.ajax({
+                url: '{{ route('pendapatan.pendapatan.per.rt') }}',
+                method: 'GET',
+                success: function(data) {
+                    const labels = Object.keys(data);
+                    const values = labels.map(k => data[k].persentase_rendah);
 
-                            const ctx = document.getElementById('chartPekerjaanGender')
-                                .getContext('2d');
-                            if (charts.gender) charts.gender.destroy();
+                    $('#loading-rt').fadeOut(300, function() {
+                        $('#chartPendapatanRT').fadeIn(400);
 
-                            charts.gender = new Chart(ctx, {
-                                type: 'bar',
-                                data: {
-                                    labels: data.labels,
-                                    datasets: [{
-                                            label: 'Laki-Laki',
-                                            data: data.datasets[0].data,
-                                            backgroundColor: '#007bff',
-                                            borderWidth: 0,
-                                            borderRadius: 10,
-                                            barThickness: 30
-                                        },
-                                        {
-                                            label: 'Perempuan',
-                                            data: data.datasets[1].data,
-                                            backgroundColor: '#e83e8c',
-                                            borderWidth: 0,
-                                            borderRadius: 10,
-                                            barThickness: 30
+                        new Chart($('#chartPendapatanRT'), {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: '% Pendapatan Rendah',
+                                    data: values,
+                                    backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                                    borderColor: '#dc3545',
+                                    borderWidth: 2,
+                                    borderRadius: 10
+                                }]
+                            },
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(0,0,0,0.8)',
+                                        padding: 15,
+                                        cornerRadius: 8,
+                                        callbacks: {
+                                            label: function(context) {
+                                                return context.parsed.x.toFixed(2) +
+                                                    '%';
+                                            }
                                         }
-                                    ]
+                                    }
                                 },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            position: 'top',
-                                            labels: {
-                                                padding: 15,
-                                                font: {
-                                                    size: 13,
-                                                    weight: '600'
-                                                },
-                                                usePointStyle: true,
-                                                pointStyle: 'circle'
+                                scales: {
+                                    x: {
+                                        beginAtZero: true,
+                                        max: 100,
+                                        ticks: {
+                                            callback: function(value) {
+                                                return value + '%';
+                                            },
+                                            font: {
+                                                size: 12
                                             }
                                         },
-                                        tooltip: {
-                                            backgroundColor: 'rgba(0,0,0,0.8)',
-                                            padding: 15,
-                                            cornerRadius: 8,
-                                            titleFont: {
-                                                size: 14,
-                                                weight: 'bold'
-                                            },
-                                            bodyFont: {
-                                                size: 13
-                                            },
-                                            callbacks: {
-                                                footer: function(tooltipItems) {
-                                                    let sum = 0;
-                                                    tooltipItems.forEach(function(
-                                                        tooltipItem) {
-                                                        sum += tooltipItem
-                                                            .parsed.y;
-                                                    });
-                                                    return 'Total: ' + sum
-                                                        .toLocaleString() +
-                                                        ' orang';
-                                                }
-                                            }
+                                        grid: {
+                                            color: 'rgba(0,0,0,0.03)'
                                         }
                                     },
-                                    scales: {
-                                        x: {
-                                            grid: {
-                                                display: false
-                                            },
-                                            ticks: {
-                                                font: {
-                                                    size: 11,
-                                                    weight: 'bold'
-                                                }
+                                    y: {
+                                        ticks: {
+                                            font: {
+                                                size: 12,
+                                                weight: 'bold'
                                             }
                                         },
-                                        y: {
-                                            beginAtZero: true,
-                                            grid: {
-                                                color: 'rgba(0,0,0,0.03)'
-                                            },
-                                            ticks: {
-                                                font: {
-                                                    size: 12
-                                                },
-                                                callback: function(value) {
-                                                    return value.toLocaleString();
-                                                }
-                                            }
+                                        grid: {
+                                            display: false
                                         }
                                     }
                                 }
-                            });
+                            }
+                        });
+                    });
+                }
+            });
+
+            // ==================== KELOMPOK RENTAN ====================
+            $.ajax({
+                url: '{{ route('pendapatan.kelompok.rentan') }}',
+                method: 'GET',
+                success: function(data) {
+                    $('#lansia-rentan-count').text(data.total.toLocaleString('id-ID'));
+                }
+            });
+
+            // ==================== DATATABLES ====================
+            const tablePenduduk = $('#table-penduduk').DataTable({
+                processing: true,
+                serverSide: true,
+                responsive: false,
+                autoWidth: false,
+                ordering: true,
+                paging: true,
+                searching: true,
+                info: true,
+                lengthMenu: [
+                    [10, 25, 50, 100, -1],
+                    [10, 25, 50, 100, "Semua"]
+                ],
+                language: {
+                    processing: '<div class="spinner-premium"><div class="double-bounce1"></div><div class="double-bounce2"></div></div><p class="loading-text">Memproses data...</p>',
+                    lengthMenu: 'Tampilkan _MENU_ data per halaman',
+                    zeroRecords: 'Data tidak ditemukan',
+                    info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                    infoEmpty: 'Tidak ada data tersedia',
+                    infoFiltered: '(disaring dari _MAX_ total data)',
+                    search: 'Pencarian:',
+                    paginate: {
+                        first: '<i class="fas fa-angle-double-left"></i>',
+                        last: '<i class="fas fa-angle-double-right"></i>',
+                        next: '<i class="fas fa-angle-right"></i>',
+                        previous: '<i class="fas fa-angle-left"></i>'
+                    }
+                },
+                ajax: {
+                    url: '{{ route('pendapatan.datatable.penduduk') }}',
+                    data: function(d) {
+                        d.pendapatan = $('#filter-pendapatan').val();
+                        d.kelompok_umur = $('#filter-kelompok-umur').val();
+                        d.rt_rw = $('#filter-rt-rw').val();
+                    }
+                },
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'no_nik',
+                        name: 'no_nik',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'nama',
+                        name: 'nama'
+                    },
+                    {
+                        data: 'jenkel',
+                        name: 'jenkel',
+                        className: 'text-center',
+                        render: data => data == 1 ?
+                            '<span class="badge-status-premium badge-primary-premium">L</span>' :
+                            '<span class="badge-status-premium badge-danger-premium">P</span>'
+                    },
+                    {
+                        data: 'tgl_lahir',
+                        name: 'tgl_lahir',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'umur',
+                        name: 'umur',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'kp',
+                        name: 'kp'
+                    },
+                    {
+                        data: 'rt_rw',
+                        name: 'rt_rw',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'pendapatan_perbulan',
+                        name: 'pendapatan_perbulan',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'punya_bpjs',
+                        name: 'punya_bpjs',
+                        className: 'text-center',
+                        render: data => data === 'ya' ?
+                            '<span class="badge-status-premium badge-success-premium">Punya</span>' :
+                            '<span class="badge-status-premium badge-danger-premium">Tidak</span>'
+                    },
+                    {
+                        data: 'pembayaran_bpjs',
+                        name: 'pembayaran_bpjs',
+                        className: 'text-center',
+                        render: data => data ?
+                            `<span class="badge-status-premium badge-info-premium">${data}</span>` :
+                            '<span class="text-muted">-</span>'
+                    }
+                ]
+            });
+
+            // Load RT/RW options untuk filter
+            $.ajax({
+                url: '{{ route('pendapatan.datatable.penduduk') }}',
+                method: 'GET',
+                data: {
+                    get_rt_rw: true
+                },
+                success: function(response) {
+                    if (response.rt_rw_list) {
+                        const rtRwSelect = $('#filter-rt-rw, #filter-lansia-rt-rw');
+                        response.rt_rw_list.forEach(function(rt_rw) {
+                            rtRwSelect.append(new Option(rt_rw, rt_rw));
                         });
                     }
-                });
-            }
+                }
+            });
 
-            // Load Pekerjaan by Usia
-            function loadPekerjaanByUsia() {
-                $.ajax({
-                    url: '{{ route('pekerjaan.api.pekerjaan.usia') }}',
-                    method: 'GET',
-                    success: function(data) {
-                        $('#loading-usia').fadeOut(300, function() {
-                            $('#usiaChartWrapper').fadeIn(400);
+            $('#filter-pendapatan, #filter-kelompok-umur, #filter-rt-rw').change(function() {
+                tablePenduduk.draw();
+            });
 
-                            const ctx = document.getElementById('chartPekerjaanUsia')
-                                .getContext('2d');
-                            if (charts.usia) charts.usia.destroy();
+            $('#reset-filter').click(function() {
+                $('#filter-pendapatan').val('').trigger('change');
+                $('#filter-kelompok-umur').val('').trigger('change');
+                $('#filter-rt-rw').val('').trigger('change');
+                tablePenduduk.draw();
+            });
 
-                            const usiaColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
-                                '#ffeaa7',
-                                '#dfe6e9'
-                            ];
-                            const datasets = data.datasets.map((dataset, index) => ({
-                                label: dataset.label,
-                                data: dataset.data,
-                                backgroundColor: usiaColors[index],
-                                borderWidth: 0,
-                                borderRadius: 8
-                            }));
-
-                            charts.usia = new Chart(ctx, {
-                                type: 'bar',
-                                data: {
-                                    labels: data.labels,
-                                    datasets: datasets
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            position: 'top',
-                                            labels: {
-                                                font: {
-                                                    size: 11,
-                                                    weight: '600'
-                                                },
-                                                padding: 12,
-                                                usePointStyle: true,
-                                                pointStyle: 'circle'
-                                            }
-                                        },
-                                        tooltip: {
-                                            backgroundColor: 'rgba(0,0,0,0.8)',
-                                            padding: 15,
-                                            cornerRadius: 8,
-                                            titleFont: {
-                                                size: 14,
-                                                weight: 'bold'
-                                            },
-                                            bodyFont: {
-                                                size: 13
-                                            },
-                                            callbacks: {
-                                                footer: function(tooltipItems) {
-                                                    let sum = 0;
-                                                    tooltipItems.forEach(function(
-                                                        tooltipItem) {
-                                                        sum += tooltipItem
-                                                            .parsed.y;
-                                                    });
-                                                    return 'Total: ' + sum
-                                                        .toLocaleString() +
-                                                        ' orang';
-                                                }
-                                            }
-                                        }
-                                    },
-                                    scales: {
-                                        x: {
-                                            stacked: true,
-                                            grid: {
-                                                display: false
-                                            },
-                                            ticks: {
-                                                font: {
-                                                    size: 10,
-                                                    weight: 'bold'
-                                                }
-                                            }
-                                        },
-                                        y: {
-                                            stacked: true,
-                                            beginAtZero: true,
-                                            grid: {
-                                                color: 'rgba(0,0,0,0.03)'
-                                            },
-                                            ticks: {
-                                                font: {
-                                                    size: 12
-                                                },
-                                                callback: function(value) {
-                                                    return value.toLocaleString();
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        });
+            const tableLansia = $('#table-lansia').DataTable({
+                processing: true,
+                serverSide: true,
+                responsive: false,
+                autoWidth: false,
+                ordering: true,
+                paging: true,
+                searching: true,
+                info: true,
+                lengthMenu: [
+                    [10, 25, 50, 100, -1],
+                    [10, 25, 50, 100, "Semua"]
+                ],
+                language: {
+                    processing: '<div class="spinner-premium"><div class="double-bounce1"></div><div class="double-bounce2"></div></div><p class="loading-text">Memproses data...</p>',
+                    lengthMenu: 'Tampilkan _MENU_ data per halaman',
+                    zeroRecords: 'Data tidak ditemukan',
+                    info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                    infoEmpty: 'Tidak ada data tersedia',
+                    infoFiltered: '(disaring dari _MAX_ total data)',
+                    search: 'Pencarian:',
+                    paginate: {
+                        first: '<i class="fas fa-angle-double-left"></i>',
+                        last: '<i class="fas fa-angle-double-right"></i>',
+                        next: '<i class="fas fa-angle-right"></i>',
+                        previous: '<i class="fas fa-angle-left"></i>'
                     }
-                });
-            }
-
-            // Load Piramida Penduduk
-            function loadPiramidaPenduduk() {
-                $.ajax({
-                    url: '{{ route('pekerjaan.api.distribusi.usia') }}',
-                    method: 'GET',
-                    success: function(data) {
-                        $('#loading-piramida').fadeOut(300, function() {
-                            $('#piramidaChartWrapper').fadeIn(400);
-
-                            const ctx = document.getElementById('chartPiramidaPenduduk')
-                                .getContext('2d');
-                            if (charts.piramida) charts.piramida.destroy();
-
-                            charts.piramida = new Chart(ctx, {
-                                type: 'bar',
-                                data: {
-                                    labels: data.labels,
-                                    datasets: [{
-                                            label: 'Laki-Laki',
-                                            data: data.datasets[0].data,
-                                            backgroundColor: '#007bff',
-                                            borderWidth: 0,
-                                            borderRadius: 8,
-                                            barThickness: 20
-                                        },
-                                        {
-                                            label: 'Perempuan',
-                                            data: data.datasets[1].data,
-                                            backgroundColor: '#e83e8c',
-                                            borderWidth: 0,
-                                            borderRadius: 8,
-                                            barThickness: 20
-                                        }
-                                    ]
-                                },
-                                options: {
-                                    indexAxis: 'y',
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            position: 'top',
-                                            labels: {
-                                                padding: 15,
-                                                font: {
-                                                    size: 13,
-                                                    weight: '600'
-                                                },
-                                                usePointStyle: true,
-                                                pointStyle: 'circle'
-                                            }
-                                        },
-                                        tooltip: {
-                                            backgroundColor: 'rgba(0,0,0,0.8)',
-                                            padding: 15,
-                                            cornerRadius: 8,
-                                            titleFont: {
-                                                size: 14,
-                                                weight: 'bold'
-                                            },
-                                            bodyFont: {
-                                                size: 13
-                                            },
-                                            callbacks: {
-                                                label: function(context) {
-                                                    const value = Math.abs(context
-                                                        .parsed.x);
-                                                    return context.dataset.label +
-                                                        ': ' + value
-                                                        .toLocaleString() +
-                                                        ' orang';
-                                                }
-                                            }
-                                        }
-                                    },
-                                    scales: {
-                                        x: {
-                                            grid: {
-                                                color: 'rgba(0,0,0,0.03)'
-                                            },
-                                            ticks: {
-                                                font: {
-                                                    size: 12
-                                                },
-                                                callback: function(value) {
-                                                    return Math.abs(value)
-                                                        .toLocaleString();
-                                                }
-                                            }
-                                        },
-                                        y: {
-                                            grid: {
-                                                display: false
-                                            },
-                                            ticks: {
-                                                font: {
-                                                    size: 12,
-                                                    weight: 'bold'
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        });
+                },
+                ajax: {
+                    url: '{{ route('pendapatan.datatable.lansia.rentan') }}',
+                    data: function(d) {
+                        d.pendapatan = $('#filter-lansia-pendapatan').val();
+                        d.rt_rw = $('#filter-lansia-rt-rw').val();
                     }
-                });
-            }
-
-            // Initialize DataTable Pekerjaan
-            function initTablePekerjaan() {
-                if (dataTables.pekerjaan) {
-                    dataTables.pekerjaan.destroy();
-                }
-
-                dataTables.pekerjaan = $('#table-pekerjaan').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    responsive: false,
-                    autoWidth: false,
-                    lengthMenu: [
-                        [10, 25, 50, 100, -1],
-                        [10, 25, 50, 100, "Semua"]
-                    ],
-                    language: {
-                        processing: '<div class="spinner-premium"><div class="double-bounce1"></div><div class="double-bounce2"></div></div><p class="loading-text">Memproses data...</p>',
-                        lengthMenu: 'Tampilkan _MENU_ data per halaman',
-                        zeroRecords: 'Data tidak ditemukan',
-                        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
-                        infoEmpty: 'Tidak ada data tersedia',
-                        infoFiltered: '(disaring dari _MAX_ total data)',
-                        search: 'Pencarian:',
-                        paginate: {
-                            first: '<i class="fas fa-angle-double-left"></i>',
-                            last: '<i class="fas fa-angle-double-right"></i>',
-                            next: '<i class="fas fa-angle-right"></i>',
-                            previous: '<i class="fas fa-angle-left"></i>'
-                        }
+                },
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
                     },
-                    ajax: {
-                        url: '{{ route('pekerjaan.dt.detail.pekerjaan') }}',
-                        data: function(d) {
-                            d.pekerjaan = $('#filter-pekerjaan').val();
-                        }
+                    {
+                        data: 'no_nik',
+                        name: 'no_nik',
+                        className: 'text-center'
                     },
-                    columns: [{
-                            data: 'DT_RowIndex',
-                            name: 'DT_RowIndex',
-                            orderable: false,
-                            searchable: false,
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'nik',
-                            name: 'nik',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'nama',
-                            name: 'nama'
-                        },
-                        {
-                            data: 'usia',
-                            name: 'usia',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'jenis_kelamin',
-                            name: 'jenis_kelamin',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'pekerjaan',
-                            name: 'pekerjaan',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'kategori_pendapatan',
-                            name: 'kategori_pendapatan',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'alamat_kk',
-                            name: 'alamat_kk'
-                        }
-                    ]
-                });
-            }
-
-            function initTablePendapatan() {
-                if (dataTables.pendapatan) {
-                    dataTables.pendapatan.destroy();
-                }
-
-                dataTables.pendapatan = $('#table-pendapatan').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    responsive: false,
-                    autoWidth: false,
-                    lengthMenu: [
-                        [10, 25, 50, 100, -1],
-                        [10, 25, 50, 100, "Semua"]
-                    ],
-                    language: {
-                        processing: '<div class="spinner-premium"><div class="double-bounce1"></div><div class="double-bounce2"></div></div><p class="loading-text">Memproses data...</p>',
-                        lengthMenu: 'Tampilkan _MENU_ data per halaman',
-                        zeroRecords: 'Data tidak ditemukan',
-                        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
-                        infoEmpty: 'Tidak ada data tersedia',
-                        infoFiltered: '(disaring dari _MAX_ total data)',
-                        search: 'Pencarian:',
-                        paginate: {
-                            first: '<i class="fas fa-angle-double-left"></i>',
-                            last: '<i class="fas fa-angle-double-right"></i>',
-                            next: '<i class="fas fa-angle-right"></i>',
-                            previous: '<i class="fas fa-angle-left"></i>'
-                        }
+                    {
+                        data: 'nama',
+                        name: 'nama'
                     },
-                    ajax: {
-                        url: '{{ route('pekerjaan.dt.detail.pendapatan') }}',
-                        data: function(d) {
-                            d.kategori = $('#filter-pendapatan').val();
-                        }
+                    {
+                        data: 'jenkel',
+                        name: 'jenkel',
+                        className: 'text-center',
+                        render: data => data == 1 ?
+                            '<span class="badge-status-premium badge-primary-premium">L</span>' :
+                            '<span class="badge-status-premium badge-danger-premium">P</span>'
                     },
-                    columns: [{
-                            data: 'DT_RowIndex',
-                            name: 'DT_RowIndex',
-                            orderable: false,
-                            searchable: false,
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'nik',
-                            name: 'nik',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'nama',
-                            name: 'nama'
-                        },
-                        {
-                            data: 'usia',
-                            name: 'usia',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'jenis_kelamin',
-                            name: 'jenis_kelamin',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'pekerjaan',
-                            name: 'pekerjaan',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'pendapatan_perbulan',
-                            name: 'pendapatan_perbulan',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'alamat_kk',
-                            name: 'alamat_kk'
-                        }
-                    ]
-                });
-            }
-
-            function initTableStatus() {
-                if (dataTables.status) {
-                    dataTables.status.destroy();
-                }
-
-                dataTables.status = $('#table-status').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    responsive: false,
-                    autoWidth: false,
-                    lengthMenu: [
-                        [10, 25, 50, 100, -1],
-                        [10, 25, 50, 100, "Semua"]
-                    ],
-                    language: {
-                        processing: '<div class="spinner-premium"><div class="double-bounce1"></div><div class="double-bounce2"></div></div><p class="loading-text">Memproses data...</p>',
-                        lengthMenu: 'Tampilkan _MENU_ data per halaman',
-                        zeroRecords: 'Data tidak ditemukan',
-                        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
-                        infoEmpty: 'Tidak ada data tersedia',
-                        infoFiltered: '(disaring dari _MAX_ total data)',
-                        search: 'Pencarian:',
-                        paginate: {
-                            first: '<i class="fas fa-angle-double-left"></i>',
-                            last: '<i class="fas fa-angle-double-right"></i>',
-                            next: '<i class="fas fa-angle-right"></i>',
-                            previous: '<i class="fas fa-angle-left"></i>'
-                        }
+                    {
+                        data: 'tgl_lahir',
+                        name: 'tgl_lahir',
+                        className: 'text-center'
                     },
-                    ajax: {
-                        url: '{{ route('pekerjaan.dt.detail.status') }}',
-                        data: function(d) {
-                            d.status = $('#filter-status').val();
-                        }
+                    {
+                        data: 'umur',
+                        name: 'umur',
+                        className: 'text-center'
                     },
-                    columns: [{
-                            data: 'DT_RowIndex',
-                            name: 'DT_RowIndex',
-                            orderable: false,
-                            searchable: false,
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'nik',
-                            name: 'nik',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'nama',
-                            name: 'nama'
-                        },
-                        {
-                            data: 'usia',
-                            name: 'usia',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'jenis_kelamin',
-                            name: 'jenis_kelamin',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'pekerjaan',
-                            name: 'pekerjaan',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'status_pekerjaan',
-                            name: 'status_pekerjaan',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'pendapatan_perbulan',
-                            name: 'pendapatan_perbulan',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'alamat_kk',
-                            name: 'alamat_kk'
-                        }
-                    ]
-                });
-            }
-
-            function initTableGender() {
-                if (dataTables.gender) {
-                    dataTables.gender.destroy();
-                }
-
-                dataTables.gender = $('#table-gender').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    responsive: false,
-                    autoWidth: false,
-                    lengthMenu: [
-                        [10, 25, 50, 100, -1],
-                        [10, 25, 50, 100, "Semua"]
-                    ],
-                    language: {
-                        processing: '<div class="spinner-premium"><div class="double-bounce1"></div><div class="double-bounce2"></div></div><p class="loading-text">Memproses data...</p>',
-                        lengthMenu: 'Tampilkan _MENU_ data per halaman',
-                        zeroRecords: 'Data tidak ditemukan',
-                        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
-                        infoEmpty: 'Tidak ada data tersedia',
-                        infoFiltered: '(disaring dari _MAX_ total data)',
-                        search: 'Pencarian:',
-                        paginate: {
-                            first: '<i class="fas fa-angle-double-left"></i>',
-                            last: '<i class="fas fa-angle-double-right"></i>',
-                            next: '<i class="fas fa-angle-right"></i>',
-                            previous: '<i class="fas fa-angle-left"></i>'
-                        }
+                    {
+                        data: 'kp',
+                        name: 'kp'
                     },
-                    ajax: {
-                        url: '{{ route('pekerjaan.dt.detail.gender') }}',
-                        data: function(d) {
-                            d.gender = $('#filter-gender').val();
-                            d.pekerjaan = $('#filter-gender-pekerjaan').val();
-                        }
+                    {
+                        data: 'rt_rw',
+                        name: 'rt_rw',
+                        className: 'text-center'
                     },
-                    columns: [{
-                            data: 'DT_RowIndex',
-                            name: 'DT_RowIndex',
-                            orderable: false,
-                            searchable: false,
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'nik',
-                            name: 'nik',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'nama',
-                            name: 'nama'
-                        },
-                        {
-                            data: 'usia',
-                            name: 'usia',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'jenis_kelamin',
-                            name: 'jenis_kelamin',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'pekerjaan',
-                            name: 'pekerjaan',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'alamat_kk',
-                            name: 'alamat_kk'
-                        }
-                    ]
-                });
-            }
-
-            function initTableUsia() {
-                if (dataTables.usia) {
-                    dataTables.usia.destroy();
-                }
-
-                dataTables.usia = $('#table-usia').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    responsive: false,
-                    autoWidth: false,
-                    lengthMenu: [
-                        [10, 25, 50, 100, -1],
-                        [10, 25, 50, 100, "Semua"]
-                    ],
-                    language: {
-                        processing: '<div class="spinner-premium"><div class="double-bounce1"></div><div class="double-bounce2"></div></div><p class="loading-text">Memproses data...</p>',
-                        lengthMenu: 'Tampilkan _MENU_ data per halaman',
-                        zeroRecords: 'Data tidak ditemukan',
-                        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
-                        infoEmpty: 'Tidak ada data tersedia',
-                        infoFiltered: '(disaring dari _MAX_ total data)',
-                        search: 'Pencarian:',
-                        paginate: {
-                            first: '<i class="fas fa-angle-double-left"></i>',
-                            last: '<i class="fas fa-angle-double-right"></i>',
-                            next: '<i class="fas fa-angle-right"></i>',
-                            previous: '<i class="fas fa-angle-left"></i>'
-                        }
+                    {
+                        data: 'pendapatan_perbulan',
+                        name: 'pendapatan_perbulan',
+                        className: 'text-center'
                     },
-                    ajax: {
-                        url: '{{ route('pekerjaan.dt.detail.usia') }}',
-                        data: function(d) {
-                            d.kategori_usia = $('#filter-usia').val();
-                        }
+                    {
+                        data: 'punya_bpjs',
+                        name: 'punya_bpjs',
+                        className: 'text-center',
+                        render: data => data === 'ya' ?
+                            '<span class="badge-status-premium badge-success-premium">Punya</span>' :
+                            '<span class="badge-status-premium badge-danger-premium">Tidak</span>'
                     },
-                    columns: [{
-                            data: 'DT_RowIndex',
-                            name: 'DT_RowIndex',
-                            orderable: false,
-                            searchable: false,
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'nik',
-                            name: 'nik',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'nama',
-                            name: 'nama'
-                        },
-                        {
-                            data: 'tgl_lahir',
-                            name: 'tgl_lahir',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'usia',
-                            name: 'usia',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'kategori_usia',
-                            name: 'kategori_usia',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'jenis_kelamin',
-                            name: 'jenis_kelamin',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'pekerjaan',
-                            name: 'pekerjaan',
-                            className: 'text-center'
-                        },
-                        {
-                            data: 'alamat_kk',
-                            name: 'alamat_kk'
-                        }
-                    ]
-                });
-            }
+                    {
+                        data: 'pembayaran_bpjs',
+                        name: 'pembayaran_bpjs',
+                        className: 'text-center',
+                        render: data => data ?
+                            `<span class="badge-status-premium badge-info-premium">${data}</span>` :
+                            '<span class="text-muted">-</span>'
+                    }
+                ]
+            });
 
-            // Tab change handler
+            $('#filter-lansia-pendapatan, #filter-lansia-rt-rw').change(function() {
+                tableLansia.draw();
+            });
+
+            $('#reset-filter-lansia').click(function() {
+                $('#filter-lansia-pendapatan').val('').trigger('change');
+                $('#filter-lansia-rt-rw').val('').trigger('change');
+                tableLansia.draw();
+            });
+
+            // Main category pills navigation
             $('#categoryTab a[data-toggle="pill"]').on('shown.bs.tab', function(e) {
-                const target = $(e.target).attr('href');
+                const targetPane = $(e.target).attr('href');
 
-                // Scroll to card
+                // Scroll to top of card
                 $('html, body').animate({
                     scrollTop: $('.card-widget-premium:last').offset().top - 100
                 }, 300);
 
-                switch (target) {
-                    case '#pekerjaan-kategori':
-                        if (!dataTables.pekerjaan) initTablePekerjaan();
-                        break;
-                    case '#pendapatan-kategori':
-                        if (!dataTables.pendapatan) initTablePendapatan();
-                        break;
-                    case '#status-kategori':
-                        if (!dataTables.status) initTableStatus();
-                        break;
-                    case '#gender-kategori':
-                        if (!dataTables.gender) initTableGender();
-                        break;
-                    case '#usia-kategori':
-                        if (!dataTables.usia) initTableUsia();
-                        break;
-                }
+                setTimeout(function() {
+                    if (targetPane === '#semua-penduduk') {
+                        tablePenduduk.columns.adjust().draw(false);
+                    } else if (targetPane === '#tab-lansia-rentan') {
+                        tableLansia.columns.adjust().draw(false);
+                    }
+                }, 150);
             });
-
-            // Apply Filter Function
-            window.applyFilter = function(type) {
-                switch (type) {
-                    case 'pekerjaan':
-                        if (dataTables.pekerjaan) dataTables.pekerjaan.ajax.reload();
-                        break;
-                    case 'pendapatan':
-                        if (dataTables.pendapatan) dataTables.pendapatan.ajax.reload();
-                        break;
-                    case 'status':
-                        if (dataTables.status) dataTables.status.ajax.reload();
-                        break;
-                    case 'gender':
-                        if (dataTables.gender) dataTables.gender.ajax.reload();
-                        break;
-                    case 'usia':
-                        if (dataTables.usia) dataTables.usia.ajax.reload();
-                        break;
-                }
-            }
-
-            // Initialize all charts
-            loadKPIData();
-            loadDistribusiPekerjaan();
-            loadDistribusiPendapatan();
-            loadPekerjaanVsPendapatan();
-            loadStatusPekerjaan();
-            loadAnalisisPendapatan();
-            loadPekerjaanByGender();
-            loadPekerjaanByUsia();
-            loadPiramidaPenduduk();
-
-            // Initialize first table
-            initTablePekerjaan();
         });
     </script>
 @endpush

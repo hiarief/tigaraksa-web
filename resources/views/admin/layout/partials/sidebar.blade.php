@@ -126,6 +126,15 @@
                         <i class="fas fa-wallet header-icon"></i>
                         <span>EKONOMI & BANTUAN</span>
                     </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('kecamatan.pendapatan.index') }}"
+                            class="nav-link {{ Route::is('kecamatan.pendapatan.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-wallet"></i>
+                            <p>Pendapatan</p>
+                            <span class="nav-glow"></span>
+                        </a>
+                    </li>
                 @endcan
 
                 @can('desa-chart')

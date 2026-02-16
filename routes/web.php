@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\Kecamatan\BpjsKecamatanController;
 use App\Http\Controllers\Admin\Kecamatan\KepemilikanRumahKecamatanController;
 use App\Http\Controllers\Admin\Kecamatan\KependudukanKecamatanContrroller;
 use App\Http\Controllers\Admin\Kecamatan\PekerjaanKecamatanController;
+use App\Http\Controllers\Admin\Kecamatan\PendapatanKecamatanController;
 use App\Http\Controllers\Admin\Kecamatan\PendidikanKecamatanController;
 use App\Http\Controllers\Admin\Kecamatan\PerkawinanKecamatanController;
 use App\Http\Controllers\Admin\Kecamatan\UmurKecamatanController;
@@ -351,6 +352,29 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/datatable-abnormal', [KepemilikanRumahKecamatanController::class, 'getDatatableAbnormal'])->name('datatable.abnormal');
             Route::get('/list-desa', [KepemilikanRumahKecamatanController::class, 'getListDesa'])->name('list.desa');
             Route::get('/list-pendapatan', [KepemilikanRumahKecamatanController::class, 'getListPendapatan'])->name('list.pendapatan');
+        });
+
+        Route::group(['prefix' => '/pendapatan', 'as' => 'pendapatan.'], function () {
+            Route::get('/', [PendapatanKecamatanController::class, 'index'])->name('index');
+            Route::get('/statistik-jumlah', [PendapatanKecamatanController::class, 'getStatistikJumlah'])->name('jumlah');
+            Route::get('/statistik-rasio', [PendapatanKecamatanController::class, 'getStatistikRasio'])->name('rasio');
+            Route::get('/distribusi-pendapatan', [PendapatanKecamatanController::class, 'getDistribusiPendapatan'])->name('distribusi');
+            Route::get('/distribusi-jenis-kelamin', [PendapatanKecamatanController::class, 'getDistribusiJenisKelamin'])->name('jenkel');
+            Route::get('/distribusi-per-desa', [PendapatanKecamatanController::class, 'getDistribusiPerDesa'])->name('desa');
+            Route::get('/distribusi-kelompok-umur', [PendapatanKecamatanController::class, 'getDistribusiKelompokUmur'])->name('umur');
+            Route::get('/pendapatan-umur-jenkel', [PendapatanKecamatanController::class, 'getPendapatanUmurJenisKelamin'])->name('umur.jenkel');
+            Route::get('/pendapatan-berdasarkan-umur', [PendapatanKecamatanController::class, 'getPendapatanBerdasarkanUmur'])->name('berdasarkan.umur');
+            Route::get('/top10-pekerjaan-tertinggi', [PendapatanKecamatanController::class, 'getTop10PekerjaanPendapatanTertinggi'])->name('top10.pekerjaan');
+            Route::get('/pendapatan-tertinggi-desa', [PendapatanKecamatanController::class, 'getPendapatanTertinggiPerDesa'])->name('tertinggi.desa');
+            Route::get('/detail-per-desa', [PendapatanKecamatanController::class, 'getDetailPerDesa'])->name('detail.desa');
+            Route::get('/distribusi-pekerjaan', [PendapatanKecamatanController::class, 'getDistribusiPekerjaan'])->name('pekerjaan.distribusi');
+            Route::get('/pendapatan-per-desa', [PendapatanKecamatanController::class, 'getPendapatanPerDesa'])->name('per.desa');
+            Route::get('/pekerjaan-berdasarkan-gender', [PendapatanKecamatanController::class, 'getPekerjaanBerdasarkanGender'])->name('pekerjaan.gender');
+            Route::get('/datatable-kepala-keluarga', [PendapatanKecamatanController::class, 'getDatatableKepalaKeluarga'])->name('datatable.kepala-keluarga');
+            Route::get('/list-desa', [PendapatanKecamatanController::class, 'getListDesa'])->name('list.desa');
+            Route::get('/list-pendapatan', [PendapatanKecamatanController::class, 'getListPendapatan'])->name('list.pendapatan');
+            Route::get('/list-pekerjaan', [PendapatanKecamatanController::class, 'getListPekerjaan'])->name('list.pekerjaan');
+            Route::get('/clear-cache', [PendapatanKecamatanController::class, 'clearCache'])->name('clear.cache');
         });
 
     });
