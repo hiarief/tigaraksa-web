@@ -135,6 +135,15 @@
                             <span class="nav-glow"></span>
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('kecamatan.bantuan.pemerintah.index') }}"
+                            class="nav-link {{ Route::is('kecamatan.bantuan.pemerintah.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-hand-holding-heart"></i>
+                            <p>Bantuan Pemerintah</p>
+                            <span class="nav-glow"></span>
+                        </a>
+                    </li>
                 @endcan
 
                 @can('desa-chart')

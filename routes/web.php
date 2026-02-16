@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DataHilangController;
 use App\Http\Controllers\Admin\KartuKeluargaAnggotaController;
 use App\Http\Controllers\Admin\KartuKeluargaController;
+use App\Http\Controllers\Admin\Kecamatan\BantuanPemerintahKecamatanController;
 use App\Http\Controllers\Admin\Kecamatan\BpjsKecamatanController;
 use App\Http\Controllers\Admin\Kecamatan\KepemilikanRumahKecamatanController;
 use App\Http\Controllers\Admin\Kecamatan\KependudukanKecamatanContrroller;
@@ -375,6 +376,23 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/list-pendapatan', [PendapatanKecamatanController::class, 'getListPendapatan'])->name('list.pendapatan');
             Route::get('/list-pekerjaan', [PendapatanKecamatanController::class, 'getListPekerjaan'])->name('list.pekerjaan');
             Route::get('/clear-cache', [PendapatanKecamatanController::class, 'clearCache'])->name('clear.cache');
+        });
+
+        Route::group(['prefix' => '/bantuan-pemerintah', 'as' => 'bantuan.pemerintah.'], function () {
+            Route::get('/', [BantuanPemerintahKecamatanController::class, 'index'])->name('index');
+            Route::get('/statistik/jumlah', [BantuanPemerintahKecamatanController::class, 'statistikJumlah'])->name('jumlah');
+            Route::get('/statistik/rasio', [BantuanPemerintahKecamatanController::class, 'statistikRasio'])->name('rasio');
+            Route::get('/distribusi/jenis', [BantuanPemerintahKecamatanController::class, 'distribusiJenisBantuan'])->name('jenis');
+            Route::get('/distribusi/jenkel', [BantuanPemerintahKecamatanController::class, 'distribusiJenkel'])->name('jenkel');
+            Route::get('/distribusi/desa', [BantuanPemerintahKecamatanController::class, 'distribusiPerDesa'])->name('desa');
+            Route::get('/distribusi/umur', [BantuanPemerintahKecamatanController::class, 'distribusiUmur'])->name('umur');
+            Route::get('/distribusi/umur-jenkel', [BantuanPemerintahKecamatanController::class, 'distribusiUmurJenkel'])->name('umur.jenkel');
+            Route::get('/distribusi/jenis-desa', [BantuanPemerintahKecamatanController::class, 'distribusiBantuanPerDesa'])->name('jenis.desa');
+            Route::get('/detail/desa', [BantuanPemerintahKecamatanController::class, 'detailPerDesa'])->name('detail.desa');
+            Route::get('/data/abnormal', [BantuanPemerintahKecamatanController::class, 'dataAbnormal'])->name('abnormal');
+            Route::get('/list/desa', [BantuanPemerintahKecamatanController::class, 'listDesa'])->name('list.desa');
+            Route::get('/datatable/abnormal', [BantuanPemerintahKecamatanController::class, 'datatableAbnormal'])->name('datatable.abnormal');
+            Route::get('/datatable/penduduk', [BantuanPemerintahKecamatanController::class, 'datatablePenduduk'])->name('datatable.penduduk');
         });
 
     });
